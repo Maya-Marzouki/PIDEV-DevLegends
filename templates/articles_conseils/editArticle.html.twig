@@ -1,0 +1,83 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modifier l'Article{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg p-4">
+                <h1 class="text-center mb-4">Modifier l'Article de Conseil</h1>
+
+                    {# Affichage des erreurs globales du formulaire #}
+                    {% if form.vars.errors|length > 0 %}
+                        <div class="alert alert-danger">
+                            <strong>Des erreurs sont survenues :</strong>
+                            <ul>
+                                {% for error in form.errors %}
+                                    <li>{{ error.message }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="mb-3">
+                        {{ form_label(form.titreArticle, 'Titre de l\'Article', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.titreArticle, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le titre de l\'article'}}) }}
+                        <div class="text-danger">{{ form_errors(form.titreArticle) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.contenuArticle, 'Contenu de l\'Article', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.contenuArticle, {'attr': {'class': 'form-control', 'rows': 5, 'placeholder': 'Entrez le contenu de l\'article'}}) }}
+                        <div class="text-danger">{{ form_errors(form.contenuArticle) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.categorieMentalArticle, 'Catégorie', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.categorieMentalArticle, {'attr': {'class': 'form-control'}}) }}
+                        <div class="text-danger">{{ form_errors(form.categorieMentalArticle) }}
+                    </div>
+
+                    <!-- Champ pour l'URL de l'image -->
+                    <div class="mb-3">
+                        {{ form_label(form.image, 'URL de l\'Image', {'label_attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.image, {'attr': {'class': 'form-control', 'placeholder': 'https://example.com/image.jpg', 'oninput': 'updatePreview()'}}) }}
+                        <div class="text-danger">{{ form_errors(form.image) }}
+                    </div>
+
+                    <!-- Prévisualisation de l'image -->
+                    <div class="mb-3 text-center">
+                        <img id="imagePreview" src="{{ form.image.vars.value ?: 'https://via.placeholder.com/500x300?text=Aperçu+de+l\'image' }}" class="img-fluid rounded shadow" alt="Aperçu de l'image" style="max-width: 300px;">
+                    </div>
+
+                <style>
+                    .btn-custom-green {
+                        background-color: #28a745 !important; /* Vert Bootstrap */
+                        color: white !important; /* Texte blanc */
+                        font-weight: bold;
+                    }
+                </style>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ path('app_articles_conseils_admin') }}" class="btn btn-custom-green py-3 px-4">Voir la liste des articles</a>
+                        <button type="submit" class="btn btn-custom-green py-3 px-4">Enregistrer les modifications</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript pour mettre à jour l'aperçu de l'image -->
+<script>
+    function updatePreview() {
+        let image = document.querySelector("input[name='image']").value;
+        let preview = document.getElementById("imagePreview");
+        preview.src = image || "https://via.placeholder.com/500x300?text=Aperçu+de+l'image";
+    }
+</script>
+
+{% endblock %}

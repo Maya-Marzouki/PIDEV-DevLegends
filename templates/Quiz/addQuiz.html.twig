@@ -1,0 +1,51 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Ajouter un Quiz{% endblock %}
+
+{% block body %}
+    <h1>Ajouter un Quiz</h1>
+
+    {# Formulaire principal pour le Quiz #}
+    {{ form_start(form) }}
+        {{ form_row(form.questionQuiz) }}
+        {{ form_row(form.categorieSant) }}
+        <button class="btn btn-success">Enregistrer le Quiz</button>
+    {{ form_end(form) }}
+
+    <h3>Ajouter des Réponses à la Question</h3>
+    
+    <form method="POST" action="{{ path('quiz_add') }}">
+        <div class="question-responses">
+            <div class="response-block">
+                <label for="reponse">Réponse</label>
+                <input type="text" name="questions[0][reponse]" required>
+
+                <label for="points">Points</label>
+                <input type="number" name="questions[0][points]" required>
+            </div>
+
+            <button type="button" class="add-response-btn">Ajouter une autre réponse</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enregistrer le Quiz et les Réponses</button>
+    </form>
+
+    <script>
+        let counter = 1;
+
+        document.querySelector('.add-response-btn').addEventListener('click', function() {
+            const responseBlock = document.createElement('div');
+            responseBlock.classList.add('response-block');
+            responseBlock.innerHTML = `
+                <label for="reponse">Réponse</label>
+                <input type="text" name="questions[${counter}][reponse]" required>
+
+                <label for="points">Points</label>
+                <input type="number" name="questions[${counter}][points]" required>
+            `;
+            document.querySelector('.question-responses').appendChild(responseBlock);
+            counter++;
+        });
+    </script>
+
+{% endblock %}

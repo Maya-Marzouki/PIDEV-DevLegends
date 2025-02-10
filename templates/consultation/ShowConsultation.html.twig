@@ -1,0 +1,50 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+<div class="row d-flex justify-content-center"> {# Centre le tableau horizontalement #}
+    <div class="col-lg-10"> {# Réduit la largeur du tableau pour qu'il soit mieux centré #}
+        <div class="card">
+            <div class="card-block text-center"> {# Centre le texte dans la carte #}
+                <h4 class="card-title">Liste des Consultations</h4>
+                <h6 class="card-subtitle">Gestion des consultations</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center"> {# Centre le texte dans le tableau #}
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Âge</th>
+                            <th>Actions</th>
+                        </tr>
+                        {% for consultation in consultations %}
+                        <tr>
+                            <td>{{ consultation.id }}</td>
+                            <td>{{ consultation.dateCons|date('Y-m-d') }}</td>
+                            <td>{{ consultation.Nom }}</td>
+                            <td>{{ consultation.prenom }}</td>
+                            <td>{{ consultation.age }}</td>
+                            <td>
+                                <a href="{{ path('edit_consultation', { id: consultation.id }) }}" class="btn btn-succes">Modifier</a>
+                                <a href="{{ path('delete_consultation', { id: consultation.id }) }}" class="btn btn-succes" onclick="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">Supprimer</a>
+                            </td>
+                        </tr>
+                        {% endfor %}      
+                    </table>
+                </div>
+            </div>
+        </div>
+                {# Bouton "Ajouter une Consultation" en bas à droite #}
+                <style>
+                    .btn-custom-green {
+                        background-color: #28a745 !important; /* Vert Bootstrap */
+                        color: white !important; /* Texte blanc */
+                        font-weight: bold;
+                    }
+                </style>
+                <div class="d-flex justify-content-end mt-3">
+                    <a href="{{ path('consultation_new') }}" class="btn btn-custom-green">Ajouter une Consultation</a>
+                </div>
+    </div>
+</div>
+{% endblock %}

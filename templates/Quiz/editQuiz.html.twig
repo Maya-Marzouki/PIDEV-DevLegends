@@ -1,0 +1,38 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <h1>Modifier le Quiz</h1>
+
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.questionQuiz, 'Question') }}
+            {{ form_widget(form.questionQuiz, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.categorieSant, 'Catégorie') }}
+            {{ form_widget(form.categorieSant, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.reponseQuiz, 'Réponse') }}
+            {{ form_widget(form.reponseQuiz) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.scoreQuiz, 'Score') }}
+            {{ form_widget(form.scoreQuiz, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.consultationQ, 'Consultation associée') }}
+            {{ form_widget(form.consultationQ, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <button type="submit" class="btn btn-warning">Modifier</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('quiz_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+</div>
+{% endblock %}

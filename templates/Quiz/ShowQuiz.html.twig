@@ -1,0 +1,43 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+<div class="container">
+    <h1>Détails du Quiz</h1>
+    
+    <table class="table">
+        <tr>
+            <th>ID :</th>
+            <td>{{ quiz.id }}</td>
+        </tr>
+        <tr>
+            <th>Question :</th>
+            <td>{{ quiz.questionQuiz }}</td>
+        </tr>
+        <tr>
+            <th>Catégorie :</th>
+            <td>{{ quiz.categorieSant }}</td>
+        </tr>
+        <tr>
+            <th>Réponse :</th>
+            <td>{{ quiz.reponseQuiz }}</td>
+        </tr>
+        <tr>
+            <th>Score :</th>
+            <td>{{ quiz.scoreQuiz }}</td>
+        </tr>
+        <tr>
+            <th>Consultation associée :</th>
+            <td>{{ quiz.consultationQ.id }}</td>
+        </tr>
+    </table>
+
+    <a href="{{ path('quiz_edit', { id: quiz.id }) }}" class="btn btn-warning">Modifier</a>
+    
+    <form method="post" action="{{ path('quiz_delete', { id: quiz.id }) }}" style="display:inline;">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ quiz.id) }}">
+        <button type="submit" class="btn btn-danger">Supprimer</button>
+    </form>
+
+    <a href="{{ path('quiz_index') }}" class="btn btn-secondary">Retour à la liste</a>
+</div>
+{% endblock %}

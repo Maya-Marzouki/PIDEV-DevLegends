@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+{% block title %} Sign Up {% endblock %}
+{% block body %}     
+{{ form_start(form) }}
+<div class="container-fluid py-5">
+        <div class="container">
+            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px; visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
+                <h1 class="display-5 mb-5">Sign Up</h1>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_label(form.firstName)}}
+                                    {{form_widget(form.firstName)}}
+                                    {{form_errors(form.firstName)}}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_label(form.lastName)}}
+                                    {{form_widget(form.lastName)}}
+                                    {{form_errors(form.lastName)}}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_label(form.userEmail)}}
+                                    {{form_widget(form.userEmail,{attr:{'class':'form-control','placeholder':'text@gmail.com'}})}}
+                                    {{form_errors(form.userEmail)}}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_label(form.pswrd)}}
+                                    {{form_widget(form.pswrd,{attr:{'class':'form-control','placeholder':'Mdp contenant des chiffres et des lettres'}})}}
+                                    {{form_errors(form.pswrd)}}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_label(form.userRole)}}
+                                    {{form_widget(form.userRole)}}
+                                    {{form_errors(form.userRole)}}
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_label(form.userAge)}}
+                                    {{form_widget(form.userAge)}}
+                                    {{form_errors(form.userAge)}}
+                                </div>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button class="btn btn-primary py-3 px-4" type="submit">Submit Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>      
+</div>
+{{ form_end(form) }}
+{% endblock %}
