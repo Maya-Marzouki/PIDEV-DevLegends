@@ -1,0 +1,43 @@
+{% extends 'baseAdmin.html.twig' %}
+{# {% if userList is defined and userList is not empty%} #}
+{% block body %}
+ <a href="{{ path('insertCategorie') }}" class="btn btn-success">Ajouter un Categorie</a>
+<div class="row">
+    <!-- column -->
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-block">
+			    <h4 class="card-title">Basic Table</h4>
+                    <h6 class="card-subtitle">Add class <code>.table</code></h6>
+                        <div class="table-responsive">
+                            <table class="table">
+                               <tr>
+		<th>id</th>
+        <th>nomCategorie</th>
+        
+
+	</tr>
+	{% for categorie in categories %}
+		<tr>
+			<td>{{ categorie.nomCategorie }}</td>
+                  
+                   
+
+                    
+                    <td>
+                        <a href="{{ path('editCategorie', {'id': categorie.id}) }}" >Modifier</a>
+                        <form method="post" action="{{ path('deleteCategorie', { id: categorie.id }) }}" >
+                        <a href="{{ path('deleteCategorie', {'id': categorie.id}) }}" >Supprimer</a>
+                        
+</form>
+
+                    </td>
+		</tr>
+								{% endfor %}      
+                        	</table>
+                		</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

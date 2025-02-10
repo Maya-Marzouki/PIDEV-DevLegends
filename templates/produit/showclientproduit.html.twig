@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste des Produits {% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Nos Produits</h1>
+
+    <div class="row">
+        {% for produit in produits %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
+                    <div class="card-body d-flex flex-column flex-grow-1 text-center">
+                        <h5 class="card-title text-success">{{ produit.nomProduit }}</h5>
+                        <div class="mt-auto">
+                            <p class="card-text"><strong>Quantité:</strong> {{ produit.qteProduit }}</p>
+                            <p class="card-text"><strong>Prix:</strong> {{ produit.prixProduit }} €</p>
+                            <p class="card-text"><strong>Statut:</strong> 
+                                <span class="badge bg-{{ produit.statutProduit ? 'success' : 'secondary' }}">
+                                    {{ produit.statutProduit ? 'Disponible' : 'Indisponible' }}
+                                </span>
+                            </p>
+                            <p class="card-text"><strong>Catégorie:</strong> {{ produit.CategorieProduit }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>Aucun produit trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
