@@ -1,0 +1,156 @@
+<?php
+
+namespace App\Entity;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+class User
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: "First Name is required")]
+    #[Assert\Length(
+        min: 2,
+        max: 20,
+        minMessage: 'Your first name must be at least {{ limit }} characters long',
+        maxMessage: 'Your first name cannot be longer than {{ limit }} characters',
+    )]
+    #[Assert\Regex(
+        pattern: '/\d/',
+        match: false,
+        message: 'Your first name cannot contain a number',
+    )]
+    private ?string $firstName = null;
+
+    #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message:"Last Name is required")]
+    #[Assert\Length(
+        min: 2,
+        max: 20,
+        minMessage: 'Your last name must be at least {{ limit }} characters long',
+        maxMessage: 'Your last name cannot be longer than {{ limit }} characters',
+    )]
+    #[Assert\Regex(
+        pattern: '/\d/',
+        match: false,
+        message: 'Your last name cannot contain a number',
+    )]
+    private ?string $lastName = null;
+
+    #[ORM\Column(length: 30)]
+    #[Assert\NotBlank(message:"Email is required")]
+    #[Assert\Email(message:"The email {{ value }} is not valid")]
+    private ?string $userEmail = null;
+
+    #[ORM\Column(length: 10)]
+    #[Assert\NotBlank(message:"Password is required")]
+    private ?string $pswrd = null;
+
+    #[ORM\Column(length: 20, options: ["Patient","Medecin"])]
+    #[Assert\NotBlank(message:"Role is required")]
+    private ?string $userRole = null;
+
+    #[ORM\Column]
+    #[Assert\NotBlank(message:"Age is required")]
+    #[Assert\GreaterThan(2,message:"The age must be greater than 2")]
+    #[Assert\GreaterThan(0,message:"The age must be positive")]
+    private ?int $userAge = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $userPicture = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName(?string $firstName): static
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(?string $lastName): static
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getUserEmail(): ?string
+    {
+        return $this->userEmail;
+    }
+
+    public function setUserEmail(?string $userEmail): static
+    {
+        $this->userEmail = $userEmail;
+
+        return $this;
+    }
+
+    public function getPswrd(): ?string
+    {
+        return $this->pswrd;
+    }
+
+    public function setPswrd(?string $pswrd): static
+    {
+        $this->pswrd = $pswrd;
+
+        return $this;
+    }
+
+    public function getUserRole(): ?string
+    {
+        return $this->userRole;
+    }
+
+    public function setUserRole(?string $userRole): static
+    {
+        $this->userRole = $userRole;
+
+        return $this;
+    }
+
+    public function getUserAge(): ?int
+    {
+        return $this->userAge;
+    }
+
+    public function setUserAge(?int $userAge): static
+    {
+        $this->userAge = $userAge;
+
+        return $this;
+    }
+
+    public function getUserPicture(): ?string
+    {
+        return $this->userPicture;
+    }
+
+    public function setUserPicture(?string $userPicture): static
+    {
+        $this->userPicture = $userPicture;
+
+        return $this;
+    }
+}
