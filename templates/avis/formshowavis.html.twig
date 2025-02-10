@@ -17,7 +17,7 @@
 							<tr>
 								<th>Sujet</th>
 								<th>Contenu</th>
-                                <th>Note</th>
+								<th>Note</th>
 								<th>Date</th>
 								<th>Email Destinataire</th>
 							</tr>
@@ -25,7 +25,7 @@
 								<tr>
 									<td>{{ avis.sujetAvis }}</td>
 									<td>{{ avis.contenuAvis }}</td>
-                                    <td>{{ avis.noteAvis }}</td>
+									<td>{{ avis.noteAvis }}</td>
 									<td>{{ avis.dateAvis|date('d-m-Y H:i') }}</td>
 									<td>{{ avis.emailAvis }}</td>
 
@@ -33,8 +33,9 @@
 									<td>
 										<a href="{{ path('editAvis', {'id': avis.id}) }}">Modifier</a>
 										<form method="post" action="{{ path('deleteAvis', { id: avis.id }) }}">
-											<a href="{{ path('deleteAvis', {'id': avis.id}) }}">Supprimer</a>
-
+											<a href="{{ path('deleteAvis', {'id': avis.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+												Supprimer
+											</a>
 										</form>
 
 									</td>

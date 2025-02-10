@@ -91,7 +91,7 @@ class AvisController extends AbstractController
         $manager->remove($avis);
         $manager->flush();
 
-        return $this->redirectToRoute("app_reclamation_index");
+        return $this->redirectToRoute("app_avis_index");
     }
 
     
