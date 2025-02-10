@@ -1,0 +1,34 @@
+{% extends 'baseAdmin.html.twig' %}
+{% block title %}Admin Profile{% endblock %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row page-titles">
+        <div class="col-md-5 col-8 align-self-center">
+            <h3 class="text-themecolor">Admin Profile</h3>      
+        </div>                
+    </div>
+</div>
+<center>
+    <div>
+    <div class="col-lg-4 col-xlg-3 col-md-5">
+        <div class="card">
+            <div class="card-block">
+                <center class="m-t-30">
+                    <td>
+                    {% if user.userPicture %}
+                        <img src="{{ user.userPicture }}" class="img-circle" alt="userPicture" width="150">
+                        {% else %}
+                            <span>Pas d'image</span>
+                        {% endif %}
+                    </td>
+                    <h4 class="card-title m-t-10">{{user.firstName | upper}} {{user.lastName | upper}}</h4>
+                        <h6 class="card-subtitle">{{user.userAge}} Years Old</h6>
+                        <h6 class="card-subtitle">{{user.userRole | upper}}</h6>
+                        <a class="text-themecolor" href="{{path('updateAdmin',{'id':user.id})}}">Edit Profile</a>
+                </center>
+            </div>
+        </div>
+    </div>
+    </div>
+</center>
+{% endblock %}

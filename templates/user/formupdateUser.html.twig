@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+{% block title %}Edit User Profile{% endblock %}
+{% block body %}
+{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
+<div class="container">
+    <div class="main-body">
+        <nav aria-label="breadcrumb" class="main-breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a>Home</a></li>
+              <li class="breadcrumb-item"><a>User Profile</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Edit User Profile</li>
+            </ol>
+        </nav>
+        <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            {% if user.userPicture %}
+                                <img src="{{ user.userPicture }}" class="rounded-circle" alt="userPicture" width="150">
+                            {% else %}
+                                <div class="text-center p-3 text-muted">Pas d'image</div>
+                            {% endif %}
+                            <div class="mt-3">
+                                <h4><a href="{{path('userProfile',{'id':user.id})}}">{{user.firstName | upper}} {{user.lastName | upper}}</a></h4>
+                                <h6 class="text-secondary mb-1">{{user.userAge}} Years Old</h6>
+                                <p class="text-secondary mb-1">{{user.userRole | upper}}</p>
+                                <button class="btn btn-danger" {#href="{{path('verifDelete')}}"#}>Delete Account</button>
+                                <button class="btn btn-outline-primary">Logout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-3"><h6 class="mb-0">Fisrt Name</h6></div>
+                            <div class="col-sm-9 text-secondary">
+                            <div class="form-floating">
+                                {{ form_widget(form.firstName, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.firstName) }}
+                                <div class="text-danger">{{ form_errors(form.firstName) }}</div>
+                            </div></div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3"><h6 class="mb-0">Last Name</h6></div>
+                            <div class="col-sm-9 text-secondary">
+                            <div class="form-floating">
+                                {{ form_widget(form.lastName, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.lastName) }}
+                                <div class="text-danger">{{ form_errors(form.lastName) }}</div>
+                            </div></div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3"><h6 class="mb-0">Email</h6></div>
+                            <div class="col-sm-9 text-secondary">
+                            <div class="form-floating">
+                                {{ form_widget(form.userEmail, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.userEmail) }}
+                                <div class="text-danger">{{ form_errors(form.userEmail) }}</div>
+                            </div></div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3"><h6 class="mb-0">Password</h6></div>
+                            <div class="col-sm-9 text-secondary">
+                            <div class="form-floating">
+                                {{ form_widget(form.pswrd, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.pswrd) }}
+                                <div class="text-danger">{{ form_errors(form.pswrd) }}</div>
+                            </div></div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3"><h6 class="mb-0">Role</h6></div>
+                            <div class="col-sm-9 text-secondary">
+                            <div class="form-floating">
+                                {{ form_widget(form.userRole, {attr: {'class': 'form-control', 'disabled': 'disabled'}}) }}
+                                {{ form_label(form.userRole) }}
+                                <div class="text-danger">{{ form_errors(form.userRole) }}</div>
+                            </div></div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3"><h6 class="mb-0">Age</h6></div>
+                            <div class="col-sm-9 text-secondary">
+                            <div class="form-floating">
+                                {{ form_widget(form.userAge, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.userAge) }}
+                                <div class="text-danger">{{ form_errors(form.userAge) }}</div>
+                            </div></div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3"><h6 class="mb-0">Profile Picture</h6></div>
+                            <div class="col-sm-9 text-secondary">
+                            <div class="form-floating">
+                                {{ form_widget(form.userPicture, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.userPicture) }}
+                                <div class="text-danger">{{ form_errors(form.userPicture) }}</div>
+                            </div></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12"><a class="text-themecolor" href="{{path('updateUser',{'id':user.id})}}">Edit Profile</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ form_end(form) }}
+{%endblock%}

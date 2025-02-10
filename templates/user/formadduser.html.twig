@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+{% block title %} Sign Up {% endblock %}
+{% block body %}     
+{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
+<div class="container-fluid py-5">
+        <div class="container">
+            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px; visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
+                <h1 class="display-5 mb-5">Sign Up</h1>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s" style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_widget(form.firstName, {attr: {'class': 'form-control'}})}}
+                                    {{form_label(form.firstName)}}
+                                    <div class="text-danger">
+                                    {{form_errors(form.firstName)}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_widget(form.lastName, {attr: {'class': 'form-control'}})}}
+                                    {{form_label(form.lastName)}}
+                                    <div class="text-danger">
+                                    {{form_errors(form.lastName)}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_widget(form.userEmail, {attr: {'class': 'form-control'}})}}
+                                    {{form_label(form.userEmail)}}
+                                    <div class="text-danger">
+                                    {{form_errors(form.userEmail)}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_widget(form.pswrd, {attr: {'class': 'form-control', 'type': 'password'}})}}
+                                    {{form_label(form.pswrd,"Password")}}
+                                    <div class="text-danger">
+                                    {{form_errors(form.pswrd)}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_widget(form.userRole, {attr: {'class': 'form-control'}})}}
+                                    {{form_label(form.userRole)}}
+                                    <div class="text-danger">
+                                    {{form_errors(form.userRole)}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_widget(form.userAge, {attr: {'class': 'form-control'}})}}
+                                    {{form_label(form.userAge)}}
+                                    <div class="text-danger">
+                                    {{form_errors(form.userAge)}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_widget(form.userPicture, {attr: {'class': 'form-control'}})}}
+                                    {{form_label(form.userPicture)}}
+                                    <div class="text-danger">
+                                    {{form_errors(form.userPicture)}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button class="btn btn-primary py-3 px-4" type="submit">Submit Now</button>
+                                <a class="text-themecolor" href="">Already have an account? Login here.</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+        </div>      
+</div>
+{{ form_end(form) }}
+{% endblock %}
