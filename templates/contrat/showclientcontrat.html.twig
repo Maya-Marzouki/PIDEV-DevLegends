@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste des Contrats {% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Liste des Contrats</h1>
+
+    <div class="row">
+        {% for contrat in contrats %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
+                    <div class="card-body d-flex flex-column flex-grow-1">
+                        <h5 class="card-title text-success">{{ contrat.datdebCont|date('d-m-Y H:i') }} - {{ contrat.datfinCont|date('d-m-Y H:i') }}</h5>
+                        <p class="card-text"><strong>Mode de Paiement:</strong> {{ contrat.modpaimentCont }}</p>
+                        <p class="card-text"><strong>Renouvellement:</strong> {{ contrat.renouvAutoCont ? 'Oui' : 'Non' }}</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>Aucun contrat trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

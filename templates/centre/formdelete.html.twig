@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Confirmer la suppression{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center">
+        <h1>Êtes-vous sûr de vouloir supprimer ce centre ?</h1>
+        <p>Cette action est irréversible.</p>
+
+        <!-- Formulaire de suppression avec la méthode POST -->
+        <form method="POST" action="{{ path('deleteCentre', {'id': centre.id}) }}">
+            <button class="btn btn-danger" type="submit">Supprimer</button>
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ centre.id) }}">
+        </form>
+
+        <a href="{{ path('app_centre_index') }}" class="btn btn-secondary mt-3">Annuler</a>
+    </div>
+</div>
+{% endblock %}

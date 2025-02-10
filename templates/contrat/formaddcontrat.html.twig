@@ -1,0 +1,150 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Add Contrat {% endblock %}
+
+{% block body %}
+{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-5">Ajouter un Contrat</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="row g-3">
+                        
+                        <!-- Date de début -->
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_widget(form.datdebCont, {attr: {'class': 'form-control', 'placeholder': ' '}}) }}
+                                {{ form_label(form.datdebCont, 'Date de début du contrat') }}
+                                {{ form_errors(form.datdebCont) }}
+                            </div>
+                        </div>
+
+                        <!-- Date de fin -->
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_widget(form.datfinCont, {attr: {'class': 'form-control', 'placeholder': ' '}}) }}
+                                {{ form_label(form.datfinCont, 'Date de fin du contrat') }}
+                                {{ form_errors(form.datfinCont) }}
+                            </div>
+                        </div>
+
+                        <!-- Sélection du Centre -->
+                        <div class="col-sm-12">
+                            <div class="form-floating">
+                                {{ form_widget(form.centre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.centre, 'Centre associé') }}
+                                {{ form_errors(form.centre) }}
+                            </div>
+                        </div>
+
+                        <!-- Mode de paiement -->
+                        <div class="col-sm-12">
+                            <div class="form-floating">
+                                {{ form_widget(form.modpaimentCont, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.modpaimentCont, 'Mode de paiement') }}
+                                {{ form_errors(form.modpaimentCont) }}
+                            </div>
+                        </div>
+                        
+                        
+
+                        <!-- Informations Carte Bancaire (Masqué par défaut) -->
+                        <div id="carte-info" class="col-sm-12 mt-3" style="display: none;">
+                            <h4 class="text-center mb-3">Informations de paiement</h4>
+
+                            <!-- Icônes des cartes acceptées -->
+                            <div class="text-center mb-3">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Visa.svg/120px-Visa.svg.png" width="50">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/120px-Mastercard-logo.svg.png" width="50">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Paypal.svg/120px-Paypal.svg.png" width="50">
+                            </div>
+
+                            <div class="form-floating">
+                                <input type="text" id="card-name" class="form-control" placeholder="Nom sur la carte">
+                                <label for="card-name">Nom sur la carte</label>
+                            </div>
+
+                            <div class="form-floating mt-3">
+                                <input type="text" id="card-number" class="form-control" placeholder="Numéro de carte">
+                                <label for="card-number">Numéro de carte</label>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-sm-6">
+                                    <div class="form-floating">
+                                        <input type="text" id="card-expiry" class="form-control" placeholder="MM/AA">
+                                        <label for="card-expiry">Date d'expiration</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-floating">
+                                        <input type="text" id="card-cvc" class="form-control" placeholder="CVC">
+                                        <label for="card-cvc">Cryptogramme visuel</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Renouvellement automatique -->
+                        <div class="col-sm-12 mt-3">
+                            <div class="form-check form-switch">
+                                {{ form_widget(form.renouvAutoCont, { attr: {'class': 'form-check-input'} }) }}
+                                {{ form_label(form.renouvAutoCont, 'Renouvellement Automatique', { attr: {'class': 'form-check-label'} }) }}
+                                {{ form_errors(form.renouvAutoCont) }}
+                            </div>
+                        </div>
+
+                        <!-- Bouton de paiement sécurisé -->
+                         <style>
+                            .btn-custom-green{
+                                background-color: #28a745 !important;
+                                color: white !important;
+                                font-weight: bold;
+                            }
+                        </style>
+                      <div class="col-12 text-center mt-4">
+                            <button class="btn btn-custom-green py-3 px-4" type="submit" id="pay-button">
+                                <i class="fas fa-lock"></i> Valider le Contrat
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </div>      
+</div>
+{{ form_end(form) }}
+
+<!-- JavaScript pour gérer l'affichage dynamique -->
+<script>
+document.getElementById("{{ form.modpaimentCont.vars.id }}").addEventListener("change", function() {
+    let carteInfo = document.getElementById("carte-info");
+    if (this.value === "carte") {
+        carteInfo.style.display = "block";
+    } else {
+        carteInfo.style.display = "none";
+    }
+});
+
+// Validation avant soumission
+document.getElementById("pay-button").addEventListener("click", function(event) {
+    let modePaiement = document.getElementById("{{ form.modpaimentCont.vars.id }}").value;
+    if (modePaiement === "carte") {
+        let cardNumber = document.getElementById("card-number").value;
+        let cardExpiry = document.getElementById("card-expiry").value;
+        let cardCvc = document.getElementById("card-cvc").value;
+
+        if (!cardNumber || !cardExpiry || !cardCvc) {
+            alert("Veuillez remplir tous les champs de la carte bancaire.");
+            event.preventDefault();
+        }
+    }
+});
+</script>
+
+{% endblock %}

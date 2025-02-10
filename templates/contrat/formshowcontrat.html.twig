@@ -1,0 +1,51 @@
+{% extends 'baseAdmin.html.twig' %}
+{# {% if userList is defined and userList is not empty%} #}
+{% block body %}
+<style>
+                            .btn-custom-green{
+                                background-color: #28a745 !important;
+                                color: white !important;
+                                font-weight: bold;
+                            }
+                        </style>
+ <a href="{{ path('insertContrat') }}" class="btn btn-custom-green">Add Contrat</a>
+<div class="row">
+    <!-- column -->
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-block">
+			    <h4 class="card-title">Basic Table</h4>
+                    <h6 class="card-subtitle">Add class <code>.table</code></h6>
+                        <div class="table-responsive">
+                            <table class="table">
+                               <tr>
+		<th>Date Debut </th>
+        <th>Date Fin</th>
+        <th>Mode De Paiement</th>
+        <th>Renouvelement</th>
+	</tr>
+	{% for contrat in contrats %}
+		<tr>
+			        <td>{{ contrat.datdebCont|date('d-m-Y H:i') }}</td>
+			        <td>{{ contrat.datfinCont|date('d-m-Y H:i') }}</td>
+                    <td>{{ contrat.modpaimentCont }}</td>
+                    <td>{{ contrat.renouvAutoCont }}</td>
+                    
+                    
+                    <td>
+                        <a href="{{ path('editContrat', {'id': contrat.id}) }}" >Update</a>
+                        <form method="post" action="{{ path('deleteContrat', { id: contrat.id }) }}" >
+                        <a href="{{ path('deleteContrat', {'id': contrat.id}) }}" >Delete</a>
+                        
+</form>
+
+                    </td>
+		</tr>
+								{% endfor %}      
+                        	</table>
+                		</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
