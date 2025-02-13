@@ -37,6 +37,11 @@ class ArticlesConseils
     private ?string $categorieMentalArticle = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\File(
+        maxSize: "2M",
+        mimeTypes: ["image/jpeg", "image/png"],
+        mimeTypesMessage: "Veuillez uploader une image valide (JPG ou PNG)."
+    )]
     // #[Assert\NotBlank(message: "L'URL de l'image ne peut pas être vide.")]
     // #[Assert\Url(message: "L'URL de l'image n'est pas valide.")]
     private ?string $image = null;
