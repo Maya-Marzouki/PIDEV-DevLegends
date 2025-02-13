@@ -49,13 +49,13 @@ class ArticlesConseilsType extends AbstractType
             ->add('image', FileType::class, [
                 'mapped' => false, // Ne pas lier directement à l’entité
                 'required' => false, // L’upload n’est pas obligatoire
-                'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => ['image/jpeg', 'image/png'],
-                        'mimeTypesMessage' => 'Veuillez uploader une image valide (JPG ou PNG).',
-                    ])
-                ],
+                // 'constraints' => [
+                //     new File([
+                //         'maxSize' => '2M',
+                //         'mimeTypes' => ['image/jpeg', 'image/png'],
+                //         'mimeTypesMessage' => 'Veuillez uploader une image valide (JPG ou PNG).',
+                //     ])
+                // ],
             ]);
     }
 
