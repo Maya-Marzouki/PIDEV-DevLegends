@@ -10,13 +10,13 @@
             <h1 class="display-5 mb-5">Remplissez le formulaire</h1>
         </div>
         
-        {# Affichage des messages Flash #}
+        {# Affichage des messages Flash
         {% for message in app.flashes('success') %}
             <div class="alert alert-success text-center">{{ message }}</div>
-        {% endfor %}
-        {% for message in app.flashes('danger') %}
+        {% endfor %} #}
+        {# {% for message in app.flashes('danger') %}
             <div class="alert alert-danger text-center">{{ message }}</div>
-        {% endfor %}
+        {% endfor %} #}
 
         <div class="row justify-content-center">
             <div class="col-lg-7">

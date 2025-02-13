@@ -9,7 +9,7 @@
             <div class="card shadow-lg p-4">
                 <h1 class="text-center mb-4">Modifier l'Article de Conseil</h1>
 
-                    {# Affichage des erreurs globales du formulaire #}
+                    {# Affichage des erreurs globales du formulaire
                     {% if form.vars.errors|length > 0 %}
                         <div class="alert alert-danger">
                             <strong>Des erreurs sont survenues :</strong>
@@ -19,7 +19,7 @@
                                 {% endfor %}
                             </ul>
                         </div>
-                    {% endif %}
+                    {% endif %} #}
 
                 {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                     

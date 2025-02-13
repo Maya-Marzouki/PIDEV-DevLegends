@@ -7,11 +7,11 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow-lg rounded">
-                    <img src="{{ articleConseil.image }}" class="card-img-top" alt="{{ articleConseil.titreArticle }}">
+                    <img src="{{ asset(articleConseil.image) }}" class="card-img-top" alt="{{ articleConseil.titreArticle }}">
                     <div class="card-body">
                         <h1 class="card-title text-center">{{ articleConseil.titreArticle }}</h1>
                         <p class="text-muted text-center"><strong>Catégorie :</strong> {{ articleConseil.categorieMentalArticle }}</p>
-                        <p class="text-muted text-center"><strong>ContenuContenu de l'Article : :</strong>
+                        <p class="text-muted text-center"><strong>Contenu de l'Article :</strong>
                         <p class="card-text mt-4">{{ articleConseil.contenuArticle }}</p>
                     </div>
                     <div class="card-footer d-flex justify-content-between">

@@ -14,7 +14,7 @@
                 </div>
 
                 <!-- Affichage des erreurs globales -->
-                {% if form.vars.errors|length > 0 %}
+                {# {% if form.vars.errors|length > 0 %}
                     <div class="alert alert-danger">
                         <strong>Des erreurs sont survenues :</strong>
                         <ul>
@@ -23,20 +23,20 @@
                             {% endfor %}
                         </ul>
                     </div>
-                {% endif %}
+                {% endif %} #}
 
                 <!-- Début du formulaire -->
                 {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                 <div class="row g-3">
                     
-                    <!-- Champ Question -->
-                    <div class="col-12">
-                        <div class="form-floating">
-                            {{ form_label(form.questionText, 'Question') }}
-                            {{ form_widget(form.questionText, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la question ici'}}) }}
-                        </div>
-                        <div class="text-danger small mt-1">{{ form_errors(form.questionText) }}</div>
-                    </div>
+<div class="col-12">
+    <div class="form-floating">
+        {{ form_label(form.questionText, 'Question') }}
+        {{ form_widget(form.questionText, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la question ici'}}) }}
+    </div>
+    <div class="text-danger small mt-1">{{ form_errors(form.questionText) }}</div>
+</div>
+
 
                     <!-- Champ Type de Réponse -->
                     <div class="col-12">
@@ -60,14 +60,13 @@
                     <div class="col-12 text-center mt-3">
                         <button class="btn btn-custom-green py-3 px-4" type="submit">Enregistrer</button>
                     </div>
-
                 </div>
                 {{ form_end(form) }}
             </div>
         </div>
     </div>
 </div>
-                {# Bouton "Mettre à jour" en bas à droite #}
+                {# Bouton "Enregistrer" en bas à droite #}
                 <style>
                     .btn-custom-green {
                         background-color: #28a745 !important; /* Vert Bootstrap */

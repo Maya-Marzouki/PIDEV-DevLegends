@@ -13,12 +13,12 @@
                 <div class="col-lg-7">
 
                         {# Affichage des messages Flash #}
-                        {% for message in app.flashes('success') %}
+                        {# {% for message in app.flashes('success') %}
                             <div class="alert alert-success text-center">{{ message }}</div>
                         {% endfor %}
                         {% for message in app.flashes('danger') %}
                             <div class="alert alert-danger text-center">{{ message }}</div>
-                        {% endfor %}
+                        {% endfor %} #}
 
                     <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
                     {{ form_start(form, {'attr': {'class': 'row g-3','novalidate': 'novalidate'}}) }}
@@ -60,7 +60,7 @@
                         </div>
                         <div class="col-12">
                             <div class="form-floating">
-                                {{ form_widget(form.notesCons, {'attr': {'class': 'form-control border-0', 'placeholder': 'Notes'}}) }}
+                                {{ form_widget(form.notesCons, {'attr': {'class': 'form-control border-0', 'placeholder': 'Remarques'}}) }}
                                 {{ form_label(form.notesCons) }}
                                 <div class="text-danger">{{ form_errors(form.notesCons) }}</div>
                             </div>

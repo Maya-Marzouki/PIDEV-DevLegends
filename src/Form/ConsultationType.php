@@ -24,13 +24,13 @@ class ConsultationType extends AbstractType
                 'required' => true,
                 'min' => (new \DateTime('today'))->format('Y-m-d'), // Date minimale = aujourd'hui
             ],
-            'constraints' => [
-                new Assert\NotBlank(['message' => 'La date est requise.']),
-                new Assert\GreaterThanOrEqual([
-                    'value' => 'today',
-                    'message' => 'La date ne peut pas être antérieure à aujourd’hui.',
-                ])
-            ],
+            // 'constraints' => [
+            //     new Assert\NotBlank(['message' => 'La date est requise.']),
+            //     new Assert\GreaterThanOrEqual([
+            //         'value' => 'today',
+            //         'message' => 'La date ne peut pas être antérieure à aujourd’hui.',
+            //     ])
+            // ],
         ])
             ->add('lienVisioCons', TextType::class, [
                 'label' => 'Lien de la Consultation',
@@ -38,10 +38,10 @@ class ConsultationType extends AbstractType
                 'required' => true,
                 'placeholder' => 'https://example.com',
             ],
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le lien est obligatoire.']),
-                    new Assert\Url(['message' => 'Veuillez entrer une URL valide.']),
-                ],
+                // 'constraints' => [
+                //     new Assert\NotBlank(['message' => 'Le lien est obligatoire.']),
+                //     new Assert\Url(['message' => 'Veuillez entrer une URL valide.']),
+                // ],
             ])
             // ->add('scoreMental', IntegerType::class, [
             //     'label' => 'Score Mental'
@@ -50,22 +50,22 @@ class ConsultationType extends AbstractType
             //     'label' => 'État Mental'
             // ])
             ->add('notesCons', TextareaType::class, [
-                'label' => 'Notes',
+                'label' => 'Remarques',
                 'attr' => ['class' => 'form-control',
                 'required' => true,
                 'minlength' => 10,
                 'maxlength' => 1000,
-                'placeholder' => 'Notes',
+                'placeholder' => 'Remarques',
             ],
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Les notes sont obligatoires.']),
-                    new Assert\Length([
-                        'min' => 10,
-                        'max' => 1000,
-                        'minMessage' => 'Les notes doivent contenir au moins {{ limit }} caractères.',
-                        'maxMessage' => 'Les notes ne doivent pas dépasser {{ limit }} caractères.',
-                    ]),
-                ],
+                // 'constraints' => [
+                //     new Assert\NotBlank(['message' => 'Les notes sont obligatoires.']),
+                //     new Assert\Length([
+                //         'min' => 10,
+                //         'max' => 1000,
+                //         'minMessage' => 'Les notes doivent contenir au moins {{ limit }} caractères.',
+                //         'maxMessage' => 'Les notes ne doivent pas dépasser {{ limit }} caractères.',
+                // //     ]),
+                // ],
             ])
             ->add('nom', TextareaType::class, [
                 'label' => 'Nom',
@@ -75,15 +75,15 @@ class ConsultationType extends AbstractType
                 'maxlength' => 255,
                 'placeholder' => 'Nom',
                 ],
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le nom obligatoires.']),
-                    new Assert\Length([
-                        'min' => 3,
-                        'max' => 100,
-                        'minMessage' => 'Le nom doit contenir au moins {{ limit }} caractères.',
-                        'maxMessage' => 'Le nom ne doit pas dépasser {{ limit }} caractères.',
-                    ]),
-                ],
+                // 'constraints' => [
+                //     new Assert\NotBlank(['message' => 'Le nom obligatoires.']),
+                //     new Assert\Length([
+                //         'min' => 3,
+                //         'max' => 100,
+                //         'minMessage' => 'Le nom doit contenir au moins {{ limit }} caractères.',
+                //         'maxMessage' => 'Le nom ne doit pas dépasser {{ limit }} caractères.',
+                //     ]),
+                // ],
             ])
             ->add('prenom', TextareaType::class, [
                 'label' => 'Prenom',
@@ -93,15 +93,15 @@ class ConsultationType extends AbstractType
                 'maxlength' => 255,
                 'placeholder' => 'Prenom',
                 ],
-                'constraints' => [
-                    new Assert\NotBlank(['message' => 'Le prénom obligatoires.']),
-                    new Assert\Length([
-                        'min' => 3,
-                        'max' => 100,
-                        'minMessage' => 'Le prénom doit contenir au moins {{ limit }} caractères.',
-                        'maxMessage' => 'Le prénom ne doit pas dépasser {{ limit }} caractères.',
-                    ]),
-                ],
+                // 'constraints' => [
+                //     new Assert\NotBlank(['message' => 'Le prénom obligatoires.']),
+                //     new Assert\Length([
+                //         'min' => 3,
+                //         'max' => 100,
+                //         'minMessage' => 'Le prénom doit contenir au moins {{ limit }} caractères.',
+                //         'maxMessage' => 'Le prénom ne doit pas dépasser {{ limit }} caractères.',
+                //     ]),
+                // ],
             ])
             ->add('age', IntegerType::class, [
                 'label' => 'Age',
@@ -111,20 +111,19 @@ class ConsultationType extends AbstractType
                 'max' => 120,
                 'placeholder' => 'Age',
             ],
-            'constraints' => [
-                new Assert\NotBlank(['message' => 'Le champs age est obligatoire.']),
-                new Assert\Range([
-                    'min' => 0,
-                    'max' => 120,
-                    'notInRangeMessage' => 'Le champs age doit être compris entre {{ min }} et {{ max }}.',
-                ]),
-            ],
+            // 'constraints' => [
+            //     new Assert\NotBlank(['message' => 'Le champs age est obligatoire.']),
+            //     new Assert\Range([
+            //         'min' => 0,
+            //         'max' => 120,
+            //         'notInRangeMessage' => 'Le champs age doit être compris entre {{ min }} et {{ max }}.',
+            //     ]),
+            // ],
             ]);
             // ->add('save', SubmitType::class, [
             //     'label' => 'Enregistrer'
             // ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

@@ -17,7 +17,7 @@
                     {{ form_start(form, {'attr': {'class': 'row g-3','novalidate': 'novalidate'}}) }}
 
                         {# Affichage des erreurs globales du formulaire #}
-                        {% if form.vars.errors|length > 0 %}
+                        {# {% if form.vars.errors|length > 0 %}
                             <div class="alert alert-danger">
                                 <strong>Des erreurs sont survenues :</strong>
                                 <ul>
@@ -26,7 +26,7 @@
                                     {% endfor %}
                                 </ul>
                             </div>
-                        {% endif %}
+                        {% endif %} #}
 
                         <div class="col-sm-6">
                             <div class="form-floating">
@@ -82,7 +82,7 @@
                         </div>  #}
                         <div class="col-12">
                             <div class="form-floating">
-                                {{ form_widget(form.notesCons, {'attr': {'class': 'form-control border-0', 'placeholder': 'Notes'}}) }}
+                                {{ form_widget(form.notesCons, {'attr': {'class': 'form-control border-0', 'placeholder': 'Remarques'}}) }}
                                 {{ form_label(form.notesCons) }}
                                 <div class="text-danger">{{ form_errors(form.notesCons) }}</div>
 
@@ -103,9 +103,7 @@
         </div>
     </div>
 {# {{ form_end(form) }} #}
-<a href="{{ path('consultation_index') }}" class="btn btn-secondary">Retour à la liste</a>
-
-        <script>
+        {# <script>
         document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('consultation-form');
             const fields = [
@@ -129,7 +127,7 @@
                 });
             });
         });
-    </script>
+    </script> #}
 
     <style>
         .is-invalid {

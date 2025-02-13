@@ -24,6 +24,16 @@ class ReponseController extends AbstractController
         ]);
     }
 
+    
+    #[Route('/admin/reponse', name: 'app_reponse_index_admin')]
+    public function adminRepIndex(ReponseRepository $reponses): Response
+    {
+        // Affiche la liste des reponses pour l'admin
+        return $this->render('reponse/viewBackReponse.html.twig', [
+            'reponses' => $reponses->findAll(),
+        ]);
+    }
+
     // Créer une nouvelle réponse
     #[Route('/reponse/new', name: 'reponse_new')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response

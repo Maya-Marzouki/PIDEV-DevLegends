@@ -42,7 +42,7 @@ class Consultation
     #[Assert\NotBlank(message: "L'état mental ne peut pas être vide.")]
     private ?string $etatMental = null;
 
-    #[ORM\Column(length: 255)]    #[Assert\NotBlank(message: "La note de consultation ne peut pas être vide.")]
+    #[ORM\Column(length: 255)]    #[Assert\NotBlank(message: "Le champs remarques ne peut pas être vide.")]
     private ?string $notesCons = null;
 
     /**
@@ -62,7 +62,7 @@ class Consultation
     #[ORM\Column]
     #[Assert\NotBlank(message: "L'âge ne peut pas être vide.")]
     #[Assert\Range(
-        min: 0,
+        min: 1,
         max: 120,
         notInRangeMessage: "L'âge doit être entre {{ min }} et {{ max }}."
     )]
@@ -83,7 +83,7 @@ class Consultation
         return $this->dateCons;
     }
 
-    public function setDateCons(\DateTimeInterface $dateCons): static
+    public function setDateCons(?\DateTimeInterface $dateCons): static
     {
         $this->dateCons = $dateCons;
 
