@@ -46,7 +46,7 @@ class ReclamationController extends AbstractController
             $manager->persist($reclamation);
             $manager->flush();
 
-            return $this->redirectToRoute('app_reclamation_index');
+            return $this->redirectToRoute('reclamationclient');
         }
 
         return $this->render('reclamation/formaddreclamation.html.twig', [

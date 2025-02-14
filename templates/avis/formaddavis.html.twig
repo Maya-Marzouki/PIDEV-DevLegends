@@ -1,11 +1,11 @@
-{% extends 'baseAdmin.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}
 	Ajouter un avis
 {% endblock %}
 
 {% block body %}
-	{{ form_start(form,{'attr': {'novalidate': 'novalidate'}} ) }} 
+	{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 	<div class="container-fluid py-5">
 		<div class="container">
 			<div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
@@ -17,44 +17,43 @@
 						<div class="row g-3">
 							<div class="col-sm-6">
 								<div class="form-floating">
-									{{ form_label(form.sujetAvis , "Sujet") }}
-									{{ form_widget(form.sujetAvis, {attr: {'class': 'form-control'}}) }}
+									{{ form_widget(form.sujetAvis, { 'attr': {'class': 'form-control', 'placeholder': 'Sujet'} }) }}
+									{{ form_label(form.sujetAvis) }}
 									{{ form_errors(form.sujetAvis) }}
 								</div>
 							</div>
 
 							<div class="col-sm-12">
 								<div class="form-floating">
-									{{ form_label(form.contenuAvis , "Contenu") }}
-									{{ form_widget(form.contenuAvis, {attr: {'class': 'form-control'}}) }}
+									{{ form_widget(form.contenuAvis, { 'attr': {'class': 'form-control', 'placeholder': 'Contenu'} }) }}
+									{{ form_label(form.contenuAvis) }}
 									{{ form_errors(form.contenuAvis) }}
 								</div>
 							</div>
 
-                            <div class="col-sm-12">
+							<div class="col-sm-12">
 								<div class="form-floating">
-									{{ form_label(form.noteAvis , "Note") }}
-									{{ form_widget(form.noteAvis, {attr: {'class': 'form-control'}}) }}
+									{{ form_widget(form.noteAvis, { 'attr': {'class': 'form-control', 'placeholder': 'Note'} }) }}
+									{{ form_label(form.noteAvis) }}
 									{{ form_errors(form.noteAvis) }}
 								</div>
 							</div>
 
 							<div class="col-sm-12">
 								<div class="form-floating">
-									{{ form_label(form.dateAvis , "Date de l'envoi") }}
-									{{ form_widget(form.dateAvis, {attr: {'class': 'form-control'}}) }}
+									{{ form_widget(form.dateAvis, { 'attr': {'class': 'form-control', 'placeholder': 'Date de l\'envoi'} }) }}
+									{{ form_label(form.dateAvis) }}
 									{{ form_errors(form.dateAvis) }}
 								</div>
 							</div>
 
 							<div class="col-sm-12">
 								<div class="form-floating">
-									{{ form_label(form.emailAvis , "Email du Destinataire") }}
-									{{ form_widget(form.emailAvis, {attr: {'class': 'form-control'}}) }}
+									{{ form_widget(form.emailAvis, { 'attr': {'class': 'form-control', 'placeholder': 'Email du Destinataire'} }) }}
+									{{ form_label(form.emailAvis) }}
 									{{ form_errors(form.emailAvis) }}
 								</div>
 							</div>
-
 
 							<div class="col-12 text-center">
 								<button class="btn btn-primary py-3 px-4" type="submit">Enregistrer</button>
