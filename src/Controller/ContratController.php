@@ -46,7 +46,7 @@ class ContratController extends AbstractController
             $manager->persist($contrat);
             $manager->flush();
 
-            return $this->redirectToRoute('app_contrat_index');
+            return $this->redirectToRoute('contratclient');
         }
 
         return $this->render('contrat/formaddcontrat.html.twig', [

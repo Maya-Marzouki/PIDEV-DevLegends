@@ -30,6 +30,7 @@
 
     <!-- Template Stylesheet -->
     <link href="{{asset('client/css/style.css')}}" rel="stylesheet">
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 </head>
 
 <body> 
@@ -86,6 +87,7 @@
                     <div class="dropdown-menu bg-light m-0">
                         <a href="{{ path('centreclient') }}"  class="dropdown-item">Centres</a>
                         <a href="{{ path('packclient') }}"  class="dropdown-item">Packs</a>
+                        <a href="{{ path('insertContrat') }}"  class="dropdown-item">Signe un contrat</a>
                         <a href="{{ path('contratclient') }}"  class="dropdown-item">Contrats</a>
                         <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                         <a href="404.html" class="dropdown-item">404 Page</a>
@@ -146,6 +148,11 @@
 {% block body %}
 
 {% endblock %}
+ <!-- 📍 Section Carte -->
+    <div class="container my-5">
+        <h2 class="text-center">📍 Our Location</h2>
+        <div id="map" style="height: 250px; width: 100%;"></div>
+    </div>
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-light footer mt-5 py-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
@@ -208,6 +215,7 @@
             </div>
         </div>
     </div>
+    
     <!-- Copyright End -->
 
 
@@ -229,6 +237,28 @@
 
     <!-- Template Javascript -->
     <script src="{{asset('client/js/main.js')}}"></script>
+
+     <!-- Leaflet JS (Ajout pour la carte) -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Script d'affichage de la carte -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    // Initialisation de la carte avec les nouvelles coordonnées
+    var map = L.map('map').setView([36.9021262, 10.1893184], 17); // Zoom ajusté à 17 pour plus de précision
+
+    // Ajout du fond de carte OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Ajout d'un marqueur pour Esprit Block M
+    L.marker([36.9021262, 10.1893184]).addTo(map)
+        .bindPopup("<b>Esprit Block M</b><br>Notre bureau à Esprit Block M")
+        .openPopup();
+});
+
+    </script>
 </body>
 
 </html>

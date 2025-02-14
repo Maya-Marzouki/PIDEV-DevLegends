@@ -8,7 +8,7 @@
                                 font-weight: bold;
                             }
                         </style>
- <a href="{{ path('insertContrat') }}" class="btn btn-custom-green">Add Contrat</a>
+ <a href="{{ path('insertContrat') }}" class="btn btn-custom-green">Ajouter Contrat</a>
 <div class="row">
     <!-- column -->
     <div class="col-lg-12">
@@ -18,34 +18,37 @@
                     <h6 class="card-subtitle">Add class <code>.table</code></h6>
                         <div class="table-responsive">
                             <table class="table">
-                               <tr>
-		<th>Date Debut </th>
+    <tr>
+        <th>Date Debut</th>
         <th>Date Fin</th>
         <th>Mode De Paiement</th>
-        <th>Renouvelement</th>
-	</tr>
-	{% for contrat in contrats %}
-		<tr>
-			        <td>{{ contrat.datdebCont|date('d-m-Y H:i') }}</td>
-			        <td>{{ contrat.datfinCont|date('d-m-Y H:i') }}</td>
-                    <td>{{ contrat.modpaimentCont }}</td>
-                    <td>{{ contrat.renouvAutoCont }}</td>
-                    
-                    
-                    <td>
-                        <a href="{{ path('editContrat', {'id': contrat.id}) }}" >Update</a>
-                        <form method="post" action="{{ path('deleteContrat', { id: contrat.id }) }}" >
-                        <a href="{{ path('deleteContrat', {'id': contrat.id}) }}" >Delete</a>
-                        
-</form>
+        <th>Renouvellement</th>
+        <th>Centre</th> {# Ajout de l'en-tête pour le centre #}
+        <th>Actions</th>
+    </tr>
+    {% for contrat in contrats %}
+        <tr>
+            <td>{{ contrat.datdebCont|date('d-m-Y H:i') }}</td>
+            <td>{{ contrat.datfinCont|date('d-m-Y H:i') }}</td>
+            <td>{{ contrat.modpaimentCont }}</td>
+            <td>{{ contrat.renouvAutoCont ? 'Renouvelable' : 'Non renouvelable' }}</td>
+            <td>{{ contrat.centre.nomCentre }}</td> {# Affichage du nom du centre #}
+            <td>
+                <a href="{{ path('editContrat', {'id': contrat.id}) }}">Modifier</a>
+                
+                <form method="post" action="{{ path('deleteContrat', { id: contrat.id }) }}">
+					<a href="{{ path('deleteContrat', {'id': contrat.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+						Supprimer
+					</a>
+					</form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
 
-                    </td>
-		</tr>
-								{% endfor %}      
-                        	</table>
-                		</div>
-            </div>
-        </div>
+	</div>
+    </div>
+   </div>
     </div>
 </div>
 {% endblock %}

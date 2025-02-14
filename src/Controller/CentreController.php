@@ -4,19 +4,20 @@ namespace App\Controller;
 
 use App\Entity\Centre;
 use App\Form\CentreType;
+use App\Repository\CentreRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\CentreRepository;
 
 class CentreController extends AbstractController
 {
     #[Route('/centre', name: 'app_centre_index')]
-    public function index(ManagerRegistry $mr): Response
+    public function index(CentreRepository $centreRepository): Response
     {
-        $centres = $mr->getRepository(Centre::class)->findAll();
+        $centres = $centreRepository->findAll();
 
         return $this->render('centre/formshow.html.twig', [
             'centres' => $centres,
@@ -24,17 +25,14 @@ class CentreController extends AbstractController
     }
 
     #[Route('/centreclient', name: 'centreclient')]
-    public function showcentreclient(ManagerRegistry $mr): Response
+    public function showCentreClient(CentreRepository $centreRepository): Response
     {
-        $centres = $mr->getRepository(Centre::class)->findAll();
+        $centres = $centreRepository->findAll();
 
         return $this->render('centre/showclient.html.twig', [
             'centres' => $centres,
         ]);
     }
-
-
-   
 
     #[Route('/addcentre', name: 'insertCentre', methods: ['GET', 'POST'])]
     public function new(Request $request, ManagerRegistry $mr): Response
@@ -44,15 +42,31 @@ class CentreController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $photoFile = $form->get('photoCentre')->getData();
+
+            if ($photoFile) {
+                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+
+                try {
+                    $photoFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/assets/images/',
+                        $newFilename
+                    );
+                    $centre->setPhotoCentre('assets/images/' . $newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
             $manager = $mr->getManager();
             $manager->persist($centre);
             $manager->flush();
 
+            $this->addFlash('success', 'Centre ajouté avec succès !');
             return $this->redirectToRoute('app_centre_index');
         }
 
         return $this->render('centre/formaddcentre.html.twig', [
-            'centre' => $centre,
             'form' => $form->createView(),
         ]);
     }
@@ -65,25 +79,43 @@ class CentreController extends AbstractController
         ]);
     }
 
-    // Décommentez la route pour l'édition
-    #[Route('/centre/{id}/edit', name: 'editCentre')]
+    #[Route('/centre/{id}/edit', name: 'editCentre', methods: ['GET', 'POST'])]
     public function edit(Request $request, Centre $centre, ManagerRegistry $mr): Response
     {
         $form = $this->createForm(CentreType::class, $centre);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $manager = $mr->getManager();
-            $manager->flush(); // Sauvegarde les modifications
+            $photoFile = $form->get('photoCentre')->getData();
+
+            if ($photoFile) {
+                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+
+                try {
+                    $photoFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/assets/images/',
+                        $newFilename
+                    );
+                    $centre->setPhotoCentre('assets/images/' . $newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
+            $mr->getManager()->flush();
+            $this->addFlash('success', 'Centre mis à jour avec succès !');
 
             return $this->redirectToRoute('app_centre_index');
         }
 
         return $this->render('centre/formedit.html.twig', [
-            'centre' => $centre,
             'form' => $form->createView(),
+            'centre' => $centre, // Ajout de la variable centre
         ]);
+        
+        
     }
+
 
     #[Route('/centre/{id}/delete', name: 'deleteCentre')]
     public function deleteCentre(ManagerRegistry $mr, CentreRepository $repo, $id): Response
@@ -95,7 +127,4 @@ class CentreController extends AbstractController
 
         return $this->redirectToRoute("app_centre_index");
     }
-
-
-    
 }

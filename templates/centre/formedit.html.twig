@@ -1,13 +1,14 @@
 {% extends 'baseAdmin.html.twig' %}
 
-{% block title %}Update Center{% endblock %}
+{% block title %}Mettre à jour le Centre{% endblock %}
 
 {% block body %}
-{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
+{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+
 <div class="container-fluid py-5">
     <div class="container">
         <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
-            <h1 class="display-5 mb-5">Ajouter un Centre</h1>
+            <h1 class="display-5 mb-5">Mettre à jour le Centre</h1>
         </div>
         <div class="row justify-content-center">
             <div class="col-lg-7">
@@ -55,22 +56,34 @@
                                 {{ form_errors(form.capaciteCentre) }}
                             </div>
                         </div>
-                        <div class="col-sm-12">
-                            <div class="form-floating">
-                                {{ form_label(form.photoCentre) }}
-                                {{ form_widget(form.photoCentre, {attr: {'class': 'form-control'}}) }}
-                                {{ form_errors(form.photoCentre) }}
-                            </div>
+                        
+                        <!-- Affichage de l'image actuelle -->
+                        <div class="col-sm-12 text-center">
+                            {% if centre.photoCentre %}
+                                <p>Image actuelle :</p>
+                                <img src="{{ asset(centre.photoCentre) }}" alt="Photo actuelle du centre" class="img-fluid rounded" style="max-height: 200px;">
+                            {% else %}
+                                <p class="text-muted">Aucune image actuelle</p>
+                            {% endif %}
                         </div>
+
+                        <!-- Champ Upload Image -->
+                        <div class="col-sm-12">
+                            <label class="form-label">Changer l'image du centre</label>
+                            {{ form_widget(form.photoCentre, {attr: {'class': 'form-control'}}) }}
+                            {{ form_errors(form.photoCentre) }}
+                        </div>
+
+                        <!-- Bouton de soumission -->
                         <style>
-                            .btn-custom-green{
+                            .btn-custom-green {
                                 background-color: #28a745 !important;
                                 color: white !important;
                                 font-weight: bold;
                             }
                         </style>
                         <div class="col-12 text-center">
-                            <button class="btn btn-custom-green py-3 px-4" type="submit">Update</button>
+                            <button class="btn btn-custom-green py-3 px-4" type="submit">Mettre à jour</button>
                         </div>
                     </div>
                 </div>
@@ -78,5 +91,6 @@
         </div>
     </div>      
 </div>
+
 {{ form_end(form) }}
 {% endblock %}

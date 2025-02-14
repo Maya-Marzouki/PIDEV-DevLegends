@@ -35,7 +35,7 @@ class Pack
     #[Assert\NotBlank(message:"Pack description is required")]
     #[Assert\Length(
         min: 2,
-        max: 20,
+        max: 255,
         minMessage: 'Your Pack description  must be at least {{ limit }} characters long',
         maxMessage: 'Your Pack description  cannot be longer than {{ limit }} characters',
     )]
@@ -62,6 +62,9 @@ class Pack
     )]
     
     private ?string $dureePack = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photoPack = null;
 
     public function getId(): ?int
     {
@@ -112,6 +115,18 @@ class Pack
     public function setDureePack(?string $dureePack): static
     {
         $this->dureePack = $dureePack;
+
+        return $this;
+    }
+
+    public function getPhotoPack(): ?string
+    {
+        return $this->photoPack;
+    }
+
+    public function setPhotoPack(?string $photoPack): static
+    {
+        $this->photoPack = $photoPack;
 
         return $this;
     }

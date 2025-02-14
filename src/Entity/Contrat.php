@@ -18,12 +18,12 @@ class Contrat
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(message: "The start date is required")]
-    #[Assert\GreaterThan("today", message: "The start date must be in the future")]
+    #[Assert\GreaterThanOrEqual("today", message: "The start date must be today or in the future")]
     private ?\DateTimeInterface $datdebCont = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(message: "The end date is required")]
-    #[Assert\GreaterThan(propertyPath: "datdebCont", message: "The end date must be after the start date")]
+    #[Assert\GreaterThanOrEqual(propertyPath: "datdebCont", message: "The end date must be after or equal to the start date")]
     private ?\DateTimeInterface $datfinCont = null;
 
     #[ORM\Column(length: 255)]
@@ -37,6 +37,9 @@ class Contrat
     #[ORM\ManyToOne(inversedBy: 'contrats')]
     private ?Centre $centre = null;
 
+    #[ORM\ManyToOne(inversedBy: 'contrats')]
+    private ?User $client = null;  // Relation ManyToOne vers User (Client)
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -47,7 +50,7 @@ class Contrat
         return $this->datdebCont;
     }
 
-    public function setDatdebCont(\DateTimeInterface $datdebCont): static
+    public function setDatdebCont(?\DateTimeInterface $datdebCont): static
     {
         $this->datdebCont = $datdebCont;
 
@@ -59,7 +62,7 @@ class Contrat
         return $this->datfinCont;
     }
 
-    public function setDatfinCont(\DateTimeInterface $datfinCont): static
+    public function setDatfinCont(?\DateTimeInterface $datfinCont): static
     {
         $this->datfinCont = $datfinCont;
 
@@ -71,7 +74,7 @@ class Contrat
         return $this->modpaimentCont;
     }
 
-    public function setModpaimentCont(string $modpaimentCont): static
+    public function setModpaimentCont(?string $modpaimentCont): static
     {
         $this->modpaimentCont = $modpaimentCont;
 
@@ -83,7 +86,7 @@ class Contrat
         return $this->renouvAutoCont;
     }
 
-    public function setRenouvAutoCont(bool $renouvAutoCont): static
+    public function setRenouvAutoCont(?bool $renouvAutoCont): static
     {
         $this->renouvAutoCont = $renouvAutoCont;
 
@@ -101,4 +104,17 @@ class Contrat
 
         return $this;
     }
+
+    public function getClient(): ?User
+    {
+        return $this->client;
+    }
+
+    public function setClient(?User $client): static
+    {
+        $this->client = $client;
+        return $this;
+    }
+
+    
 }

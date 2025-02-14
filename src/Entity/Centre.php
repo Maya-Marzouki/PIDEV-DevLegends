@@ -43,10 +43,14 @@ class Centre
     private ?string $adresseCentre = null;
 
 
-    #[ORM\Column]
-    #[Assert\NotBlank(message:"Phone number is required")]
-    #[Assert\GreaterThan(0,message:"The phone number must be positive")]
-    private ?int $telCentre = null;
+    #[ORM\Column(length: 12)] // Longueur maximale de 12 caractères (+21612345678)
+    #[Assert\NotBlank(message: "Le numéro de téléphone est requis.")]
+    // #[Assert\Regex(
+    //     pattern: '/^\+216\d{8}$/',
+    //     message: 'Le numéro de téléphone doit commencer par +216 et être suivi de 8 chiffres.'
+    // )]
+    private ?string $telCentre = null;
+
 
 
     #[ORM\Column(length: 255)]
@@ -77,7 +81,7 @@ class Centre
     private ?int $capaciteCentre = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Url(message: "The provided URL is not valid.")]
+   // #[Assert\Url(message: "The provided URL is not valid.")]
     private ?string $photoCentre = null;
 
 
@@ -174,7 +178,7 @@ class Centre
         return $this->photoCentre;
     }
 
-    public function setPhotoCentre(?string $photoCentre): static
+    public function setPhotoCentre(string $photoCentre): static
     {
         $this->photoCentre = $photoCentre;
 

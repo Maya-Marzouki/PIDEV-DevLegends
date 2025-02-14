@@ -42,15 +42,31 @@ class PackController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $photoFile = $form->get('photoPack')->getData();
+
+            if ($photoFile) {
+                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+
+                try {
+                    $photoFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/assets/images/',
+                        $newFilename
+                    );
+                    $pack->setPhotoPack('assets/images/' . $newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
             $manager = $mr->getManager();
             $manager->persist($pack);
             $manager->flush();
 
+            $this->addFlash('success', 'Pack ajouté avec succès !');
             return $this->redirectToRoute('app_pack_index');
         }
 
         return $this->render('pack/formaddpack.html.twig', [
-            'pack' => $pack,
             'form' => $form->createView(),
         ]);
     }
@@ -71,17 +87,34 @@ class PackController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $manager = $mr->getManager();
-            $manager->flush(); // Sauvegarde les modifications
+            $photoFile = $form->get('photoPack')->getData();
+
+            if ($photoFile) {
+                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+
+                try {
+                    $photoFile->move(
+                        $this->getParameter('kernel.project_dir') . '/public/assets/images/',
+                        $newFilename
+                    );
+                    $pack->setPhotoPack('assets/images/' . $newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
+                }
+            }
+
+            $mr->getManager()->flush();
+            $this->addFlash('success', 'Pack mis à jour avec succès !');
 
             return $this->redirectToRoute('app_pack_index');
         }
 
         return $this->render('pack/formeditpack.html.twig', [
-            'pack' => $pack,
             'form' => $form->createView(),
+            'pack' => $pack, // Ajout de la variable pack
         ]);
     }
+
 
 #[Route('/pack/{id}/delete', name: 'deletePack')]
     public function deletePack(ManagerRegistry $mr, PackRepository $repo, $id): Response
@@ -94,5 +127,22 @@ class PackController extends AbstractController
         return $this->redirectToRoute("app_pack_index");
     }
 
-    
+    #[Route('/pack/{id}/achat', name: 'achatPack')]
+public function acheterPack(Pack $pack): Response
+{
+    return $this->render('pack/achat.html.twig', [
+        'pack' => $pack,
+    ]);
 }
+
+    #[Route('/pack/{id}/paiement', name: 'paiementPack')]
+    public function paiement(int $id): Response
+    {
+        // Logique pour afficher la page de paiement
+        return $this->render('pack/achat.html.twig', [
+            'packId' => $id
+        ]);
+    }
+}
+
+

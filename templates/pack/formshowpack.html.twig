@@ -2,14 +2,14 @@
 {# {% if userList is defined and userList is not empty%} #}
 {% block body %}
  
-                        <style>
-                            .btn-custom-green{
-                                background-color: #28a745 !important;
-                                color: white !important;
-                                font-weight: bold;
-                            }
-                        </style>
- <a href="{{ path('insertPack') }}" class="btn btn-custom-green">Add Pack</a>
+       <style>
+          .btn-custom-green{
+           background-color: #28a745 !important;
+           color: white !important;
+           font-weight: bold;
+          }
+        </style>
+ <a href="{{ path('insertPack') }}" class="btn btn-custom-green">Ajouter Pack</a>
 <div class="row">
     <!-- column -->
     <div class="col-lg-12">
@@ -19,32 +19,39 @@
                     <h6 class="card-subtitle">Add class <code>.table</code></h6>
                         <div class="table-responsive">
                             <table class="table">
-                               <tr>
+    <tr>
 		<th>Nom</th>
         <th>Description</th>
         <th>Prix</th>
         <th>Duree</th>
+        <th>Photo</th>
 	</tr>
 	{% for pack in packs %}
 		<tr>
 			<td>{{ pack.nomPack }}</td>
-                    <td>{{ pack.descriptPack }}</td>
+                    <td>{{ pack.descriptPack|nl2br }}</td>
                     <td>{{ pack.prixPack }}</td>
-                    <td>{{ pack.dureePack }}</td>
-                    
-                    
+                    <td>{{ pack.dureePack }}</td>  
+                     <td>
+                        {% if pack.photoPack %}
+                        <img src="{{ pack.photoPack }}" alt="Photo du pack" width="100">
+                        {% else %}
+                        <span>Pas d'image</span>
+                        {% endif %}
+                     </td>      
                     <td>
-                        <a href="{{ path('editPack', {'id': pack.id}) }}" >Update</a>
-                        <form method="post" action="{{ path('deletePack', { id: pack.id }) }}" >
-                        <a href="{{ path('deletePack', {'id': pack.id}) }}" >Delete</a>
-                        
-</form>
+                        <a href="{{ path('editPack', {'id': pack.id}) }}" >Modifier</a>
+                        <form method="post" action="{{ path('deletePack', { id: pack.id }) }}">
+					<a href="{{ path('deletePack', {'id': pack.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+						Supprimer
+					</a>
+					</form>
 
                     </td>
-		</tr>
-								{% endfor %}      
-                        	</table>
-                		</div>
+		            </tr>
+				{% endfor %}      
+        	</table>
+        	</div>
             </div>
         </div>
     </div>

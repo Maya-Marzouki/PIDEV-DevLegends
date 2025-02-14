@@ -107,4 +107,34 @@ class User
 
         return $this;
     }
+     /**
+     * @return Collection<int, Contrat>
+     */
+    public function getContrats(): Collection
+    {
+        return $this->contrats;
+    }
+
+    public function addContrat(Contrat $contrat): static
+    {
+        if (!$this->contrats->contains($contrat)) {
+            $this->contrats[] = $contrat;
+            $contrat->setClient($this);  // Relier le contrat à l'utilisateur
+        }
+
+        return $this;
+    }
+
+    public function removeContrat(Contrat $contrat): static
+    {
+        if ($this->contrats->removeElement($contrat)) {
+            // Défaire la relation avec le contrat
+            if ($contrat->getClient() === $this) {
+                $contrat->setClient(null);
+            }
+        }
+
+        return $this;
+    }
 }
+

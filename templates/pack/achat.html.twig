@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Achat du Pack {{ pack.nomPack }} {% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Achat du Pack: {{ pack.nomPack }}</h1>
+    
+    <div class="card shadow-lg border-0 p-4">
+        <div class="card-body text-center">
+            {% if pack.photoPack %}
+                <img src="{{ asset(pack.photoPack) }}" class="card-img-top img-fluid" style="max-width: 300px; height: auto;" alt="Photo du pack {{ pack.nomPack }}">
+            {% else %}
+                <div class="text-center p-3 text-muted">Pas d'image</div>
+            {% endif %}
+            <h5 class="card-title text-success">{{ pack.nomPack }}</h5>
+            <p class="card-text"><strong>Description:</strong></p>
+            <p class="card-text">{{ pack.descriptPack|replace({'. ': '<br>'})|raw }}</p>
+            <p class="card-text"><strong>Prix:</strong> {{ pack.prixPack }} €</p>
+            <p class="card-text"><strong>Durée:</strong> {{ pack.dureePack }} jours</p>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <h4 class="text-primary">Mode de paiement</h4>
+        <div class="form-floating mb-3">
+            <select id="mode-paiement" class="form-control">
+                <option value="paypal">PayPal</option>
+                <option value="carte">Carte bancaire</option>
+            </select>
+            <label for="mode-paiement">Choisissez un mode de paiement</label>
+        </div>
+    </div>
+
+    <!-- Informations Carte Bancaire (Masqué par défaut) -->
+    <div id="carte-info" class="col-md-6 mx-auto mt-3" style="display: none;">
+        <h4 class="text-center mb-3">Informations de paiement</h4>
+
+        <!-- Icônes des cartes acceptées -->
+        <div class="text-center mb-3">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Visa.svg/120px-Visa.svg.png" width="50">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/120px-Mastercard-logo.svg.png" width="50">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Paypal.svg/120px-Paypal.svg.png" width="50">
+        </div>
+
+        <div class="form-floating">
+            <input type="text" id="card-name" class="form-control" placeholder="Nom sur la carte">
+            <label for="card-name">Nom sur la carte</label>
+        </div>
+
+        <div class="form-floating mt-3">
+            <input type="text" id="card-number" class="form-control" placeholder="Numéro de carte">
+            <label for="card-number">Numéro de carte</label>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-sm-6">
+                <div class="form-floating">
+                    <input type="text" id="card-expiry" class="form-control" placeholder="MM/AA">
+                    <label for="card-expiry">Date d'expiration</label>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-floating">
+                    <input type="text" id="card-cvc" class="form-control" placeholder="CVC">
+                    <label for="card-cvc">Cryptogramme visuel</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulaire PayPal (Masqué par défaut) -->
+    <div id="paypal-info" class="col-md-6 mx-auto mt-3" style="display: none;">
+        <h4 class="text-center mb-3">Payez avec PayPal</h4>
+        <div class="text-center">
+            <!-- Logo PayPal -->
+            <img src="{{ asset('images/paypal.png') }}" width="120" alt="Logo PayPal">
+        </div>
+        <div class="form-floating mt-3">
+            <input type="email" id="paypal-email" class="form-control" placeholder="Adresse email PayPal">
+            <label for="paypal-email">Adresse email PayPal</label>
+        </div>
+        <div class="text-center mt-3">
+            <a href="#" class="btn btn-primary">Se connecter à PayPal</a>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="#" class="btn btn-success" id="pay-button">Procéder au paiement</a>
+        <a href="{{ path('packclient') }}" class="btn btn-secondary">Retour</a>
+    </div>
+</div>
+
+<!-- JavaScript pour gérer l'affichage dynamique -->
+<script>
+document.getElementById("mode-paiement").addEventListener("change", function() {
+    let carteInfo = document.getElementById("carte-info");
+    let paypalInfo = document.getElementById("paypal-info");
+
+    // Cacher les deux formulaires par défaut
+    carteInfo.style.display = "none";
+    paypalInfo.style.display = "none";
+
+    // Afficher le bon formulaire selon le mode de paiement choisi
+    if (this.value === "carte") {
+        carteInfo.style.display = "block";
+    } else if (this.value === "paypal") {
+        paypalInfo.style.display = "block";
+    }
+});
+
+document.getElementById("pay-button").addEventListener("click", function(event) {
+    let modePaiement = document.getElementById("mode-paiement").value;
+    
+    // Validation pour PayPal
+    if (modePaiement === "paypal") {
+        let paypalEmail = document.getElementById("paypal-email").value;
+        if (!paypalEmail) {
+            alert("Veuillez entrer votre adresse email PayPal.");
+            event.preventDefault(); // Empêche le soumission du formulaire
+            return; // Arrête l'exécution du code suivant
+        }
+    }
+
+    // Validation pour carte bancaire
+    if (modePaiement === "carte") {
+        let cardNumber = document.getElementById("card-number").value;
+        let cardExpiry = document.getElementById("card-expiry").value;
+        let cardCvc = document.getElementById("card-cvc").value;
+
+        if (!cardNumber || !cardExpiry || !cardCvc) {
+            alert("Veuillez remplir tous les champs de la carte bancaire.");
+            event.preventDefault(); // Empêche le soumission du formulaire
+            return; // Arrête l'exécution du code suivant
+        }
+
+        // Ajout de validation pour le numéro de carte, expiration et CVC
+        if (!/^\d{16}$/.test(cardNumber)) {
+            alert("Le numéro de carte bancaire est invalide.");
+            event.preventDefault();
+            return;
+        }
+
+        if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+            alert("La date d'expiration doit être au format MM/AA.");
+            event.preventDefault();
+            return;
+        }
+
+        if (!/^\d{3}$/.test(cardCvc)) {
+            alert("Le CVC doit comporter 3 chiffres.");
+            event.preventDefault();
+            return;
+        }
+    }
+});
+</script>
+
+{% endblock %}

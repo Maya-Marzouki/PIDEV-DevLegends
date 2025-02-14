@@ -9,6 +9,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 
 class ContratType extends AbstractType
 {
@@ -32,8 +34,12 @@ class ContratType extends AbstractType
             ->add('renouvAutoCont')
             ->add('centre', EntityType::class, [
                 'class' => Centre::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nomCentre', // Afficher le nom du centre
+                'placeholder' => 'Sélectionnez un centre', // Optionnel : ajoute un texte par défaut
+                'attr' => ['class' => 'form-control'],
+            
             ])
+            
         ;
     }
 

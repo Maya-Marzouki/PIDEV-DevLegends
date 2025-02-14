@@ -4,8 +4,10 @@ namespace App\Form;
 
 use App\Entity\Centre;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class CentreType extends AbstractType
 {
@@ -18,11 +20,18 @@ class CentreType extends AbstractType
             ->add('emailCentre')
             ->add('specialiteCentre')
             ->add('capaciteCentre')
-            ->add('photoCentre', null, [
-                'attr' => ['class' => 'form-control'],
-                'label' => 'Photo URL',
+            ->add('photoCentre', FileType::class, [
+                'label' => 'Photo du centre (JPG, PNG)',
+                'mapped' => false, // Ne pas lier directement à l’entité
+                'required' => false, // L’upload n’est pas obligatoire
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2M',
+                        'mimeTypes' => ['image/jpeg', 'image/png'],
+                        'mimeTypesMessage' => 'Veuillez uploader une image valide (JPG ou PNG).',
+                    ])
+                ],
             ]);
-        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -32,5 +41,6 @@ class CentreType extends AbstractType
         ]);
     }
 }
+
 
 
