@@ -29,20 +29,21 @@ class Consultation
     #[Assert\Url(message: "Veuillez entrer un lien valide.")]
     private ?string $lienVisioCons = null;
 
-    #[ORM\Column]
-    #[Assert\NotBlank(message: "Le score mental ne peut pas être vide.")]
-    #[Assert\Range(
-        min: 0,
-        max: 100,
-        notInRangeMessage: "Le score mental doit être entre {{ min }} et {{ max }}.",
-    )]
-    private ?int $scoreMental = null;
+    // #[ORM\Column]
+    // // #[Assert\NotBlank(message: "Le score mental ne peut pas être vide.")]
+    // // #[Assert\Range(
+    // //     min: 0,
+    // //     max: 100,
+    // //     notInRangeMessage: "Le score mental doit être entre {{ min }} et {{ max }}.",
+    // // )]
+    // private ?int $scoreMental = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "L'état mental ne peut pas être vide.")]
-    private ?string $etatMental = null;
+    // #[ORM\Column(length: 255)]
+    // #[Assert\NotBlank(message: "L'état mental ne peut pas être vide.")]
+    // private ?string $etatMental = null;
 
-    #[ORM\Column(length: 255)]    #[Assert\NotBlank(message: "Le champs remarques ne peut pas être vide.")]
+    #[ORM\Column(length: 255)]    
+    #[Assert\NotBlank(message: "Le champs remarques ne peut pas être vide.")]
     private ?string $notesCons = null;
 
     /**
@@ -102,29 +103,29 @@ class Consultation
         return $this;
     }
 
-    public function getScoreMental(): ?int
-    {
-        return $this->scoreMental;
-    }
+    // public function getScoreMental(): ?int
+    // {
+    //     return $this->scoreMental;
+    // }
 
-    public function setScoreMental(?int $scoreMental): static
-    {
-        $this->scoreMental = $scoreMental;
+    // public function setScoreMental(?int $scoreMental): static
+    // {
+    //     $this->scoreMental = $scoreMental;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getEtatMental(): ?string
-    {
-        return $this->etatMental;
-    }
+    // public function getEtatMental(): ?string
+    // {
+    //     return $this->etatMental;
+    // }
 
-    public function setEtatMental(?string $etatMental): static
-    {
-        $this->etatMental = $etatMental;
+    // public function setEtatMental(?string $etatMental): static
+    // {
+    //     $this->etatMental = $etatMental;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getNotesCons(): ?string
     {

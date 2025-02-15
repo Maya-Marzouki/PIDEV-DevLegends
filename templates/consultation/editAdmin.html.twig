@@ -1,0 +1,68 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modifier la Consultation{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg p-4">
+                <h1 class="text-center mb-4">Modifier la Consultation</h1>
+                
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                
+                <div class="mb-3">
+                    {{ form_label(form.nom, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom'}}) }}
+                    <div class="text-danger">{{ form_errors(form.nom) }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.prenom, 'Prénom', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.prenom, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le prénom'}}) }}
+                    <div class="text-danger">{{ form_errors(form.prenom) }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.age, 'Âge', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.age, {'attr': {'class': 'form-control', 'placeholder': 'Entrez l\'âge'}}) }}
+                    <div class="text-danger">{{ form_errors(form.age) }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.dateCons, 'Date de consultation', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dateCons, {'attr': {'class': 'form-control'}}) }}
+                    <div class="text-danger">{{ form_errors(form.dateCons) }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.lienVisioCons, 'Lien Visio', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.lienVisioCons, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le lien visio'}}) }}
+                    <div class="text-danger">{{ form_errors(form.lienVisioCons) }}</div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form_label(form.notesCons, 'Raison(s) de la consultation thérapeutique', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.notesCons, {'attr': {'class': 'form-control', 'placeholder': 'Ajoutez la/les raison(s) de la consultation thérapeutique'}}) }}
+                    <div class="text-danger">{{ form_errors(form.notesCons) }}</div>
+                </div>
+                
+                <style>
+                    .btn-custom-green {
+                        background-color: #28a745 !important;
+                        color: white !important;
+                        font-weight: bold;
+                    }
+                </style>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('consultation_index') }}" class="btn btn-custom-green py-3 px-4">Retour</a>
+                    <button type="submit" class="btn btn-custom-green py-3 px-4">Enregistrer les modifications</button>
+                </div>
+                
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -17,7 +17,7 @@
                     {{ form_start(form, {'attr': {'class': 'row g-3','novalidate': 'novalidate'}}) }}
 
                         {# Affichage des erreurs globales du formulaire #}
-                        {# {% if form.vars.errors|length > 0 %}
+                        {% if form.vars.errors|length > 0 %}
                             <div class="alert alert-danger">
                                 <strong>Des erreurs sont survenues :</strong>
                                 <ul>
@@ -26,7 +26,7 @@
                                     {% endfor %}
                                 </ul>
                             </div>
-                        {% endif %} #}
+                        {% endif %}
 
                         <div class="col-sm-6">
                             <div class="form-floating">
@@ -95,7 +95,7 @@
                         {{ form_end(form) }}
 
                         <div class="col-12 text-center mt-3">
-                            <a href="{{ path('consultation_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                            <a href="{{ path('consultation_view') }}" class="btn btn-secondary">Retour à la liste</a>
                         </div>
                     </div>
                 </div>

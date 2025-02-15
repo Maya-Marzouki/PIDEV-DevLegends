@@ -25,7 +25,7 @@
                             <td>{{ consultation.prenom }}</td>
                             <td>{{ consultation.age }}</td>
                             <td>
-                                <a href="{{ path('edit_consultation', { id: consultation.id }) }}" class="btn btn-succes">Modifier</a>
+                                <a href="{{ path('edit_consultation_Admin', { id: consultation.id }) }}" class="btn btn-succes">Modifier</a>
                                 <a href="{{ path('delete_consultation', { id: consultation.id }) }}" class="btn btn-succes" onclick="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">Supprimer</a>
                             </td>
                         </tr>
@@ -42,9 +42,9 @@
                         font-weight: bold;
                     }
                 </style>
-                <div class="d-flex justify-content-end mt-3">
+                {# <div class="d-flex justify-content-end mt-3">
                     <a href="{{ path('consultation_new') }}" class="btn btn-custom-green">Ajouter une Consultation</a>
-                </div>
+                </div> #}
     </div>
 </div>
 {% endblock %}
