@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class ProduitType extends AbstractType
 {
@@ -17,10 +18,20 @@ class ProduitType extends AbstractType
             ->add('nomProduit')
             ->add('prixProduit')
             ->add('qteProduit')
-            ->add('statutProduit')
+             // Statut, avec "Indisponible" par défaut
+             ->add('statutProduit', ChoiceType::class, [
+                'choices' => [
+                    'Disponible' => true,    
+                    'Indisponible' => false  
+                ],
+                'label' => 'Statut',
+                'data' => false,  // Par défaut, l'état du statut est "Indisponible"
+                'attr' => ['class' => 'form-control'],
+                
+            ])
             ->add('categorieProduit', EntityType::class, [
                 'class' => Categorie::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nomCategorie',
             ])
         ;
     }

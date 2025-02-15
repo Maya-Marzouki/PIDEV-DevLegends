@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\ProduitRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -17,14 +20,13 @@ class Produit
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
+    #[ORM\Column]
     #[Assert\NotBlank(message: "Le nom du produit est obligatoire")]
     #[Assert\Length(
         min: 2,
         max: 255,
-        minMessage: "Le nom doit contenir au moins {{ limit }} caractères",
-        maxMessage: "Le nom ne peut dépasser {{ limit }} caractères"
+        minMessage: "Le nom doit contenir au moins 2 caractères",
+        maxMessage: "Le nom ne peut dépasser 30 caractères"
     )]
     private ?string $nomProduit = null;
 
@@ -38,24 +40,35 @@ class Produit
     private ?int $qteProduit = 0;
 
     #[ORM\Column(length: 255)]
-    private ?string $statutProduit = self::STATUT_INDISPONIBLE;
+    private ?string $statutProduit;
 
     #[ORM\ManyToOne(inversedBy: 'produits')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Une catégorie doit être sélectionnée")]
     private ?Categorie $categorieProduit = null;
+     /**
+     * Cette propriété est ajoutée pour gérer la relation avec la commande
+     * Elle n'est pas nécessairement persistée si tu ne souhaites pas avoir une relation à travers une entité intermédiaire
+     */
+    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'produits')]
+    private $commandes;
+
+    public function __construct()
+    {
+        // Défaut à "indisponible" à la création
+        $this->statutProduit = self::STATUT_INDISPONIBLE;
+        $this->commandes = new ArrayCollection();
+    }
 
     public function __toString(): string
     {
         return $this->nomProduit ?? '';
     }
 
-    // Lifecycle Callbacks
-
-    #[ORM\PrePersist]
     #[ORM\PreUpdate]
     public function updateStatut(): void
     {
+        // Met à jour le statut UNIQUEMENT lors d'une modification
         $this->statutProduit = $this->qteProduit > 0 
             ? self::STATUT_DISPONIBLE 
             : self::STATUT_INDISPONIBLE;
@@ -131,4 +144,20 @@ class Produit
             default => 'Statut inconnu',
         };
     }
+     // Méthodes pour gérer les commandes liées à ce produit
+     public function addCommande(Commande $commande): self
+     {
+         if (!$this->commandes->contains($commande)) {
+             $this->commandes[] = $commande;
+         }
+ 
+         return $this;
+     }
+ 
+     public function removeCommande(Commande $commande): self
+     {
+         $this->commandes->removeElement($commande);
+ 
+         return $this;
+     }
 }

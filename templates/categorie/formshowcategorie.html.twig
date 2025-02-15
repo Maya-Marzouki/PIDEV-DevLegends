@@ -12,7 +12,7 @@
                         <div class="table-responsive">
                             <table class="table">
                                <tr>
-		<th>id</th>
+		
         <th>nomCategorie</th>
         
 
@@ -25,10 +25,14 @@
 
                     
                     <td>
-                        <a href="{{ path('editCategorie', {'id': categorie.id}) }}" >Modifier</a>
+                       <a href="{{ path('editCategorie', {'id': categorie.id}) }}" class="btn btn-custom-green">Modifier</a>
+<a href="{{ path('deleteCategorie', {'id': categorie.id}) }}"class="btn btn-danger">Supprimer</a>
+
+
                         <form method="post" action="{{ path('deleteCategorie', { id: categorie.id }) }}" >
-                        <a href="{{ path('deleteCategorie', {'id': categorie.id}) }}" >Supprimer</a>
                         
+
+
 </form>
 
                     </td>

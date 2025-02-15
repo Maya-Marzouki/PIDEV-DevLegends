@@ -16,12 +16,22 @@
                             <p class="card-text"><strong>Quantité:</strong> {{ produit.qteProduit }}</p>
                             <p class="card-text"><strong>Prix:</strong> {{ produit.prixProduit }} €</p>
                             <p class="card-text"><strong>Statut:</strong> 
-                                <span class="badge bg-{{ produit.statutProduit ? 'success' : 'secondary' }}">
-                                    {{ produit.statutProduit ? 'Disponible' : 'Indisponible' }}
+                                <span class="badge bg-{% if produit.statutProduit == 'indisponible' %}danger{% else %}success{% endif %}">
+                                    {{ produit.statutProduit|capitalize }}
                                 </span>
                             </p>
-                            <p class="card-text"><strong>Catégorie:</strong> {{ produit.CategorieProduit }}</p>
+                            <p class="card-text"><strong>Catégorie:</strong> {{ produit.categorieProduit.nomCategorie }}</p>
                         </div>
+                        {% if produit.statutProduit != 'indisponible' %}
+                            <form action="{{ path('panier') }}" method="POST">
+                            <input type="hidden" name="idProduit" value="{{ produit.id }}">
+                            <input type="hidden" name="nomProduit" value="{{ produit.nomProduit }}">
+                            <input type="hidden" name="prixProduit" value="{{ produit.prixProduit}}">
+                            <input type="number" name="quantiteProduit" value="1" min="1">
+                            <button type="submit">Ajouter au panier</button>
+                            </form>
+
+                        {% endif %}
                     </div>
                 </div>
             </div>
