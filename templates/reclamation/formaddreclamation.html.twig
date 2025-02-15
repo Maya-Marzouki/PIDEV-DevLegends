@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Ajouter une Reclamation
+{% endblock %}
+
+{% block body %}
+
+{# Affichage des messages flash #}
+{% for message in app.flashes('success') %}
+	<div class="alert alert-success">
+		{{ message }}
+	</div>
+{% endfor %}
+
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+<div class="container-fluid py-5">
+	<div class="container">
+		<div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+			<h1 class="display-5 mb-5">Ajouter une Reclamation</h1>
+		</div>
+		<div class="row justify-content-center">
+			<div class="col-lg-7">
+				<div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+					<div class="row g-3">
+						<div class="col-sm-6">
+							<div class="form-floating">
+								{{ form_widget(form.sujetRec, { 'attr': {'class': 'form-control', 'placeholder': 'Sujet'} }) }}
+								{{ form_label(form.sujetRec) }}
+								{{ form_errors(form.sujetRec) }}
+							</div>
+						</div>
+
+						<div class="col-sm-12">
+							<div class="form-floating">
+								{{ form_widget(form.contenuRec, { 'attr': {'class': 'form-control', 'placeholder': 'Contenu'} }) }}
+								{{ form_label(form.contenuRec) }}
+								{{ form_errors(form.contenuRec) }}
+							</div>
+						</div>
+
+						<div class="col-sm-12">
+							<div class="form-floating">
+								{{ form_widget(form.dateRec, { 'attr': {'class': 'form-control', 'placeholder': 'Date de l\'envoi de la réclamation'} }) }}
+									{{ form_label(form.dateRec) }}
+									{{ form_errors(form.dateRec) }}
+								</div>
+							</div>
+
+							<div class="col-sm-12">
+								<div class="form-floating">
+									{{ form_widget(form.emailDes, { 'attr': {'class': 'form-control', 'placeholder': 'Email du Destinataire'} }) }}
+									{{ form_label(form.emailDes) }}
+									{{ form_errors(form.emailDes) }}
+								</div>
+							</div>
+
+							<div class="col-12 text-center">
+								<button class="btn btn-primary py-3 px-4" type="submit">Enregistrer</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{{ form_end(form) }}
+{% endblock %}
