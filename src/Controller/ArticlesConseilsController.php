@@ -107,6 +107,12 @@ public function show(ArticlesConseilsRepository $articlesConseilsRepository, int
                         $this->getParameter('kernel.project_dir') . '/public/assets/images/',
                         $newFilename
                     );
+                    // Supprimer l'ancienne image si elle existe
+                    if ($articleConseil->getImage() && file_exists($this->getParameter('kernel.project_dir') . '/public/' . $articleConseil->getImage())) {
+                        unlink($this->getParameter('kernel.project_dir') . '/public/' . $articleConseil->getImage());
+                    }
+                    
+                    // Mettre à jour l'image
                     $articleConseil->setImage('assets/images/' . $newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');

@@ -15,6 +15,8 @@
                             <th>Nom</th>
                             <th>Prénom</th>
                             <th>Âge</th>
+                            <th>Profession</th>
+                            <th>Raison(s) de la consultation thérapeutique</th>
                             <th>Actions</th>
                         </tr>
                         {% for consultation in consultations %}
@@ -24,9 +26,16 @@
                             <td>{{ consultation.Nom }}</td>
                             <td>{{ consultation.prenom }}</td>
                             <td>{{ consultation.age }}</td>
+                            <td>{{ consultation.lienVisioCons }}</td>
+                            <td>{{ consultation.notesCons }}</td>
                             <td>
                                 <a href="{{ path('edit_consultation_Admin', { id: consultation.id }) }}" class="btn btn-succes">Modifier</a>
-                                <a href="{{ path('delete_consultation', { id: consultation.id }) }}" class="btn btn-succes" onclick="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">Supprimer</a>
+                                <form action="{{ path('delete_consultation_Admin', {'id': consultation.id}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ consultation.id) }}">
+                                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                                </form>
+
+                                {# <a href="{{ path('delete_consultation_Admin', { id: consultation.id }) }}" class="btn btn-succes" onclick="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">Supprimer</a> #}
                             </td>
                         </tr>
                         {% endfor %}      

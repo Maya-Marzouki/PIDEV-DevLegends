@@ -25,8 +25,8 @@ class Consultation
     private ?\DateTimeInterface $dateCons = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le lien de la visioconsultation ne peut pas être vide.")]
-    #[Assert\Url(message: "Veuillez entrer un lien valide.")]
+    #[Assert\NotBlank(message: "Le champs profession ne peut pas être vide.")]
+    // #[Assert\Url(message: "Veuillez entrer un lien valide.")]
     private ?string $lienVisioCons = null;
 
     // #[ORM\Column]
@@ -43,7 +43,7 @@ class Consultation
     // private ?string $etatMental = null;
 
     #[ORM\Column(length: 255)]    
-    #[Assert\NotBlank(message: "Le champs remarques ne peut pas être vide.")]
+    #[Assert\NotBlank(message: "Le champs 'Raison(s) de la consultation thérapeutique' ne peut pas être vide.")]
     private ?string $notesCons = null;
 
     /**

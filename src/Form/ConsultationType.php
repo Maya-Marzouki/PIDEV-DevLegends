@@ -33,10 +33,10 @@ class ConsultationType extends AbstractType
             // ],
         ])
             ->add('lienVisioCons', TextType::class, [
-                'label' => 'Lien de la Consultation',
+                'label' => 'Profession',
                 'attr' => ['class' => 'form-control',
                 'required' => true,
-                'placeholder' => 'https://example.com',
+                'placeholder' => 'Entrez votre profession',
             ],
                 // 'constraints' => [
                 //     new Assert\NotBlank(['message' => 'Le lien est obligatoire.']),
@@ -50,12 +50,12 @@ class ConsultationType extends AbstractType
             //     'label' => 'État Mental'
             // ])
             ->add('notesCons', TextareaType::class, [
-                'label' => 'Remarques',
+                'label' => 'Raison(s) de la consultation thérapeutique',
                 'attr' => ['class' => 'form-control',
                 'required' => true,
                 'minlength' => 10,
                 'maxlength' => 1000,
-                'placeholder' => 'Remarques',
+                'placeholder' => 'Raison(s) de la consultation thérapeutique',
             ],
                 // 'constraints' => [
                 //     new Assert\NotBlank(['message' => 'Les notes sont obligatoires.']),

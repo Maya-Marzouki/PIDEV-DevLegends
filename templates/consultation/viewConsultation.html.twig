@@ -18,6 +18,8 @@
                         <th>Nom</th>
                         <th>Prénom</th>
                         <th>Âge</th>
+                        <th>Profession</th>
+                        <th>Raison(s) de la consultation thérapeutique</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -29,11 +31,13 @@
                             <td>{{ consultation.Nom }}</td>
                             <td>{{ consultation.prenom }}</td>
                             <td>{{ consultation.age }}</td>
+                            <td>{{ consultation.lienVisioCons }}</td>
+                            <td>{{ consultation.notesCons }}</td>
                             <td>
                                 <a href="{{ path('edit_consultation', { id: consultation.id }) }}" class="btn btn-success">Modifier</a>
-                                <form action="{{ path('delete_consultation', { id: consultation.id }) }}" method="POST" style="display:inline;">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_consultation') }}">
-                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">Supprimer</button>
+                                <form action="{{ path('delete_consultation', {'id': consultation.id}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ consultation.id) }}">
+                                    <button type="submit" class="btn btn-danger">Supprimer</button>
                                 </form>
                             </td>
                         </tr>

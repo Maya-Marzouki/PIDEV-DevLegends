@@ -99,7 +99,7 @@ class ConsultationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            return $this->redirectToRoute('consultation_index');
+            return $this->redirectToRoute('consultation_view');
         }
 
         return $this->render('consultation/editConsultation.html.twig', [
@@ -124,6 +124,17 @@ class ConsultationController extends AbstractController
 
     #[Route('/delete/{id}', name: 'delete_consultation', methods: ['POST'])]
     public function delete(Request $request, Consultation $consultation, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$consultation->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($consultation);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('consultation_view');
+    }
+
+    #[Route('/deleteAdmin/{id}', name: 'delete_consultation_Admin', methods: ['POST'])]
+    public function deleteAdmin(Request $request, Consultation $consultation, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$consultation->getId(), $request->request->get('_token'))) {
             $entityManager->remove($consultation);

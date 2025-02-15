@@ -53,21 +53,21 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="form-floating">
-                                {{ form_widget(form.lienVisioCons, {'attr': {'class': 'form-control border-0', 'placeholder': 'Lien Visio'}}) }}
+                                {{ form_widget(form.lienVisioCons, {'attr': {'class': 'form-control border-0', 'placeholder': 'Entrez votre profession'}}) }}
                                 {{ form_label(form.lienVisioCons) }}
                                 <div class="text-danger">{{ form_errors(form.lienVisioCons) }}</div>
                             </div>
                         </div>
                         <div class="col-12">
                             <div class="form-floating">
-                                {{ form_widget(form.notesCons, {'attr': {'class': 'form-control border-0', 'placeholder': 'Remarques'}}) }}
+                                {{ form_widget(form.notesCons, {'attr': {'class': 'form-control border-0', 'placeholder': 'RemarRaison(s) de la consultation thérapeutiqueques'}}) }}
                                 {{ form_label(form.notesCons) }}
                                 <div class="text-danger">{{ form_errors(form.notesCons) }}</div>
                             </div>
                         </div>
                         <div class="col-12 text-center">
-                            <a href="{{ path('consultation_view') }}" class="btn btn-success py-3 px-4">Mettre à jour</a>
-                            {# <button class="btn btn-success py-3 px-4" type="submit">Mettre à jour</button> #}
+                            {# <a href="{{ path('consultation_view') }}" class="btn btn-success py-3 px-4">Mettre à jour</a> #}
+                            <button class="btn btn-success py-3 px-4" type="submit">Mettre à jour</button>
                         </div>
 
                         {{ form_end(form) }}
