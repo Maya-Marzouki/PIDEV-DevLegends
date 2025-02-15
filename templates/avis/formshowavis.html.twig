@@ -1,0 +1,56 @@
+{% extends 'baseAdmin.html.twig' %}
+{# {% if userList is defined and userList is not empty%} #}
+{% block body %}
+
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">
+			{{ message }}
+		</div>
+	{% endfor %}
+	<a href="{{ path('insertAvis') }}" class="btn btn-success">Ajouter un Avis</a>
+	<div
+		class="row">
+		<!-- column -->
+		<div class="col-lg-12">
+			<div class="card">
+				<div class="card-block">
+					<h4 class="card-title">Basic Table</h4>
+					<h6 class="card-subtitle">Add class
+						<code>.table</code>
+					</h6>
+					<div class="table-responsive">
+						<table class="table">
+							<tr>
+								<th>Sujet</th>
+								<th>Contenu</th>
+								<th>Note</th>
+								<th>Date</th>
+								<th>Email Destinataire</th>
+							</tr>
+							{% for avis in aviss %}
+								<tr>
+									<td>{{ avis.sujetAvis }}</td>
+									<td>{{ avis.contenuAvis }}</td>
+									<td>{{ avis.noteAvis }}/10</td>
+									<td>{{ avis.dateAvis|date('d-m-Y H:i') }}</td>
+									<td>{{ avis.emailAvis }}</td>
+
+
+									<td>
+										<a href="{{ path('editAvis', {'id': avis.id}) }}">Modifier</a>
+										<form method="post" action="{{ path('deleteAvis', { id: avis.id }) }}">
+											<a href="{{ path('deleteAvis', {'id': avis.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+												Supprimer
+											</a>
+										</form>
+
+									</td>
+								</tr>
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
