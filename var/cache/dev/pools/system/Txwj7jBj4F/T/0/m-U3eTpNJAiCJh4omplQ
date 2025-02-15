@@ -1,0 +1,3 @@
+<?php //9b179952954703dbbbdd87770219b1fa
+
+return [PHP_INT_MAX, 'client/lib/lightbox/images/close.png'];

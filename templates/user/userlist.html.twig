@@ -1,0 +1,24 @@
+
+{# {% if userList is defined and userList is not empty%} #}
+<table border="1">
+	<tr>
+		<th>id</th>
+		<th>username</th>
+		<th>email</th>
+		<th>Action</th>
+	</tr>
+	{% for user in userList %}
+		<tr>
+			<td>{{user.id}}</td>
+			<td>{{user.firstName}}</td>
+            <td>{{user.lastName}}</td>
+			<td>{{user.userEmail}}</td>
+            <td>{{user.pswrd}}</td>
+			<td>{{user.userRole}}</td>
+            <td>{{user.userAge}}</td>
+			<td>
+				<a href="{{path('getUser',{'id':user.id})}}">details</a>
+				<a href="{{path('deleteUser',{'id':user.id})}}">delete</a>
+			</td>
+		</tr>
+	{% endfor %}

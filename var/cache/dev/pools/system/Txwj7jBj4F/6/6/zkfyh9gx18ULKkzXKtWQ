@@ -1,0 +1,3 @@
+<?php //c396e07893466d1765b4052f78468d25
+
+return [PHP_INT_MAX, 'client/lib/owlcarousel/assets/owl.carousel.min.css'];

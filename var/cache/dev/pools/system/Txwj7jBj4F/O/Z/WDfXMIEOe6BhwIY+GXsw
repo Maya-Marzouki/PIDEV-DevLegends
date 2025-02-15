@@ -1,0 +1,3 @@
+<?php //d17d0ca3be835629b57185c659977845
+
+return [PHP_INT_MAX, 'client/lib/waypoints/waypoints.min.js'];
