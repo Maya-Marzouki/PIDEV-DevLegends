@@ -1,6 +1,12 @@
 {% extends 'baseAdmin.html.twig' %}
 {# {% if userList is defined and userList is not empty%} #}
 {% block body %}
+
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">
+			{{ message }}
+		</div>
+	{% endfor %}
 	<a href="{{ path('insertAvis') }}" class="btn btn-success">Ajouter un Avis</a>
 	<div
 		class="row">
@@ -25,7 +31,7 @@
 								<tr>
 									<td>{{ avis.sujetAvis }}</td>
 									<td>{{ avis.contenuAvis }}</td>
-									<td>{{ avis.noteAvis }}</td>
+									<td>{{ avis.noteAvis }}/10</td>
 									<td>{{ avis.dateAvis|date('d-m-Y H:i') }}</td>
 									<td>{{ avis.emailAvis }}</td>
 

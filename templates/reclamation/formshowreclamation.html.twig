@@ -1,6 +1,13 @@
 {% extends 'baseAdmin.html.twig' %}
-{# {% if userList is defined and userList is not empty%} #}
+
 {% block body %}
+	{# Affichage des messages flash #}
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">
+			{{ message }}
+		</div>
+	{% endfor %}
+
 	<a href="{{ path('insertReclamation') }}" class="btn btn-success">Ajouter un Reclamation</a>
 	<div
 		class="row">
@@ -26,8 +33,6 @@
 									<td>{{ reclamation.contenuRec }}</td>
 									<td>{{ reclamation.dateRec|date('d-m-Y H:i') }}</td>
 									<td>{{ reclamation.emailDes }}</td>
-
-
 									<td>
 										<a href="{{ path('editReclamation', {'id': reclamation.id}) }}">Modifier</a>
 										<form method="post" action="{{ path('deleteReclamation', { id: reclamation.id }) }}">
@@ -35,7 +40,6 @@
 												Supprimer
 											</a>
 										</form>
-
 									</td>
 								</tr>
 							{% endfor %}

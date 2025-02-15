@@ -45,6 +45,7 @@ class ReclamationController extends AbstractController
             $manager = $mr->getManager();
             $manager->persist($reclamation);
             $manager->flush();
+            $this->addFlash('success', 'Votre réclamation a été envoyée avec succès.');
 
             return $this->redirectToRoute('reclamationclient');
         }
@@ -73,6 +74,7 @@ class ReclamationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $mr->getManager();
             $manager->flush(); // Sauvegarde les modifications
+            $this->addFlash('success', 'La réclamation a été modifiée avec succès.');
 
             return $this->redirectToRoute('app_reclamation_index');
         }
@@ -83,16 +85,15 @@ class ReclamationController extends AbstractController
         ]);
     }
 
-#[Route('/reclamation/{id}/delete', name: 'deleteReclamation')]
+    #[Route('/reclamation/{id}/delete', name: 'deleteReclamation')]
     public function deleteReclamation(ManagerRegistry $mr, ReclamationRepository $repo, $id): Response
     {
         $manager = $mr->getManager();
         $reclamation = $repo->find($id);
         $manager->remove($reclamation);
         $manager->flush();
+        $this->addFlash('success', 'La réclamation a été supprimée avec succès.');
 
         return $this->redirectToRoute("app_reclamation_index");
     }
-
-    
 }

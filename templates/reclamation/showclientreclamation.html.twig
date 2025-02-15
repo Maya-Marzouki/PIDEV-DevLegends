@@ -1,28 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Liste des Reclamations {% endblock %}
+{% block title %}
+	Liste des Reclamations
+{% endblock %}
 
 {% block body %}
-<div class="container my-5">
-    <h1 class="text-center text-success mb-4">Liste des Reclamations</h1>
 
-    <div class="row">
-        {% for reclamation in reclamations %}
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
-                    <div class="card-body d-flex flex-column flex-grow-1 text-center">
-                        <h5 class="card-title text-success">{{ reclamation.sujetRec }}</h5>
-                        <p class="card-text"><strong>Contenu:</strong> {{ reclamation.contenuRec }}</p>
-                        <p class="card-text"><strong>Date:</strong> {{ reclamation.dateRec|date('d-m-Y H:i') }}</p>
-                        <p class="card-text"><strong>Email Destinataire:</strong> {{ reclamation.emailDes }}</p>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="col-12 text-center text-muted">
-                <p>Aucune reclamation trouvée.</p>
-            </div>
-        {% endfor %}
-    </div>
-</div>
+	{# Affichage des messages flash #}
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">
+			{{ message }}
+		</div>
+	{% endfor %}
+
+	<div class="container my-5">
+		<h1 class="text-center text-success mb-4">Liste des Reclamations</h1>
+
+		<div class="row">
+			{% for reclamation in reclamations %}
+				<div class="col-md-4 mb-4">
+					<div class="card shadow-lg border-0 h-100 d-flex flex-column">
+						<div class="card-body d-flex flex-column flex-grow-1 text-center">
+							<h5 class="card-title text-success">{{ reclamation.sujetRec }}</h5>
+							<p class="card-text">
+								<strong>Contenu:</strong>
+								{{ reclamation.contenuRec }}</p>
+							<p class="card-text">
+								<strong>Date:</strong>
+								{{ reclamation.dateRec|date('d-m-Y H:i') }}</p>
+							<p class="card-text">
+								<strong>Email Destinataire:</strong>
+								{{ reclamation.emailDes }}</p>
+						</div>
+					</div>
+				</div>
+			{% else %}
+				<div class="col-12 text-center text-muted">
+					<p>Aucune reclamation trouvée.</p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
 {% endblock %}

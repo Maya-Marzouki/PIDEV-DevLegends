@@ -45,6 +45,7 @@ class AvisController extends AbstractController
             $manager = $mr->getManager();
             $manager->persist($avis);
             $manager->flush();
+            $this->addFlash('success', 'Votre avis a été envoyé avec succès.');
 
             return $this->redirectToRoute('avisclient');
         }
@@ -73,6 +74,7 @@ class AvisController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $mr->getManager();
             $manager->flush(); // Sauvegarde les modifications
+            $this->addFlash('success', 'L\'avis a été modifié avec succès.');
 
             return $this->redirectToRoute('app_avis_index');
         }
@@ -90,6 +92,7 @@ class AvisController extends AbstractController
         $avis = $repo->find($id);
         $manager->remove($avis);
         $manager->flush();
+        $this->addFlash('success', 'L\'avis a été supprimé avec succès.');
 
         return $this->redirectToRoute("app_avis_index");
     }
