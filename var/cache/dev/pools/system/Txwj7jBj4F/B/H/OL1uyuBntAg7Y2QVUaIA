@@ -1,0 +1,3 @@
+<?php //988104e8ef8bf801237f1a3cdcce69ef
+
+return [PHP_INT_MAX, 'client/lib/lightbox/js/lightbox.min.js'];

@@ -1,0 +1,3 @@
+<?php //a306d7d1e745a5a0c57a1eae64668348
+
+return [PHP_INT_MAX, 'client/lib/lightbox/images/loading.gif'];

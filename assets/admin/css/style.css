@@ -3511,7 +3511,7 @@ table.dataTable thead .sorting:after {
   text-align: center;
   text-decoration: none;
   cursor: pointer;
-  *cursor: hand;
+  cursor: hand;
   color: #67757c;
   border: 1px solid transparent;
   border-radius: 2px; }
@@ -4766,6 +4766,7 @@ Stylish tooltip
 
 .tooltip-content3 {
   position: absolute;
+  background: url(../assets/images/tooltip/shape1.svg) no-repeat center bottom;
   background-size: 100% 100%;
   z-index: 9999;
   width: 200px;
