@@ -1,0 +1,52 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+	{# Affichage des messages flash #}
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">
+			{{ message }}
+		</div>
+	{% endfor %}
+
+	<a href="{{ path('insertReclamation') }}" class="btn btn-success">Ajouter un Reclamation</a>
+	<div
+		class="row">
+		<!-- column -->
+		<div class="col-lg-12">
+			<div class="card">
+				<div class="card-block">
+					<h4 class="card-title">Basic Table</h4>
+					<h6 class="card-subtitle">Add class
+						<code>.table</code>
+					</h6>
+					<div class="table-responsive">
+						<table class="table">
+							<tr>
+								<th>Sujet</th>
+								<th>Contenu</th>
+								<th>Date</th>
+								<th>Email Destinataire</th>
+							</tr>
+							{% for reclamation in reclamations %}
+								<tr>
+									<td>{{ reclamation.sujetRec }}</td>
+									<td>{{ reclamation.contenuRec }}</td>
+									<td>{{ reclamation.dateRec|date('d-m-Y H:i') }}</td>
+									<td>{{ reclamation.emailDes }}</td>
+									<td>
+										<a class="text-themecolor" href="{{ path('editReclamation', {'id': reclamation.id}) }}">Modifier</a>
+										<form method="post" action="{{ path('deleteReclamation', { id: reclamation.id }) }}">
+											<a class="text-themecolor" href="{{ path('deleteReclamation', {'id': reclamation.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+												Supprimer
+											</a>
+										</form>
+									</td>
+								</tr>
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

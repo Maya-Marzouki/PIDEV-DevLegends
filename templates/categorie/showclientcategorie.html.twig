@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste des Categories {% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Nos Categories</h1>
+
+    <div class="row">
+        {% for categorie in categories %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
+                    <div class="card-body d-flex flex-column flex-grow-1 text-center">
+                        <h5 class="card-title text-success">{{ categorie.id }}</h5>
+                        <div class="mt-auto">
+                            <p class="card-text"><strong>nomCategorie:</strong> {{ categorie.nomCategorie }}</p>
+                           
+                    
+                            </p>
+                            <p class="card-text"><strong>Catégorie:</strong> {{ categorie.nomCategorie }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>Aucun categorie trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

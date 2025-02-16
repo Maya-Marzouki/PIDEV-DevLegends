@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Mon Panier</h1>
+
+    <div class="row">
+        {% if panier is empty %}
+            <div class="col-12 text-center text-muted">
+                <p>Votre panier est vide.</p>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Produit</th>
+                            <th>Prix</th>
+                            <th>Quantité</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in panier %}
+                            <tr>
+                                <td>{{ item.nomProduit ?? 'Produit non disponible' }}</td>
+                                <td>{{ item.prixProduit ?? 'N/A' }} </td>
+                                <td>{{ item.quantiteProduit ?? 0 }}</td>
+                                <td>{{ item.prixProduit * item.quantiteProduit }} €</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="text-end">
+                    <p><strong>Total:</strong> {{ total }} </p>
+                </div>
+
+                <!-- Bouton Valider la Commande -->
+                <form action="{{ path('valider_commande') }}" method="POST">
+                    <button type="submit" class="btn btn-success">Valider la Commande</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

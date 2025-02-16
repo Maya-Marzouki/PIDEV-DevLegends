@@ -1,0 +1,84 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Liste des Articles
+{% endblock %}
+
+{% block body %}
+	<div
+		class="row d-flex justify-content-center mt-4">
+		{# Centre le tableau horizontalement #}
+		<div
+			class="col-lg-10">
+			{# Réduit la largeur du tableau pour un meilleur centrage #}
+			<div class="card">
+				<div
+					class="card-block text-center p-4">
+					{# Centre le texte dans la carte #}
+					<h4 class="card-title">Liste des Articles de Conseils</h4>
+					<h6 class="card-subtitle mb-3">Gestion des articles</h6>
+					<div class="table-responsive">
+						<table
+							class="table table-bordered text-center">
+							{# Centre le texte dans le tableau #}
+							<thead class="table-dark">
+								<tr>
+									<th>Titre</th>
+									<th>Contenu</th>
+									<th>Catégorie</th>
+									<th>Image</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for article in articlesConseils %}
+									<tr>
+										<td>{{ article.titreArticle }}</td>
+										<td>{{ article.contenuArticle|slice(0, 100) }}...</td>
+										<td>{{ article.categorieMentalArticle }}</td>
+										<td>
+											{% if article.image %}
+												<img src="{{ asset(article.image) }}" alt="Image de l'article" width="100">
+											{% else %}
+												<span>Pas d'image</span>
+											{% endif %}
+										</td>
+										<td>
+											<a href="{{ path('app_articles_conseils_edit', {'id': article.id}) }}" class="text-themecolor">
+												Modifier
+											</a>
+											<form action="{{ path('app_articles_conseils_delete', {'id': article.id}) }}" method="post" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">
+												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+												<a type="submit" class="text-themecolor">
+													Supprimer
+												</a>
+											</form>
+										</td>
+									</tr>
+								{% else %}
+									<tr>
+										<td colspan="5" class="text-center">Aucun article disponible.</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			{# Bouton "Ajouter un Article" en bas à droite #}
+			<style>
+				.btn-custom-green {
+					background-color: #28a745 !important; /* Vert Bootstrap */
+					color: white !important; /* Texte blanc */
+					font-weight: bold;
+				}
+			</style>
+			<div class="d-flex justify-content-end mt-3">
+				<a href="{{ path('app_articles_conseils_new') }}" class="btn btn-custom-green">Ajouter un Article</a>
+			</div>
+			<div class="d-flex justify-content-end mt-3">
+				<a href="{{ path('app_articles_conseils_index') }}" class="btn btn-custom-green">Retour à la liste des articles</a>
+			</div>
+
+		</div>
+	</div>
+{% endblock %}

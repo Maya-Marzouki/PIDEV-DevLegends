@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% block title %}Edit User Profile{% endblock %}
+{% block title %}Modifier Profile{% endblock %}
 {% block body %}
 {{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
 <div class="container">
@@ -8,7 +8,7 @@
             <ol class="breadcrumb">
               <li class="breadcrumb-item"><a>Home</a></li>
               <li class="breadcrumb-item"><a>User Profile</a></li>
-              <li class="breadcrumb-item active" aria-current="page">Edit User Profile</li>
+              <li class="breadcrumb-item active" aria-current="page">Modifier Profile</li>
             </ol>
         </nav>
         <div class="row gutters-sm">
@@ -17,7 +17,7 @@
                     <div class="card-body">
                         <div class="d-flex flex-column align-items-center text-center">
                             {% if user.userPicture %}
-                                <img src="{{ user.userPicture }}" class="rounded-circle" alt="userPicture" width="150">
+                                <img src="{{ asset(user.userPicture) }}" class="rounded-circle" alt="userPicture" width="150">
                             {% else %}
                                 <div class="text-center p-3 text-muted">Pas d'image</div>
                             {% endif %}
@@ -25,8 +25,13 @@
                                 <h4><a href="{{path('userProfile',{'id':user.id})}}">{{user.firstName | upper}} {{user.lastName | upper}}</a></h4>
                                 <h6 class="text-secondary mb-1">{{user.userAge}} Years Old</h6>
                                 <p class="text-secondary mb-1">{{user.userRole | upper}}</p>
-                                <button class="btn btn-danger" {#href="{{path('verifDelete')}}"#}>Delete Account</button>
-                                <button class="btn btn-outline-primary">Logout</button>
+                                {% if user.docSpecialty %}
+                                    <p class="text-secondary ">{{user.docSpecialty}}</p>
+                                {% else %}
+                                    <div class="text-center p-3 text-muted"></div>
+                                {% endif %}
+                                <button class="btn btn-danger" {#href="{{path('verifDelete')}}"#}>Désactiver compte</button>
+                                <button class="btn btn-outline-primary">Déconnexion</button>
                             </div>
                         </div>
                     </div>
@@ -36,21 +41,21 @@
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-sm-3"><h6 class="mb-0">Fisrt Name</h6></div>
+                            <div class="col-sm-3"><h6 class="mb-0">Prénom</h6></div>
                             <div class="col-sm-9 text-secondary">
                             <div class="form-floating">
                                 {{ form_widget(form.firstName, {attr: {'class': 'form-control'}}) }}
-                                {{ form_label(form.firstName) }}
+                                {{ form_label(form.firstName,"Prénom") }}
                                 <div class="text-danger">{{ form_errors(form.firstName) }}</div>
                             </div></div>
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-sm-3"><h6 class="mb-0">Last Name</h6></div>
+                            <div class="col-sm-3"><h6 class="mb-0">Nom</h6></div>
                             <div class="col-sm-9 text-secondary">
                             <div class="form-floating">
                                 {{ form_widget(form.lastName, {attr: {'class': 'form-control'}}) }}
-                                {{ form_label(form.lastName) }}
+                                {{ form_label(form.lastName,"Nom") }}
                                 <div class="text-danger">{{ form_errors(form.lastName) }}</div>
                             </div></div>
                         </div>
@@ -60,18 +65,18 @@
                             <div class="col-sm-9 text-secondary">
                             <div class="form-floating">
                                 {{ form_widget(form.userEmail, {attr: {'class': 'form-control'}}) }}
-                                {{ form_label(form.userEmail) }}
+                                {{ form_label(form.userEmail,"Email") }}
                                 <div class="text-danger">{{ form_errors(form.userEmail) }}</div>
                             </div></div>
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-sm-3"><h6 class="mb-0">Password</h6></div>
+                            <div class="col-sm-3"><h6 class="mb-0">Mot de passe</h6></div>
                             <div class="col-sm-9 text-secondary">
                             <div class="form-floating">
-                                {{ form_widget(form.pswrd, {attr: {'class': 'form-control'}}) }}
-                                {{ form_label(form.pswrd) }}
-                                <div class="text-danger">{{ form_errors(form.pswrd) }}</div>
+                                {{ form_widget(form.password, {attr: {'class': 'form-control'}}) }}
+                                {{ form_label(form.password,"Mot de passe") }}
+                                <div class="text-danger">{{ form_errors(form.password) }}</div>
                             </div></div>
                         </div>
                         <hr>
@@ -80,32 +85,48 @@
                             <div class="col-sm-9 text-secondary">
                             <div class="form-floating">
                                 {{ form_widget(form.userRole, {attr: {'class': 'form-control', 'disabled': 'disabled'}}) }}
-                                {{ form_label(form.userRole) }}
+                                {{ form_label(form.userRole,"Role") }}
                                 <div class="text-danger">{{ form_errors(form.userRole) }}</div>
                             </div></div>
                         </div>
                         <hr>
+                        <div id="med-info" class="col-sm-12 mt-3" style="display: none;">
+    {% if form.docSpecialty is defined %}
+        <div class="row">
+            <div class="col-sm-3"><h6 class="mb-0">Spécialité</h6></div>
+            <div class="col-sm-9 text-secondary">
+                <div class="form-floating">
+                    {{ form_widget(form.docSpecialty, {attr: {'class': 'form-control'}}) }}
+                    {{ form_label(form.docSpecialty, "Spécialité") }}
+                    <div class="text-danger">{{ form_errors(form.docSpecialty) }}</div>
+                </div>
+            </div>
+        </div>
+        <hr>
+    {% endif %}
+</div>
+                        
                         <div class="row">
                             <div class="col-sm-3"><h6 class="mb-0">Age</h6></div>
                             <div class="col-sm-9 text-secondary">
                             <div class="form-floating">
                                 {{ form_widget(form.userAge, {attr: {'class': 'form-control'}}) }}
-                                {{ form_label(form.userAge) }}
+                                {{ form_label(form.userAge,"Age") }}
                                 <div class="text-danger">{{ form_errors(form.userAge) }}</div>
                             </div></div>
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-sm-3"><h6 class="mb-0">Profile Picture</h6></div>
+                            <div class="col-sm-3"><h6 class="mb-0">Photo de profile</h6></div>
                             <div class="col-sm-9 text-secondary">
                             <div class="form-floating">
                                 {{ form_widget(form.userPicture, {attr: {'class': 'form-control'}}) }}
-                                {{ form_label(form.userPicture) }}
+                                {{ form_label(form.userPicture,"Photo de profile") }}
                                 <div class="text-danger">{{ form_errors(form.userPicture) }}</div>
                             </div></div>
                         </div>
                         <div class="row">
-                            <div class="col-sm-12"><a class="text-themecolor" href="{{path('updateUser',{'id':user.id})}}">Edit Profile</a></div>
+                            <div class="col-sm-12"><button class="btn btn-success" type="Submit">Enregistrer</button></div>
                         </div>
                     </div>
                 </div>
@@ -114,4 +135,25 @@
     </div>
 </div>
 {{ form_end(form) }}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let userRoleField = document.getElementById("{{ form.userRole.vars.id }}");
+    let medInfo = document.getElementById("med-info");
+
+    function toggleSpecialtyField() {
+        if (userRoleField.value.toLowerCase() === "medecin") {
+            medInfo.style.display = "block";
+        } else {
+            medInfo.style.display = "none";
+        }
+    }
+
+    // Vérification initiale au chargement de la page
+    toggleSpecialtyField();
+
+    // Ajout de l'événement sur changement du champ userRole
+    userRoleField.addEventListener("change", toggleSpecialtyField);
+});
+</script>
+
 {%endblock%}

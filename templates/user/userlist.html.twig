@@ -1,11 +1,11 @@
 {% extends 'baseAdmin.html.twig' %}
-{% block title %}Users List{% endblock %}
+{% block title %}Liste des utilisateurs{% endblock %}
 {# {% if userList is defined and userList is not empty%} #}
 {% block body %}
 <div class="container-fluid">
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor">Users List</h3>      
+            <h3 class="text-themecolor">Liste des utilisateurs</h3>      
         </div>                
     </div>
 </div>
@@ -14,19 +14,18 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-block">
-			    <h4 class="card-title">Basic Table</h4>
-                    <h6 class="card-subtitle">Add class <code>.table</code></h6>
                         <div class="table-responsive">
                             <table class="table">
                                 <tr>
 									<th>ID</th>
-									<th>FIRST NAME</th>
-									<th>LAST NAME</th>
+									<th>PRENOM</th>
+									<th>NOM</th>
 									<th>EMAIL</th>
-									<th>PASSWORD</th>
+									<th>MOT DE PASSE</th>
 									<th>ROLE</th>
+									<th>SPECIALITE</th>
 									<th>AGE</th>
-									<th>PROFILE PICTURE</th>
+									<th>PHOTO DE PROFILE</th>
 									<th>ACTIONS</th>
 								</tr>
 								{% for user in userList %}
@@ -35,13 +34,22 @@
 								<td>{{user.firstName}}</td>
         						<td>{{user.lastName}}</td>
 								<td>{{user.userEmail}}</td>
-        						<td>{{user.pswrd}}</td>
+        						<td>{{user.password}}</td>
 								<td>{{user.userRole}}</td>
+								<td>{{user.docSpecialty}}</td>
             					<td>{{user.userAge}}</td>
-								<td>{{asset('images/' ~ user.userPicture)}}</td>
 								<td>
-									<a class="text-themecolor" href="{{path('updateAdmin',{'id':user.id})}}">Edit</a>
-									<a class="text-themecolor" href="{{path('deleteUser',{'id':user.id})}}">Delete</a>
+                                    {% if user.userPicture %}
+                                        <img src="{{ user.userPicture }}" alt="Photo de profile" width="100">
+                                    {% else %}
+                                        <span>Pas d'image</span>
+                                    {% endif %}
+                     			</td>
+								<td>
+									<a class="text-themecolor" href="{{path('updateAdmin',{'id':user.id})}}">Modifier</a>
+									<form method="post" action="{{ path('deleteUser', { id: user.id }) }}">
+									<a class="text-themecolor" href="{{ path('deleteUser', {'id': user.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?');">Supprimer</a>
+									</form>
 								</td>
 								</tr>
 								{% endfor %}      

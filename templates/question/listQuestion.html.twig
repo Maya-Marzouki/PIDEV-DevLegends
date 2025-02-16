@@ -1,0 +1,63 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Liste des Questions{% endblock %}
+
+{% block body %}
+<div class="row d-flex justify-content-center mt-4"> {# Centre le tableau horizontalement #}
+    <div class="col-lg-10"> {# Réduit la largeur du tableau pour un meilleur centrage #}
+        <div class="card">
+            <div class="card-block text-center p-4"> {# Centre le texte dans la carte #}
+                <h4 class="card-title">Liste des Questions</h4>
+                <h6 class="card-subtitle mb-3">Gestion des questions</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center"> {# Centre le texte dans le tableau #}
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Question</th>
+                                <th>Type de Réponse</th>
+                                <th>Points</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for question in questions %}
+                                <tr>
+                                    <td>{{ question.id }}</td>
+                                    <td>{{ question.questionText }}</td>
+                                    <td>{{ question.answerType }}</td>
+                                    <td>{{ question.points }}</td>
+                                    <td>
+                                        <a href="{{ path('question_edit', {'id': question.id}) }}" class="text-themecolor">Modifier</a>
+                                        <a href="{{ path('question_delete', { id: question.id }) }}" class="text-themecolor" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?');">Supprimer</a>
+
+                                        {# <form method="post" action="{{ path('question_delete', {'id': question.id}) }}" style="display:inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ question.id) }}">
+                                            <button type="submit" class="btn btn-succes" onclick="return confirm('Supprimer cette question ?');">Supprimer</button>
+                                        </form> #}
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">Aucune question trouvée.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+                {# Bouton "Ajouter une Question" en bas à droite #}
+                <style>
+                    .btn-custom-green {
+                        background-color: #28a745 !important; /* Vert Bootstrap */
+                        color: white !important; /* Texte blanc */
+                        font-weight: bold;
+                    }
+                </style>
+                <div class="d-flex justify-content-end mt-3">
+                    <a href="{{ path('question_new') }}" class="btn btn-custom-green">Ajouter une Question</a>
+                </div>
+    </div>
+</div>
+{% endblock %}

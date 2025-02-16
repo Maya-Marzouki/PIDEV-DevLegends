@@ -1,0 +1,70 @@
+{% extends 'baseAdmin.html.twig' %}
+{# {% if userList is defined and userList is not empty%} #}
+{% block body %}
+
+ <style>
+                            .btn-custom-green{
+                                background-color: #28a745 !important;
+                                color: white !important;
+                                font-weight: bold;
+                            }
+                        </style>
+ <a href="{{ path('insertCentre') }}" class="btn btn-custom-green">Ajouter Centre</a>
+<div class="row">
+    <!-- column -->
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-block">
+			    <h4 class="card-title">Basic Table</h4>
+                    <h6 class="card-subtitle">Add class <code>.table</code></h6>
+                        <div class="table-responsive">
+                            <table class="table">
+                               <tr>
+		<th>Nom</th>
+        <th>Adresse</th>
+        <th>Téléphone</th>
+        <th>Email</th>
+        <th>Spécialité</th>
+        <th>Capacité</th>
+        <th>Photo</th>
+        <th>Actions</th>
+	</tr>
+	{% for centre in centres %}
+		<tr>
+			<td>{{ centre.nomCentre }}</td>
+                    <td>{{ centre.adresseCentre }}</td>
+                    <td>{{ centre.telCentre }}</td>
+                    <td>{{ centre.emailCentre }}</td>
+                    <td>{{ centre.specialiteCentre }}</td>
+                    <td>{{ centre.capaciteCentre }}</td>
+                    <td>
+                                        {% if centre.photoCentre %}
+                                            <img src="{{ centre.photoCentre }}" alt="Photo du centre" width="100">
+                                        {% else %}
+                                            <span>Pas d'image</span>
+                                        {% endif %}
+                     </td>
+                    <td>
+                        <a class="text-themecolor" href="{{ path('editCentre', {'id': centre.id}) }}" >Modifier</a>
+                        <form method="post" action="{{ path('deleteCentre', { id: centre.id }) }}">
+					<a class="text-themecolor" href="{{ path('deleteCentre', {'id': centre.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce Centre ?');">
+						Supprimer
+					</a>
+					</form>
+
+          </td>
+		</tr>
+		{% endfor %}      
+        </table>
+             </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
+

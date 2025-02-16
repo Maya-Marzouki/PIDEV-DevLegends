@@ -1,0 +1,77 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %} Ajouter une Question {% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="bg-white border rounded p-4 p-sm-5 shadow-sm">
+                <!-- Titre de la page -->
+                <div class="text-center mx-auto mb-4" style="max-width: 500px;">
+                    <p class="fs-5 fw-bold text-primary">Nouvelle Question</p>
+                    <h1 class="display-5">Ajouter une Question</h1>
+                </div>
+
+                <!-- Affichage des erreurs globales -->
+                {# {% if form.vars.errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        <strong>Des erreurs sont survenues :</strong>
+                        <ul>
+                            {% for error in form.errors %}
+                                <li>{{ error.message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %} #}
+
+                <!-- Début du formulaire -->
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                <div class="row g-3">
+                    
+<div class="col-12">
+    <div class="form-floating">
+        {{ form_label(form.questionText, 'Question') }}
+        {{ form_widget(form.questionText, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la question ici'}}) }}
+    </div>
+    <div class="text-danger small mt-1">{{ form_errors(form.questionText) }}</div>
+</div>
+
+
+                    <!-- Champ Type de Réponse -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            {{ form_label(form.answerType, 'Type de Réponse') }}
+                            {{ form_widget(form.answerType, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="text-danger small mt-1">{{ form_errors(form.answerType) }}</div>
+                    </div>
+
+                    <!-- Champ Points -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            {{ form_label(form.points, 'Points') }}
+                            {{ form_widget(form.points, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la valeur des points'}}) }}
+                        </div>
+                        <div class="text-danger small mt-1">{{ form_errors(form.points) }}</div>
+                    </div>
+
+                    <!-- Bouton Ajouter -->
+                    <div class="col-12 text-center mt-3">
+                        <button class="btn btn-custom-green py-3 px-4" type="submit">Enregistrer</button>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+                {# Bouton "Enregistrer" en bas à droite #}
+                <style>
+                    .btn-custom-green {
+                        background-color: #28a745 !important; /* Vert Bootstrap */
+                        color: white !important; /* Texte blanc */
+                        font-weight: bold;
+                    }
+                </style>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+    <a href="{{ path('insertProduit') }}" class="btn btn-success">Ajouter un Produit</a>
+    <div class="row">
+        <!-- column -->
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-block">
+                    <h4 class="card-title">Liste des Produits</h4>
+                    <h6 class="card-subtitle">Gérer les produits</h6>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nom Produit</th>
+                                    <th>Quantité</th>
+                                    <th>Prix</th>
+                                    <th>Statut</th>
+                                    <th>Catégorie</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for produit in produits %}
+                                    <tr>
+                                        <td>{{ produit.nomProduit }}</td>
+                                        <td>{{ produit.qteProduit }}</td>
+                                        <td>{{ produit.prixProduit }}</td>
+                                        <td>
+                                            {% if produit.statutProduit %}
+                                                <span class="badge bg-success">Disponible</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Indisponible</span>
+                                            {% endif %}
+                                        <td>{{ produit.categorieProduit.nomCategorie ?? 'Aucune catégorie' }}</td> 
+                                        <td>
+                                            <a href="{{ path('editProduit', {'id': produit.id}) }}" class="text-themecolor">Modifier</a>
+                                            <!-- Formulaire de suppression -->
+                                            <form method="POST" action="{{ path('deleteProduit', { id: produit.id }) }}" onsubmit="return confirm('Êtes-vous sûr ?')" style="display: inline-block">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ produit.id) }}">
+                                                <a type="submit" class="text-themecolor">Supprimer</a>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">Aucun produit trouvé.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

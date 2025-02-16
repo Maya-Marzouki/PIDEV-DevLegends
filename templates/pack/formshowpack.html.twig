@@ -1,0 +1,59 @@
+{% extends 'baseAdmin.html.twig' %}
+{# {% if userList is defined and userList is not empty%} #}
+{% block body %}
+ 
+       <style>
+          .btn-custom-green{
+           background-color: #28a745 !important;
+           color: white !important;
+           font-weight: bold;
+          }
+        </style>
+ <a href="{{ path('insertPack') }}" class="btn btn-custom-green">Ajouter Pack</a>
+<div class="row">
+    <!-- column -->
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-block">
+			    <h4 class="card-title">Basic Table</h4>
+                    <h6 class="card-subtitle">Add class <code>.table</code></h6>
+                        <div class="table-responsive">
+                            <table class="table">
+    <tr>
+		<th>Nom</th>
+        <th>Description</th>
+        <th>Prix</th>
+        <th>Duree</th>
+        <th>Photo</th>
+	</tr>
+	{% for pack in packs %}
+		<tr>
+			<td>{{ pack.nomPack }}</td>
+                    <td>{{ pack.descriptPack|nl2br }}</td>
+                    <td>{{ pack.prixPack }}</td>
+                    <td>{{ pack.dureePack }}</td>  
+                     <td>
+                        {% if pack.photoPack %}
+                        <img src="{{ pack.photoPack }}" alt="Photo du pack" width="100">
+                        {% else %}
+                        <span>Pas d'image</span>
+                        {% endif %}
+                     </td>      
+                    <td>
+                        <a class="text-themecolor" href="{{ path('editPack', {'id': pack.id}) }}" >Modifier</a>
+                        <form method="post" action="{{ path('deletePack', { id: pack.id }) }}">
+					<a class="text-themecolor" href="{{ path('deletePack', {'id': pack.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce pack ?');">
+						Supprimer
+					</a>
+					</form>
+
+                    </td>
+		            </tr>
+				{% endfor %}      
+        	</table>
+        	</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste des Produits {% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Nos Produits</h1>
+
+    <div class="row">
+        {% for produit in produits %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
+                    <div class="card-body d-flex flex-column flex-grow-1 text-center">
+                        <h5 class="card-title text-success">{{ produit.nomProduit }}</h5>
+                        <div class="mt-auto">
+                            <p class="card-text"><strong>Quantité:</strong> {{ produit.qteProduit }}</p>
+                            <p class="card-text"><strong>Prix:</strong> {{ produit.prixProduit }} €</p>
+                            <p class="card-text"><strong>Statut:</strong> 
+                                <span class="badge bg-{% if produit.statutProduit == 'indisponible' %}danger{% else %}success{% endif %}">
+                                    {{ produit.statutProduit|capitalize }}
+                                </span>
+                            </p>
+                            <p class="card-text"><strong>Catégorie:</strong> {{ produit.categorieProduit.nomCategorie }}</p>
+                        </div>
+                        {% if produit.statutProduit != 'indisponible' %}
+                            <form action="{{ path('panier') }}" method="POST">
+                            <input type="hidden" name="idProduit" value="{{ produit.id }}">
+                            <input type="hidden" name="nomProduit" value="{{ produit.nomProduit }}">
+                            <input type="hidden" name="prixProduit" value="{{ produit.prixProduit}}">
+                            <input type="number" name="quantiteProduit" value="1" min="1">
+                            <button type="submit">Ajouter au panier</button>
+                            </form>
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>Aucun produit trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

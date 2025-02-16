@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier la Réponse{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <p class="fs-5 fw-bold text-primary">Modifier Réponse</p>
+            <h1 class="display-5 mb-5">Modifier la Réponse</h1>
+        </div>
+
+        {# Affichage des messages Flash
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success text-center">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('danger') %}
+            <div class="alert alert-danger text-center">{{ message }}</div>
+        {% endfor %} #}
+        
+        <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+            {{ form_start(form, {'attr': {'class': 'row g-3','novalidate': 'novalidate'}}) }}
+
+            {# Champ Texte de la réponse #}
+            <div class="col-12">
+                <div class="form-floating">
+                    {{ form_widget(form.answerText, {
+                        'attr': {
+                            'class': 'form-control border-0 ' ~ (form.answerText.vars.errors|length > 0 ? 'is-invalid' : ''),
+                            'placeholder': 'Entrez le texte de la réponse'
+                        }
+                    }) }}
+                    {{ form_label(form.answerText, null, {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.answerText) }}
+                    </div>
+                </div>
+            </div>
+
+            {# Champ Score #}
+            <div class="col-12">
+                <div class="form-floating">
+                    {{ form_widget(form.score, {
+                        'attr': {
+                            'class': 'form-control border-0 ' ~ (form.score.vars.errors|length > 0 ? 'is-invalid' : ''),
+                            'placeholder': 'Entrez le score'
+                        }
+                    }) }}
+                    {{ form_label(form.score, null, {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.score) }}
+                    </div>
+                </div>
+            </div>
+
+            {# Champ Question associée #}
+            <div class="col-12">
+                <div class="form-floating">
+                    {{ form_widget(form.question, {
+                        'attr': {
+                            'class': 'form-control border-0 ' ~ (form.question.vars.errors|length > 0 ? 'is-invalid' : '')
+                        }
+                    }) }}
+                    {{ form_label(form.question, null, {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.question) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 text-center mt-3">
+                <button class="btn btn-success py-3 px-4" type="submit">Mettre à jour</button>
+            </div>
+
+            {{ form_end(form) }}
+
+            <div class="col-12 text-center mt-3">
+                <a href="{{ path('reponse_index') }}" class="btn btn-secondary">Retour à la liste</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        .action-btn {
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.375rem 0.75rem; /* Custom padding to make the buttons consistent */
+            border-radius: 0.375rem;
+        }
+
+        .action-btn:hover {
+            text-decoration: underline;
+            color: blue !important;
+            border-color: blue;
+        }
+    </style>
+{% endblock %}

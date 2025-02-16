@@ -1,10 +1,10 @@
 {% extends 'baseAdmin.html.twig' %}
-{% block title %}Admin Profile{% endblock %}
+{% block title %}Profile Admin{% endblock %}
 {% block body %}
 <div class="container-fluid">
     <div class="row page-titles">
         <div class="col-md-5 col-8 align-self-center">
-            <h3 class="text-themecolor">Admin Profile</h3>      
+            <h3 class="text-themecolor">Profile Admin</h3>      
         </div>                
     </div>
 </div>
@@ -16,15 +16,15 @@
                 <center class="m-t-30">
                     <td>
                     {% if user.userPicture %}
-                        <img src="{{ user.userPicture }}" class="img-circle" alt="userPicture" width="150">
+                        <img src="{{ asset(user.userPicture) }}" class="img-circle" alt="userPicture" width="150">
                         {% else %}
                             <span>Pas d'image</span>
                         {% endif %}
                     </td>
                     <h4 class="card-title m-t-10">{{user.firstName | upper}} {{user.lastName | upper}}</h4>
-                        <h6 class="card-subtitle">{{user.userAge}} Years Old</h6>
+                        <h6 class="card-subtitle">{{user.userAge}} Ans</h6>
                         <h6 class="card-subtitle">{{user.userRole | upper}}</h6>
-                        <a class="text-themecolor" href="{{path('updateAdmin',{'id':user.id})}}">Edit Profile</a>
+                        <a class="text-themecolor" href="{{path('updateAdmin',{'id':user.id})}}">Modifier Profile</a>
                 </center>
             </div>
         </div>

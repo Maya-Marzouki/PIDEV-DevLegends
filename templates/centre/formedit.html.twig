@@ -1,0 +1,96 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Mettre à jour le Centre{% endblock %}
+
+{% block body %}
+{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-5">Mettre à jour le Centre</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.nomCentre) }}
+                                {{ form_widget(form.nomCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.nomCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.adresseCentre) }}
+                                {{ form_widget(form.adresseCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.adresseCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.telCentre) }}
+                                {{ form_widget(form.telCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.telCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.emailCentre) }}
+                                {{ form_widget(form.emailCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.emailCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.specialiteCentre) }}
+                                {{ form_widget(form.specialiteCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.specialiteCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.capaciteCentre) }}
+                                {{ form_widget(form.capaciteCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.capaciteCentre) }}
+                            </div>
+                        </div>
+                        
+                        <!-- Affichage de l'image actuelle -->
+                        <div class="col-sm-12 text-center">
+                            {% if centre.photoCentre %}
+                                <p>Image actuelle :</p>
+                                <img src="{{ asset(centre.photoCentre) }}" alt="Photo actuelle du centre" class="img-fluid rounded" style="max-height: 200px;">
+                            {% else %}
+                                <p class="text-muted">Aucune image actuelle</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Champ Upload Image -->
+                        <div class="col-sm-12">
+                            <label class="form-label">Changer l'image du centre</label>
+                            {{ form_widget(form.photoCentre, {attr: {'class': 'form-control'}}) }}
+                            {{ form_errors(form.photoCentre) }}
+                        </div>
+
+                        <!-- Bouton de soumission -->
+                        <style>
+                            .btn-custom-green {
+                                background-color: #28a745 !important;
+                                color: white !important;
+                                font-weight: bold;
+                            }
+                        </style>
+                        <div class="col-12 text-center">
+                            <button class="btn btn-custom-green py-3 px-4" type="submit">Mettre à jour</button>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </div>      
+</div>
+
+{{ form_end(form) }}
+{% endblock %}

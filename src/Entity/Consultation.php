@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\ConsultationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+
 
 #[ORM\Entity(repositoryClass: ConsultationRepository::class)]
 class Consultation
@@ -17,18 +19,31 @@ class Consultation
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotNull(message: "La date de consultation est obligatoire.")]
+    #[Assert\GreaterThanOrEqual("today", message: "La date ne peut pas être antérieure à aujourd'hui.")]
+    #[Assert\Type("\DateTimeInterface")]
     private ?\DateTimeInterface $dateCons = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le champs profession ne peut pas être vide.")]
+    // #[Assert\Url(message: "Veuillez entrer un lien valide.")]
     private ?string $lienVisioCons = null;
 
-    #[ORM\Column]
-    private ?int $scoreMental = null;
+    // #[ORM\Column]
+    // // #[Assert\NotBlank(message: "Le score mental ne peut pas être vide.")]
+    // // #[Assert\Range(
+    // //     min: 0,
+    // //     max: 100,
+    // //     notInRangeMessage: "Le score mental doit être entre {{ min }} et {{ max }}.",
+    // // )]
+    // private ?int $scoreMental = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $etatMental = null;
+    // #[ORM\Column(length: 255)]
+    // #[Assert\NotBlank(message: "L'état mental ne peut pas être vide.")]
+    // private ?string $etatMental = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255)]    
+    #[Assert\NotBlank(message: "Le champs 'Raison(s) de la consultation thérapeutique' ne peut pas être vide.")]
     private ?string $notesCons = null;
 
     /**
@@ -36,6 +51,23 @@ class Consultation
      */
     #[ORM\OneToMany(targetEntity: Quiz::class, mappedBy: 'consultationQ')]
     private Collection $quizzes;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom ne peut pas être vide.")]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le prénom ne peut pas être vide.")]
+    private ?string $prenom = null;
+
+    #[ORM\Column]
+    #[Assert\NotBlank(message: "L'âge ne peut pas être vide.")]
+    #[Assert\Range(
+        min: 1,
+        max: 120,
+        notInRangeMessage: "L'âge doit être entre {{ min }} et {{ max }}."
+    )]
+    private ?int $age = null;
 
     public function __construct()
     {
@@ -52,7 +84,7 @@ class Consultation
         return $this->dateCons;
     }
 
-    public function setDateCons(\DateTimeInterface $dateCons): static
+    public function setDateCons(?\DateTimeInterface $dateCons): static
     {
         $this->dateCons = $dateCons;
 
@@ -64,43 +96,43 @@ class Consultation
         return $this->lienVisioCons;
     }
 
-    public function setLienVisioCons(string $lienVisioCons): static
+    public function setLienVisioCons(?string $lienVisioCons): static
     {
         $this->lienVisioCons = $lienVisioCons;
 
         return $this;
     }
 
-    public function getScoreMental(): ?int
-    {
-        return $this->scoreMental;
-    }
+    // public function getScoreMental(): ?int
+    // {
+    //     return $this->scoreMental;
+    // }
 
-    public function setScoreMental(int $scoreMental): static
-    {
-        $this->scoreMental = $scoreMental;
+    // public function setScoreMental(?int $scoreMental): static
+    // {
+    //     $this->scoreMental = $scoreMental;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function getEtatMental(): ?string
-    {
-        return $this->etatMental;
-    }
+    // public function getEtatMental(): ?string
+    // {
+    //     return $this->etatMental;
+    // }
 
-    public function setEtatMental(string $etatMental): static
-    {
-        $this->etatMental = $etatMental;
+    // public function setEtatMental(?string $etatMental): static
+    // {
+    //     $this->etatMental = $etatMental;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     public function getNotesCons(): ?string
     {
         return $this->notesCons;
     }
 
-    public function setNotesCons(string $notesCons): static
+    public function setNotesCons(?string $notesCons): static
     {
         $this->notesCons = $notesCons;
 
@@ -133,6 +165,42 @@ class Consultation
                 $quiz->setConsultationQ(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(?string $prenom): static
+    {
+        $this->prenom = $prenom;
+
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(?int $age): static
+    {
+        $this->age = $age;
 
         return $this;
     }

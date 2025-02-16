@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CentreRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,26 +16,74 @@ class Centre
     #[ORM\Column]
     private ?int $id = null;
 
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message:"Le nom est requis")]
+    #[Assert\Length(
+        min: 2,
+        max: 20,
+        minMessage: 'Le nom du centre doit avoir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom du centre doit avoir au plus {{ limit }} caractères',
+    )]
+    #[Assert\Regex(
+        pattern: '/\d/',
+        match: false,
+        message: 'Le nom du centre ne peut pas contenir des chiffres',
+    )]
     private ?string $nomCentre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message:"L'adresse du centre est requise")]
+    #[Assert\Length(
+        min: 2,
+        max: 20,
+        minMessage: "L'adresse du centre doit avoir au moins {{ limit }} caractères",
+        maxMessage: "L'adresse du centre doit avoir au plus {{ limit }} caractères",
+    )]
     private ?string $adresseCentre = null;
 
-    #[ORM\Column]
-    private ?int $telCentre = null;
+
+    #[ORM\Column(length: 12)] // Longueur maximale de 12 caractères (+21612345678)
+    #[Assert\NotBlank(message: "Le numéro de téléphone est requis.")]
+    // #[Assert\Regex(
+    //     pattern: '/^\+216\d{8}$/',
+    //     message: 'Le numéro de téléphone doit commencer par +216 et être suivi de 8 chiffres.'
+    // )]
+    private ?string $telCentre = null;
+
+
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message:"L'email est requis")]
+    #[Assert\Email(message:"L'email {{ value }} n'est pas valide")]
     private ?string $emailCentre = null;
 
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message:"La spécialité du centre est requise")]
+    #[Assert\Length(
+        min: 2,
+        max: 20,
+        minMessage: "La spécialité du centre doit avoir au moins {{ limit }} caractères",
+        maxMessage: "La spécialité du centre doit avoir au plus {{ limit }} caractères",
+    )]
+    #[Assert\Regex(
+        pattern: '/\d/',
+        match: false,
+        message: 'La spécialité du centre ne doit pas contenir des chiffres',
+    )]
     private ?string $specialiteCentre = null;
 
+
     #[ORM\Column]
+    #[Assert\NotBlank(message:"La capacité du centre est requise")]
+    #[Assert\GreaterThan(0,message:"La capacité du centre doit être supérieure à 0")]
     private ?int $capaciteCentre = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
+   // #[Assert\Url(message: "The provided URL is not valid.")]
     private ?string $photoCentre = null;
+
 
     /**
      * @var Collection<int, Contrat>
@@ -57,7 +106,7 @@ class Centre
         return $this->nomCentre;
     }
 
-    public function setNomCentre(string $nomCentre): static
+    public function setNomCentre(?string $nomCentre): static
     {
         $this->nomCentre = $nomCentre;
 
@@ -69,7 +118,7 @@ class Centre
         return $this->adresseCentre;
     }
 
-    public function setAdresseCentre(string $adresseCentre): static
+    public function setAdresseCentre(?string $adresseCentre): static
     {
         $this->adresseCentre = $adresseCentre;
 
@@ -81,7 +130,7 @@ class Centre
         return $this->telCentre;
     }
 
-    public function setTelCentre(int $telCentre): static
+    public function setTelCentre(?int $telCentre): static
     {
         $this->telCentre = $telCentre;
 
@@ -93,7 +142,7 @@ class Centre
         return $this->emailCentre;
     }
 
-    public function setEmailCentre(string $emailCentre): static
+    public function setEmailCentre(?string $emailCentre): static
     {
         $this->emailCentre = $emailCentre;
 
@@ -105,7 +154,7 @@ class Centre
         return $this->specialiteCentre;
     }
 
-    public function setSpecialiteCentre(string $specialiteCentre): static
+    public function setSpecialiteCentre(?string $specialiteCentre): static
     {
         $this->specialiteCentre = $specialiteCentre;
 
@@ -117,7 +166,7 @@ class Centre
         return $this->capaciteCentre;
     }
 
-    public function setCapaciteCentre(int $capaciteCentre): static
+    public function setCapaciteCentre(?int $capaciteCentre): static
     {
         $this->capaciteCentre = $capaciteCentre;
 
@@ -129,16 +178,16 @@ class Centre
         return $this->photoCentre;
     }
 
-    public function setPhotoCentre(string $photoCentre): static
+    public function setPhotoCentre(?string $photoCentre): static
     {
         $this->photoCentre = $photoCentre;
 
         return $this;
     }
 
-    /**
+    /*
      * @return Collection<int, Contrat>
-     */
+     
     public function getContrats(): Collection
     {
         return $this->contrats;
@@ -164,5 +213,5 @@ class Centre
         }
 
         return $this;
-    }
+    }*/
 }

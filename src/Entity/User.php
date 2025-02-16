@@ -1,9 +1,13 @@
 <?php
 
 namespace App\Entity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -13,13 +17,13 @@ class User
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: "First Name is required")]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "Le prénom est un champs obligatoire")]
     #[Assert\Length(
         min: 2,
-        max: 20,
-        minMessage: 'Your first name must be at least {{ limit }} characters long',
-        maxMessage: 'Your first name cannot be longer than {{ limit }} characters',
+        max: 50,
+        minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le prénom doit contenir au plus {{ limit }} caractères',
     )]
     #[Assert\Regex(
         pattern: '/\d/',
@@ -28,42 +32,73 @@ class User
     )]
     private ?string $firstName = null;
 
-    #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message:"Last Name is required")]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message:"Le nom est un champs obligatoire")]
     #[Assert\Length(
         min: 2,
-        max: 20,
-        minMessage: 'Your last name must be at least {{ limit }} characters long',
-        maxMessage: 'Your last name cannot be longer than {{ limit }} characters',
+        max: 50,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom doit contenir au plus {{ limit }} caractères',
     )]
     #[Assert\Regex(
         pattern: '/\d/',
         match: false,
-        message: 'Your last name cannot contain a number',
+        message: 'Le nom ne peut pas contenir des caractères numériques',
     )]
     private ?string $lastName = null;
 
-    #[ORM\Column(length: 30)]
-    #[Assert\NotBlank(message:"Email is required")]
-    #[Assert\Email(message:"The email {{ value }} is not valid")]
+    #[ORM\Column(length: 60)]
+    #[Assert\NotBlank(message:"L'adresse email est un champs obligatoire")]
+    #[Assert\Email(message:"L'adresse email {{ value }} n'est pas valide")]
+    #[Assert\Length(
+        max: 60,
+        maxMessage: "L'adresse email doit contenir au moins {{ limit }} caractères",
+    )]
     private ?string $userEmail = null;
 
-    #[ORM\Column(length: 10)]
-    #[Assert\NotBlank(message:"Password is required")]
-    private ?string $pswrd = null;
+    #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message:"Le mot de passe est un champs obligatoire")]
+    #[Assert\Length(
+        min: 8,
+        max: 20,
+        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le mot de passe doit contenir au plus {{ limit }} caractères',
+    )]
+    #[Assert\Regex(
+        pattern: '/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).{8,20}$/',
+        message: 'Le mot de passe est trop faible. Il doit contenir au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.'
+    )]
+    private ?string $password = null;
 
-    #[ORM\Column(length: 20, options: ["Patient","Medecin"])]
-    #[Assert\NotBlank(message:"Role is required")]
+    #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message:"Le role est un champs obligatoire")]
     private ?string $userRole = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message:"Age is required")]
-    #[Assert\GreaterThan(2,message:"The age must be greater than 2")]
-    #[Assert\GreaterThan(0,message:"The age must be positive")]
+    #[Assert\NotBlank(message:"L'age est un champs obligatoire")]
+    #[Assert\Range(
+        min: 3,
+        max: 100,
+        notInRangeMessage: 'Vous devez avoir entre {{ min }} ans et {{ max }} ans pour vous inscrire',
+    )]
     private ?int $userAge = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $userPicture = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $docSpecialty = null;
+
+    /**
+     * @var Collection<int, Contrat>
+     */
+    #[ORM\OneToMany(targetEntity: Contrat::class, mappedBy: 'user')]
+    private Collection $contrats;
+
+    public function __construct()
+    {
+        $this->contrats = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -106,14 +141,14 @@ class User
         return $this;
     }
 
-    public function getPswrd(): ?string
+    public function getPassword(): ?string
     {
-        return $this->pswrd;
+        return $this->password;
     }
 
-    public function setPswrd(?string $pswrd): static
+    public function setPassword(?string $password): static
     {
-        $this->pswrd = $pswrd;
+        $this->password = $password;
 
         return $this;
     }
@@ -150,6 +185,58 @@ class User
     public function setUserPicture(?string $userPicture): static
     {
         $this->userPicture = $userPicture;
+
+        return $this;
+    }
+
+    public function getDocSpecialty(): ?string
+    {
+        return $this->docSpecialty;
+    }
+
+    public function setDocSpecialty(?string $docSpecialty): static
+    {
+        $this->docSpecialty = $docSpecialty;
+
+        return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return $this->userEmail;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary sensitive data, clear it here.
+    }
+    
+    /**
+     * @return Collection<int, Contrat>
+     */
+    public function getContrats(): Collection
+    {
+        return $this->contrats;
+    }
+
+    public function addContrat(Contrat $contrat): static
+    {
+        if (!$this->contrats->contains($contrat)) {
+            $this->contrats->add($contrat);
+            $contrat->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContrat(Contrat $contrat): static
+    {
+        if ($this->contrats->removeElement($contrat)) {
+            // set the owning side to null (unless already changed)
+            if ($contrat->getUser() === $this) {
+                $contrat->setUser(null);
+            }
+        }
 
         return $this;
     }

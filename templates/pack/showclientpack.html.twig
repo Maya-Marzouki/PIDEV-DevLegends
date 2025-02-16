@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste des Packs {% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Nos Packs</h1>
+
+    <div class="row">
+        {% for pack in packs %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
+                    
+                    {% if pack.photoPack %}
+                        <img src="{{ asset(pack.photoPack) }}" class="card-img-top" alt="Photo du pack {{ pack.nomPack }}">
+                    {% else %}
+                        <div class="text-center p-3 text-muted">Pas d'image</div>
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column flex-grow-1 text-center">
+                        <h5 class="card-title text-success">{{ pack.nomPack }}</h5>
+                        <p class="card-text"><strong>Description:</strong> {{ pack.descriptPack|nl2br }}</p>
+                        <p class="card-text"><strong>Prix:</strong> {{ pack.prixPack }} €</p>
+                        <p class="card-text"><strong>Durée:</strong> {{ pack.dureePack }} jours</p>
+                        
+                        <!-- Bouton Acheter -->
+                        <a href="{{ path('achatPack', { 'id': pack.id }) }}" class="btn btn-success mt-auto">Acheter</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>Aucun pack trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

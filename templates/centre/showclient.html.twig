@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste des Centres {% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Nos Centres</h1>
+
+    <div class="row">
+        {% for centre in centres %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
+                    {% if centre.photoCentre %}
+                        <img src="{{ centre.photoCentre }}" class="card-img-top" alt="Photo du centre">
+                    {% else %}
+                        <div class="text-center p-3 text-muted">Pas d'image</div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column flex-grow-1 text-center">
+                        <h5 class="card-title text-success">{{ centre.nomCentre }}</h5>
+                        <p class="card-text"><strong>Adresse:</strong> {{ centre.adresseCentre }}</p>
+                        <p class="card-text"><strong>Téléphone:</strong> {{ centre.telCentre }}</p>
+                        <p class="card-text"><strong>Email:</strong> {{ centre.emailCentre }}</p>
+                        <p class="card-text"><strong>Spécialité:</strong> {{ centre.specialiteCentre }}</p>
+                        <p class="card-text"><strong>Capacité:</strong> {{ centre.capaciteCentre }}</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>Aucun centre trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

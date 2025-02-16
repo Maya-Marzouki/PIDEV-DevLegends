@@ -16,6 +16,24 @@ class ArticlesConseilsRepository extends ServiceEntityRepository
         parent::__construct($registry, ArticlesConseils::class);
     }
 
+     // Ajout de la méthode save()
+     public function save(ArticlesConseils $article, bool $flush = true): void
+     {
+         $this->getEntityManager()->persist($article);
+         if ($flush) {
+             $this->getEntityManager()->flush();
+         }
+     }
+ 
+     // Ajout de la méthode remove()
+     public function remove(ArticlesConseils $article, bool $flush = true): void
+     {
+         $this->getEntityManager()->remove($article);
+         if ($flush) {
+             $this->getEntityManager()->flush();
+         }
+     }
+
     //    /**
     //     * @return ArticlesConseils[] Returns an array of ArticlesConseils objects
     //     */

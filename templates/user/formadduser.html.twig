@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
-{% block title %} Sign Up {% endblock %}
+{% block title %} S'inscrire {% endblock %}
 {% block body %}     
 {{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
 <div class="container-fluid py-5">
         <div class="container">
             <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px; visibility: visible; animation-delay: 0.1s; animation-name: fadeInUp;">
-                <h1 class="display-5 mb-5">Sign Up</h1>
+                <h1 class="display-5 mb-5"> S'inscrire </h1>
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-7">
@@ -14,7 +14,7 @@
                             <div class="col-sm-6">
                                 <div class="form-floating">
                                     {{form_widget(form.firstName, {attr: {'class': 'form-control'}})}}
-                                    {{form_label(form.firstName)}}
+                                    {{form_label(form.firstName,"Prénom")}}
                                     <div class="text-danger">
                                     {{form_errors(form.firstName)}}
                                     </div>
@@ -23,7 +23,7 @@
                             <div class="col-sm-6">
                                 <div class="form-floating">
                                     {{form_widget(form.lastName, {attr: {'class': 'form-control'}})}}
-                                    {{form_label(form.lastName)}}
+                                    {{form_label(form.lastName,"Nom")}}
                                     <div class="text-danger">
                                     {{form_errors(form.lastName)}}
                                     </div>
@@ -32,7 +32,7 @@
                             <div class="col-sm-6">
                                 <div class="form-floating">
                                     {{form_widget(form.userEmail, {attr: {'class': 'form-control'}})}}
-                                    {{form_label(form.userEmail)}}
+                                    {{form_label(form.userEmail,"Email")}}
                                     <div class="text-danger">
                                     {{form_errors(form.userEmail)}}
                                     </div>
@@ -40,26 +40,37 @@
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-floating">
-                                    {{form_widget(form.pswrd, {attr: {'class': 'form-control', 'type': 'password'}})}}
-                                    {{form_label(form.pswrd,"Password")}}
+                                    {{form_widget(form.password, {attr: {'class': 'form-control', 'type': 'password'}})}}
+                                    {{form_label(form.password,"Mot de passe")}}
                                     <div class="text-danger">
-                                    {{form_errors(form.pswrd)}}
+                                    {{form_errors(form.password)}}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-6">
                                 <div class="form-floating">
                                     {{form_widget(form.userRole, {attr: {'class': 'form-control'}})}}
-                                    {{form_label(form.userRole)}}
+                                    {{form_label(form.userRole,"Rôle")}}
                                     <div class="text-danger">
                                     {{form_errors(form.userRole)}}
                                     </div>
                                 </div>
                             </div>
+                            <div id="med-info" class="col-sm-12 mt-3" style="display: none;">
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{form_widget(form.docSpecialty, {attr: {'class': 'form-control'}})}}
+                                    {{form_label(form.docSpecialty,"Spécialité")}}
+                                    <div class="text-danger">
+                                    {{form_errors(form.docSpecialty)}}
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
                             <div class="col-sm-6">
                                 <div class="form-floating">
                                     {{form_widget(form.userAge, {attr: {'class': 'form-control'}})}}
-                                    {{form_label(form.userAge)}}
+                                    {{form_label(form.userAge,"Âge")}}
                                     <div class="text-danger">
                                     {{form_errors(form.userAge)}}
                                     </div>
@@ -68,15 +79,15 @@
                             <div class="col-sm-6">
                                 <div class="form-floating">
                                     {{form_widget(form.userPicture, {attr: {'class': 'form-control'}})}}
-                                    {{form_label(form.userPicture)}}
+                                    {{form_label(form.userPicture,"Photo de profile")}}
                                     <div class="text-danger">
                                     {{form_errors(form.userPicture)}}
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 text-center">
-                                <button class="btn btn-primary py-3 px-4" type="submit">Submit Now</button>
-                                <a class="text-themecolor" href="">Already have an account? Login here.</a>
+                                <button class="btn btn-primary py-3 px-4" type="submit">Enregistrer</button>
+                                <p class="mb-0 mt-4 text-center">Vous avez déjà un compte?<a class="text-themecolor" href="">Connectez-vous ici.</a>
                             </div>
                         </div>
                     </div>
@@ -85,4 +96,14 @@
         </div>      
 </div>
 {{ form_end(form) }}
+<script>
+document.getElementById("{{ form.userRole.vars.id }}").addEventListener("change", function() {
+    let medInfo = document.getElementById("med-info");
+    if (this.value === "Medecin") {
+        medInfo.style.display = "block";
+    } else {
+        medInfo.style.display = "none";
+    }
+});
+</script>
 {% endblock %}

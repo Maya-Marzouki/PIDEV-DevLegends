@@ -1,0 +1,73 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Ajouter une Commande{% endblock %}
+
+{% block body %}
+{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}
+	) }}
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-5">Ajouter une Commande</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                           <div class="form-floating">
+                                {{ form_label(form.nomClient) }}
+                                {{ form_widget(form.nomClient, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.nomClient) }}
+                            </div>
+                        </div>
+                    
+                        <div class="col-sm-12">
+                             <div class="form-floating">
+                                {{ form_label(form.adresseEmail) }}
+                                {{ form_widget(form.adresseEmail, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.adresseEmail) }}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                             <div class="form-floating">
+                                {{ form_label(form.adresse) }}
+                                {{ form_widget(form.adresse, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.adresse) }}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                             <div class="form-floating">
+                                {{ form_label(form.dateCommande) }}
+                                {{ form_widget(form.dateCommande, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.dateCommande) }}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                             <div class="form-floating">
+                                {{ form_label(form.statutCom) }}
+                                {{ form_widget(form.statutCom, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.statutCom) }}
+                            </div>
+                        </div>
+                           <div class="col-sm-12">
+                           <div class="form-floating">
+                                {{ form_label(form.totalCom) }}
+                                {{ form_widget(form.totalCom, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.totalCom) }}
+                            </div>
+                        </div>
+                        <div class="col-12 text-center">
+                            <button class="btn btn-primary py-3 px-4" type="submit">Enregistrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </div>      
+</div>
+{{ form_end(form) }}
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Liste des Réponses
+{% endblock %}
+
+{% block body %}
+	<div
+		class="row d-flex justify-content-center mt-4">
+		{# Centre le tableau horizontalement #}
+		<div
+			class="col-lg-10">
+			{# Réduit la largeur du tableau pour un meilleur centrage #}
+			<div class="card">
+				<div
+					class="card-block text-center p-4">
+					{# Centre le texte dans la carte #}
+					<h4 class="card-title">Liste des Réponses</h4>
+					<h6 class="card-subtitle mb-3">Gestion des réponses</h6>
+					<div class="table-responsive">
+						<table
+							class="table table-bordered text-center">
+							{# Centre le texte dans le tableau #}
+							<thead class="table-dark">
+								<tr>
+									<th>Réponse</th>
+									<th>Score</th>
+									<th>Question</th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for reponse in reponses %}
+									<tr>
+										<td>{{ reponse.answerText }}</td>
+										<td>{{ reponse.score }}</td>
+										<td>{{ reponse.question.questionText }}</td>
+										<td>
+											{# <a href="{{ path('reponse_edit', {'id': reponse.id}) }}" class="btn btn-secondary btn-sm">
+											                                            <i class="fa fa-edit"></i> Modifier
+											                                        </a> #}
+											<form action="{{ path('reponse_delete', {'id': reponse.id}) }}" method="post" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?');">
+												<input type="hidden" name="_token" value="{{ csrf_token('delete_reponse') }}">
+												<a type="submit" class="text-themecolor">
+													Supprimer
+												</a>
+											</form>
+										</td>
+									</tr>
+								{% else %}
+									<tr>
+										<td colspan="4" class="text-center">Aucune réponse disponible.</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			{# Bouton "Ajouter une Réponse" en bas à droite #}
+			<style>
+				.btn-custom-green {
+					background-color: #28a745 !important; /* Vert Bootstrap */
+					color: white !important; /* Texte blanc */
+					font-weight: bold;
+				}
+			</style>
+			{# <div class="d-flex justify-content-end mt-3">
+			                    <a href="{{ path('reponse_new') }}" class="btn btn-custom-green">Ajouter une Réponse</a>
+			                </div> #}
+		</div>
+	</div>
+{% endblock %}
