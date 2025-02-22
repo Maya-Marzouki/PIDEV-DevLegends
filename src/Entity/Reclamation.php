@@ -40,11 +40,12 @@ class Reclamation
     #[Assert\NotBlank(message: "Le contenu est obligatoire")]
     private ?string $contenuRec = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Assert\NotBlank(message: "Donnez une date précise")]
-    #[Assert\GreaterThanOrEqual("2023-01-01", message: "La date doit être postérieure au 1er janvier 2023.")]
-    #[Assert\LessThanOrEqual("today", message: "La date ne peut pas être dans le futur.")]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateRec = null;
+    public function __construct()
+    {
+        $this->dateRec = new \DateTime(); // Définir la date automatiquement
+    }
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Donnez votre email")]
@@ -52,8 +53,16 @@ class Reclamation
     #[Assert\Email(message: "Cet email {{ value }} n'est pas valide")]
     private ?string $emailDes = null;
 
+    #[ORM\Column(type: 'string', length: 50)]
+    private string $statutRec = 'Pas traitée';
+
     #[ORM\OneToOne(mappedBy: 'reclamation', cascade: ['persist', 'remove'])]
     private ?Avis $avis = null;
+
+    public function getStatutRec(): string
+    {
+        return $this->statutRec;
+    }
 
     public function getId(): ?int
     {
@@ -81,6 +90,12 @@ class Reclamation
     {
         $this->contenuRec = $contenuRec;
 
+        return $this;
+    }
+
+    public function setStatutRec(string $statutRec): static
+    {
+        $this->statutRec = $statutRec;
         return $this;
     }
 

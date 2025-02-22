@@ -38,6 +38,7 @@ class AvisController extends AbstractController
     public function new(Request $request, ManagerRegistry $mr): Response
     {
         $avis = new Avis();
+        $avis->setStatutAvis('Pas traitée'); // Initialisation du statu
         $form = $this->createForm(AvisType::class, $avis);
         $form->handleRequest($request);
 
@@ -76,7 +77,7 @@ class AvisController extends AbstractController
             $manager->flush(); // Sauvegarde les modifications
             $this->addFlash('success', 'L\'avis a été modifié avec succès.');
 
-            return $this->redirectToRoute('app_avis_index');
+            return $this->redirectToRoute('avisclient');
         }
 
         return $this->render('avis/formeditavis.html.twig', [
@@ -94,8 +95,23 @@ class AvisController extends AbstractController
         $manager->flush();
         $this->addFlash('success', 'L\'avis a été supprimé avec succès.');
 
-        return $this->redirectToRoute("app_avis_index");
+        return $this->redirectToRoute("avisclient");
     }
 
+    #[Route('/avis/{id}/traiter', name: 'traiterAvis')]
+    public function traiterAvis(Avis $avis, ManagerRegistry $mr): Response
+    {
+        if ($avis->getStatutAvis() === 'Pas traitée') {
+            $avis->setStatutAvis('Traitée');
+            $manager = $mr->getManager();
+            $manager->flush();
+
+            $this->addFlash('success', 'La réclamation a été traitée avec succès.');
+        } else {
+            $this->addFlash('warning', 'Cette réclamation est déjà traitée.');
+        }
+
+        return $this->redirectToRoute('app_avis_index');
+    }
     
 }

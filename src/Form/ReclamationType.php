@@ -14,9 +14,6 @@ class ReclamationType extends AbstractType
         $builder
             ->add('sujetRec')
             ->add('contenuRec')
-            ->add('dateRec', null, [
-                'widget' => 'single_text',
-            ])
             ->add('emailDes')
         ;
     }

@@ -1,20 +1,20 @@
 {% extends 'baseAdmin.html.twig' %}
-{# {% if userList is defined and userList is not empty%} #}
-{% block body %}
 
+{% block body %}
+	{# Affichage des messages flash #}
 	{% for message in app.flashes('success') %}
 		<div class="alert alert-success">
 			{{ message }}
 		</div>
 	{% endfor %}
+
 	<a href="{{ path('insertAvis') }}" class="btn btn-success">Ajouter un Avis</a>
-	<div
-		class="row">
+	<div class="row">
 		<!-- column -->
 		<div class="col-lg-12">
 			<div class="card">
 				<div class="card-block">
-					<h4 class="card-title">Basic Table</h4>
+					<h4 class="card-title">Liste des Avis</h4>
 					<h6 class="card-subtitle">Add class
 						<code>.table</code>
 					</h6>
@@ -25,25 +25,30 @@
 								<th>Contenu</th>
 								<th>Note</th>
 								<th>Date</th>
-								<th>Email Destinataire</th>
+								<th>Email</th>
+								<th>Statut</th>
+								<th>Action</th> 
 							</tr>
 							{% for avis in aviss %}
 								<tr>
 									<td>{{ avis.sujetAvis }}</td>
 									<td>{{ avis.contenuAvis }}</td>
 									<td>{{ avis.noteAvis }}/10</td>
-									<td>{{ avis.dateAvis|date('d-m-Y H:i') }}</td>
+									<td>{{ avis.dateAvis|date('d-m-Y H:i:s') }}</td>
 									<td>{{ avis.emailAvis }}</td>
-
-
-									<td>
-										<a class="text-themecolor" href="{{ path('editAvis', {'id': avis.id}) }}">Modifier</a>
-										<form method="post" action="{{ path('deleteAvis', { id: avis.id }) }}">
-											<a class="text-themecolor" href="{{ path('deleteAvis', {'id': avis.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
-												Supprimer
-											</a>
-										</form>
-
+									<td class="text-center">
+										{% if avis.statutAvis == 'Pas traitée' %}
+											<span class="badge badge-danger">{{ avis.statutAvis }}</span>
+										{% else %}
+											<span class="badge badge-primary">{{ avis.statutAvis }}</span>
+										{% endif %}
+									</td>
+									<td class="text-center">
+										{% if avis.statutAvis == 'Pas traitée' %}
+											<a href="{{ path('traiterAvis', {'id': avis.id}) }}" class="btn btn-primary btn-sm">Traiter</a>
+										{% else %}
+											<span class="btn btn-secondary btn-sm disabled">Déjà traitée</span>
+										{% endif %}
 									</td>
 								</tr>
 							{% endfor %}

@@ -46,17 +46,21 @@ class Avis
     #[Assert\LessThanOrEqual(10, message: "La note ne peut pas dépasser 10.")]
     private ?int $noteAvis = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Assert\LessThanOrEqual("today", message: "La date ne peut pas être dans le futur.")]
-    #[Assert\GreaterThanOrEqual("2023-01-01", message: "La date doit être postérieure au 1er janvier 2023.")]
-    #[Assert\NotBlank(message: "Donnez une date précise")]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $dateAvis = null;
+    public function __construct()
+    {
+        $this->dateAvis = new \DateTime(); // Définir la date automatiquement
+    }
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Donnez votre email")]
     #[Assert\Length(max: 25, maxMessage: "L'email ne doit pas dépasser {{ limit }} caractères.")]
     #[Assert\Email(message: "Cet email {{ value }} n'est pas valide")]
     private ?string $emailAvis = null;
+
+    #[ORM\Column(type: 'string', length: 50)]
+    private string $statutAvis = 'Pas traitée';
 
     #[ORM\OneToOne(inversedBy: 'avis', cascade: ['persist', 'remove'])]
     private ?Reclamation $reclamation = null;
@@ -83,6 +87,11 @@ class Avis
         return $this->contenuAvis;
     }
 
+    public function getStatutAvis(): string
+    {
+        return $this->statutAvis;
+    }
+
     public function setContenuAvis(string $contenuAvis): static
     {
         $this->contenuAvis = $contenuAvis;
@@ -107,13 +116,6 @@ class Avis
         return $this->dateAvis;
     }
 
-    public function setDateAvis(?\DateTimeInterface $dateAvis): static
-    {
-        $this->dateAvis = $dateAvis;
-        return $this;
-    }
-
-
     public function getEmailAvis(): ?string
     {
         return $this->emailAvis;
@@ -123,6 +125,12 @@ class Avis
     {
         $this->emailAvis = $emailAvis;
 
+        return $this;
+    }
+
+    public function setStatutAvis(string $statutAvis): static
+    {
+        $this->statutAvis = $statutAvis;
         return $this;
     }
 
@@ -137,6 +145,5 @@ class Avis
 
         return $this;
     }
-
 
 }

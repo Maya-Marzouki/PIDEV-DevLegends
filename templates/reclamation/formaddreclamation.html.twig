@@ -38,15 +38,7 @@
 								{{ form_errors(form.contenuRec) }}
 							</div>
 						</div>
-
-						<div class="col-sm-12">
-							<div class="form-floating">
-								{{ form_widget(form.dateRec, { 'attr': {'class': 'form-control', 'placeholder': 'Date de l\'envoi de la réclamation'} }) }}
-									{{ form_label(form.dateRec) }}
-									{{ form_errors(form.dateRec) }}
-								</div>
-							</div>
-
+						
 							<div class="col-sm-12">
 								<div class="form-floating">
 									{{ form_widget(form.emailDes, { 'attr': {'class': 'form-control', 'placeholder': 'Email du Destinataire'} }) }}
@@ -58,7 +50,6 @@
 							<div class="col-12 text-center">
 								<button class="btn btn-primary py-3 px-4" type="submit">Enregistrer</button>
 							</div>
-						</div>
 					</div>
 				</div>
 			</div>

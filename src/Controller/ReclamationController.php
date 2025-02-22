@@ -38,6 +38,7 @@ class ReclamationController extends AbstractController
     public function new(Request $request, ManagerRegistry $mr): Response
     {
         $reclamation = new Reclamation();
+        $reclamation->setStatutRec('Pas traitée'); // Initialisation du statu
         $form = $this->createForm(ReclamationType::class, $reclamation);
         $form->handleRequest($request);
 
@@ -76,7 +77,7 @@ class ReclamationController extends AbstractController
             $manager->flush(); // Sauvegarde les modifications
             $this->addFlash('success', 'La réclamation a été modifiée avec succès.');
 
-            return $this->redirectToRoute('app_reclamation_index');
+            return $this->redirectToRoute('reclamationclient');
         }
 
         return $this->render('reclamation/formeditreclamation.html.twig', [
@@ -94,6 +95,22 @@ class ReclamationController extends AbstractController
         $manager->flush();
         $this->addFlash('success', 'La réclamation a été supprimée avec succès.');
 
-        return $this->redirectToRoute("app_reclamation_index");
+        return $this->redirectToRoute("reclamationclient");
+    }
+
+    #[Route('/reclamation/{id}/traiter', name: 'traiterReclamation')]
+    public function traiterReclamation(Reclamation $reclamation, ManagerRegistry $mr): Response
+    {
+        if ($reclamation->getStatutRec() === 'Pas traitée') {
+            $reclamation->setStatutRec('Traitée');
+            $manager = $mr->getManager();
+            $manager->flush();
+
+            $this->addFlash('success', 'La réclamation a été traitée avec succès.');
+        } else {
+            $this->addFlash('warning', 'Cette réclamation est déjà traitée.');
+        }
+
+        return $this->redirectToRoute('app_reclamation_index');
     }
 }

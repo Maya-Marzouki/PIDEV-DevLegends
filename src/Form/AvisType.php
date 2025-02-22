@@ -4,7 +4,6 @@ namespace App\Form;
 
 use App\Entity\Avis;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,9 +15,6 @@ class AvisType extends AbstractType
             ->add('sujetAvis')
             ->add('contenuAvis')
             ->add('noteAvis')
-            ->add('dateAvis', null, [
-                'widget' => 'single_text',
-            ])
             ->add('emailAvis')
         ;
     }
