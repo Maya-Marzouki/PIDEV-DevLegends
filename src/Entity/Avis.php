@@ -65,6 +65,9 @@ class Avis
     #[ORM\OneToOne(inversedBy: 'avis', cascade: ['persist', 'remove'])]
     private ?Reclamation $reclamation = null;
 
+    #[ORM\ManyToOne(inversedBy: 'avis')]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -142,6 +145,18 @@ class Avis
     public function setReclamation(?Reclamation $reclamation): static
     {
         $this->reclamation = $reclamation;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

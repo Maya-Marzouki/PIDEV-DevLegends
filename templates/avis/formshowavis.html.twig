@@ -26,6 +26,8 @@
 								<th>Note</th>
 								<th>Date</th>
 								<th>Email</th>
+								<th>Client ID</th>
+								{# Ajout de la colonne Client ID #}
 								<th>Statut</th>
 								<th>Action</th> 
 							</tr>
@@ -36,6 +38,8 @@
 									<td>{{ avis.noteAvis }}/10</td>
 									<td>{{ avis.dateAvis|date('d-m-Y H:i:s') }}</td>
 									<td>{{ avis.emailAvis }}</td>
+									<td>{{ avis.user ? avis.user.id : 'N/A' }}</td>
+									{# Affichage du client ID ou "N/A" si null #}
 									<td class="text-center">
 										{% if avis.statutAvis == 'Pas traitée' %}
 											<span class="badge badge-danger">{{ avis.statutAvis }}</span>

@@ -59,6 +59,9 @@ class Reclamation
     #[ORM\OneToOne(mappedBy: 'reclamation', cascade: ['persist', 'remove'])]
     private ?Avis $avis = null;
 
+    #[ORM\ManyToOne(inversedBy: 'reclamations')]
+    private ?User $user = null;
+
     public function getStatutRec(): string
     {
         return $this->statutRec;
@@ -141,6 +144,18 @@ class Reclamation
         }
 
         $this->avis = $avis;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

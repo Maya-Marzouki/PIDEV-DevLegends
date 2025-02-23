@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ReclamationRepository;
+use App\Repository\UserRepository;
 
 class ReclamationController extends AbstractController
 {
@@ -35,17 +36,28 @@ class ReclamationController extends AbstractController
 
 
     #[Route('/addreclamation', name: 'insertReclamation', methods: ['GET', 'POST'])]
-    public function new(Request $request, ManagerRegistry $mr): Response
+    public function new(Request $request, ManagerRegistry $mr, UserRepository $userRepo): Response
     {
         $reclamation = new Reclamation();
-        $reclamation->setStatutRec('Pas traitée'); // Initialisation du statu
+        $reclamation->setStatutRec('Pas traitée'); // Initialisation du statut
+
         $form = $this->createForm(ReclamationType::class, $reclamation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $mr->getManager();
+
+            // Vérifier si l'email correspond à un utilisateur existant
+            $email = $reclamation->getEmailDes();
+            $user = $userRepo->findOneBy(['userEmail' => $email]);
+
+            if ($user) {
+                $reclamation->setUser($user); // Associer l'utilisateur à la réclamation
+            }
+
             $manager->persist($reclamation);
             $manager->flush();
+
             $this->addFlash('success', 'Votre réclamation a été envoyée avec succès.');
 
             return $this->redirectToRoute('reclamationclient');
@@ -56,6 +68,7 @@ class ReclamationController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
 
     #[Route('/reclamation/{id}', name: 'app_reclamation_show', methods: ['GET'])]
     public function show(Reclamation $reclamation): Response

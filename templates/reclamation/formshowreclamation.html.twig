@@ -26,6 +26,8 @@
 								<th>Contenu</th>
 								<th>Date</th>
 								<th>Email Destinataire</th>
+								<th>Client ID</th>
+								{# Ajout de la colonne Client ID #}
 								<th>Statut</th>
 								<th>Action</th>
 							</tr>
@@ -35,6 +37,8 @@
 									<td>{{ reclamation.contenuRec }}</td>
 									<td>{{ reclamation.dateRec|date('d-m-Y H:i') }}</td>
 									<td>{{ reclamation.emailDes }}</td>
+									<td>{{ reclamation.user ? reclamation.user.id : 'N/A' }}</td>
+									{# Affichage du client ID ou "N/A" si null #}
 									<td class="text-center">
 										{% if reclamation.statutRec == 'Pas traitée' %}
 											<span class="badge badge-danger">{{ reclamation.statutRec }}</span>
@@ -51,6 +55,7 @@
 									</td>
 								</tr>
 							{% endfor %}
+
 						</table>
 					</div>
 				</div>

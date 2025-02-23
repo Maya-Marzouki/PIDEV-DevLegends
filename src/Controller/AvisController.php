@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\AvisRepository;
+use App\Repository\UserRepository;
 
 class AvisController extends AbstractController
 {
@@ -35,7 +36,7 @@ class AvisController extends AbstractController
 
 
     #[Route('/addavis', name: 'insertAvis', methods: ['GET', 'POST'])]
-    public function new(Request $request, ManagerRegistry $mr): Response
+    public function new(Request $request, ManagerRegistry $mr , UserRepository $userRepo): Response
     {
         $avis = new Avis();
         $avis->setStatutAvis('Pas traitée'); // Initialisation du statu
@@ -44,6 +45,15 @@ class AvisController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $mr->getManager();
+
+            // Vérifier si l'email correspond à un utilisateur existant
+            $email = $avis->getEmailAvis();
+            $user = $userRepo->findOneBy(['userEmail' => $email]);
+
+            if ($user) {
+                $avis->setUser($user); // Associer l'utilisateur à la réclamation
+            }
+
             $manager->persist($avis);
             $manager->flush();
             $this->addFlash('success', 'Votre avis a été envoyé avec succès.');
