@@ -1,9 +1,120 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Résultat du Quiz{% endblock %}
+{% block title %}Résultat du quiz{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Centrage parfait */
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f6f9;
+        }
+
+        /* Conteneur principal */
+        .result-container {
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .result-score {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .result-state {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .result-recommendation {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .btn-quiz {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: #007bff;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: 0.3s ease-in-out;
+        }
+
+        .btn-quiz:hover {
+            background: #0056b3;
+        }
+
+        /* Couleurs et icônes */
+        .good-mental-health { color: #28a745; }
+        .mild-fatigue { color: #17a2b8; }
+        .stress-anxiety { color: #ffc107; }
+        .moderate-depression { color: #fd7e14; }
+        .severe-mental-state { color: #dc3545; }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Résultat du Quiz</h1>
-    <p>Votre score est : {{ score }}</p>
-    <p>Votre état mental est : {{ etatMental }}</p>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow-lg rounded">
+                    <div class="card-body text-center">
+                        <h1 class="card-title">Résultat de votre Quiz</h1>
+                        <hr>
+
+                        <p class="text-muted"><strong>Votre score :</strong> <span class="badge bg-primary fs-5">{{ score }}</span></p>
+
+                        {% if etatMental == "Bonne santé mentale" %}
+                            <h2 class="text-success">💚 Bonne santé mentale</h2>
+                            <p class="card-text">Bravo ! Continuez à prendre soin de votre bien-être.</p>
+
+                        {% elseif etatMental == "Légère fatigue émotionnelle" %}
+                            <h2 class="text-info">😌 Légère fatigue émotionnelle</h2>
+                            <p class="card-text">Prenez du temps pour vous reposer et vous détendre.</p>
+
+                        {% elseif etatMental == "Signes d’anxiété ou de stress" %}
+                            <h2 class="text-warning">⚠️ Signes de stress ou d’anxiété</h2>
+                            <p class="card-text">Essayez des exercices de respiration ou des activités relaxantes.</p>
+
+                        {% elseif etatMental == "État dépressif modéré" %}
+                            <h2 class="text-danger">😢 Dépression modérée</h2>
+                            <p class="card-text">Parlez à un proche ou consultez un spécialiste.</p>
+
+                        {% else %}
+                            <h2 class="text-danger">🚨 État préoccupant</h2>
+                            <p class="card-text">Il est fortement conseillé de consulter un professionnel.</p>
+                        {% endif %}
+
+                        <hr>
+                        <div class="d-flex justify-content-center">
+                            <a href="{{ path('quiz_start') }}" class="btn btn-primary">
+                                <i class="fas fa-redo-alt"></i> Reprendre le quiz
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

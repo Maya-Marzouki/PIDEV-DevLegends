@@ -2,11 +2,221 @@
 
 {% block title %}Quiz{% endblock %}
 
-{% block body %}
-    <h1>Répondez au quiz</h1>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        {{ form_row(form.submit) }}
-    {{ form_end(form) }}
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control {
+            background-color: #f8f9fa !important;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(118, 199, 192, 0.25);
+            border-color: #76c7c0;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 5px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress {
+            background: #76c7c0;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-counter {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .question.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .text-danger {
+            color: #dc3545;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                <p class="fs-5 fw-bold text-primary">Quiz Santé Mentale</p>
+                <h1 class="display-5 mb-5">Répondez aux questions</h1>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                        {{ form_start(form, {'attr': {'class': 'row g-3', 'novalidate': 'novalidate', 'id': 'quiz-form'}}) }}
+
+                        {# Barre de progression #}
+                        <div class="col-12">
+                            <div class="progress-bar">
+                                <div class="progress" id="progress-bar"></div>
+                            </div>
+                            <div class="question-counter text-center mt-2">
+                                Question <span id="current-question">1</span> sur <span id="total-questions">{{ form.children|length }}</span>
+                            </div>
+                        </div>
+
+                        {# Affichage des questions #}
+                        {% for question in form.children %}
+                            {% if question.vars.name != '_token' %}
+                                <div class="col-12 question mb-4" data-question-id="{{ loop.index }}">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-primary mb-3">{{ form_label(question) }}</h5>
+                                            <div class="form-floating">
+                                                {{ form_widget(question, {'attr': {'class': 'form-control border-0 bg-light'}}) }}
+                                                <div class="text-danger mt-2">{{ form_errors(question) }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        {# Bouton de soumission et message de fin #}
+                        <div class="col-12 text-center">
+                            {# Message de fin #}
+                            <div id="quiz-complete-message" class="alert alert-info mb-3" style="display: none;">
+                                Vous avez terminé le quiz ! Veuillez le soumettre pour consulter votre résultat.
+                            </div>
+
+                            {# Bouton de soumission #}
+                            <button type="submit" class="btn btn-primary py-3 px-4">Soumettre</button>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizForm = document.getElementById('quiz-form');
+            const questions = document.querySelectorAll('.question');
+            const progressBar = document.getElementById('progress-bar');
+            const currentQuestionElement = document.getElementById('current-question');
+            const totalQuestions = questions.length;
+            const quizCompleteMessage = document.getElementById('quiz-complete-message');
+
+            let currentQuestionIndex = 0;
+
+            // Masquer toutes les questions sauf la première
+            questions.forEach((question, index) => {
+                if (index !== 0) {
+                    question.style.display = 'none';
+                }
+            });
+
+            // Mettre à jour la barre de progression et le compteur
+            function updateProgress() {
+                const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+                progressBar.style.width = `${progress}%`;
+                currentQuestionElement.textContent = currentQuestionIndex + 1;
+            }
+
+            // Vérifier si une réponse a été sélectionnée
+            function hasAnswerSelected(question) {
+                const inputs = question.querySelectorAll('input');
+                return Array.from(inputs).some(input => input.checked);
+            }
+
+            // Vérifier si toutes les questions ont été répondues
+            function allQuestionsAnswered() {
+                return Array.from(questions).every(question => hasAnswerSelected(question));
+            }
+
+            // Passer à la question suivante
+            function showNextQuestion() {
+                const currentQuestion = questions[currentQuestionIndex];
+
+                // Vérifier si une réponse a été sélectionnée
+                if (!hasAnswerSelected(currentQuestion)) {
+                    alert('Veuillez sélectionner une réponse avant de continuer.');
+                    return;
+                }
+
+                if (currentQuestionIndex < totalQuestions - 1) {
+                    // Masquer la question actuelle avec une animation
+                    currentQuestion.classList.remove('active');
+                    setTimeout(() => {
+                        currentQuestion.style.display = 'none';
+
+                        // Afficher la question suivante avec une animation
+                        currentQuestionIndex++;
+                        const nextQuestion = questions[currentQuestionIndex];
+                        nextQuestion.style.display = 'block';
+                        setTimeout(() => {
+                            nextQuestion.classList.add('active');
+                        }, 10);
+                        updateProgress();
+
+                        // Afficher le message de fin si c'est la dernière question
+                        if (currentQuestionIndex === totalQuestions - 1) {
+                            quizCompleteMessage.style.display = 'block';
+                        }
+                    }, 500);
+                }
+            }
+
+            // Empêcher la soumission du formulaire si toutes les questions ne sont pas répondues
+            quizForm.addEventListener('submit', (event) => {
+                if (!allQuestionsAnswered()) {
+                    event.preventDefault(); // Bloquer la soumission du formulaire
+                    alert('Veuillez répondre à toutes les questions avant de soumettre le quiz.');
+                }
+            });
+
+            // Afficher la première question avec une animation
+            questions[0].style.display = 'block';
+            setTimeout(() => {
+                questions[0].classList.add('active');
+            }, 10);
+
+            // Écouter les changements de réponse pour passer à la question suivante
+            questions.forEach(question => {
+                const inputs = question.querySelectorAll('input');
+                inputs.forEach(input => {
+                    input.addEventListener('change', showNextQuestion);
+                });
+            });
+
+            // Initialiser la barre de progression
+            updateProgress();
+        });
+    </script>
 {% endblock %}

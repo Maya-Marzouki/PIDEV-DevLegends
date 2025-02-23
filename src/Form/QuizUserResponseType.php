@@ -1,46 +1,42 @@
 <?php
+// src/Form/QuizUserResponseType.php
+
 namespace App\Form;
 
-use App\Entity\Quiz;
+use App\Entity\Question;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class QuizUserResponseType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        // Récupérer toutes les questions de la base
-        $questions = $options['questions'];  // Les questions passées dans les options
+        $questions = $options['questions'];
 
         foreach ($questions as $question) {
             $choices = [];
-            // Récupérer les réponses et points associés
-            foreach ($question->getReponsesQuiz() as $reponse) {
-                $choices[$reponse['reponseText']] = $reponse['points'];  // Associe chaque réponse avec les points
+            // Remplir le tableau de choix avec les réponses de la question et leurs scores
+            foreach ($question->getReponses() as $reponse) {
+                $choices[$reponse->getAnswerText()] = $reponse->getScore(); // Associer le texte de la réponse avec le score
             }
 
-            $builder->add('question_'.$question->getId(), ChoiceType::class, [
-                'label' => $question->getQuestionQuiz(),
+            // Ajout de la question au formulaire avec les choix de réponses
+            $builder->add('question_' . $question->getId(), ChoiceType::class, [
                 'choices' => $choices,
-                'expanded' => true,  // Boutons radio
+                'expanded' => true,  // Boutons radio pour chaque réponse
                 'multiple' => false, // Une seule réponse possible
+                'label' => $question->getQuestionText(), // Question affichée
             ]);
         }
-
-        // Ajouter le bouton de soumission du quiz
-        $builder->add('submit', SubmitType::class, [
-            'label' => 'Valider'
-        ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Quiz::class,
-            'questions' => [],  // Passer les questions dans les options
+            'data_class' => null,
+            'questions' => [],  // Liste des questions passées en paramètre
         ]);
     }
 }

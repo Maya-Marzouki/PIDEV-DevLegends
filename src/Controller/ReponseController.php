@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Entity\Reponse;
 use App\Form\ReponseQuizType;
 use App\Repository\ReponseRepository;
+use App\Repository\QuestionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,19 +37,27 @@ class ReponseController extends AbstractController
 
     // Créer une nouvelle réponse
     #[Route('/reponse/new', name: 'reponse_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, QuestionRepository $questionRepository): Response
     {
-        $reponse = new Reponse();
-        $form = $this->createForm(ReponseQuizType::class, $reponse);
+        // Tester la récupération des questions
+        $questions = $questionRepository->findAll();
+        dump($questions); // Vérifier que les questions sont bien récupérées
 
+        $reponse = new Reponse();
+        $form = $this->createForm(ReponseQuizType::class, $reponse, [
+            'questions' => $questions, // Passer les questions au formulaire
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
+            dump($form->getData()); // Afficher les données du formulaire
+            dump($form->getErrors(true)); // Afficher les erreurs de validation
+            
             if ($form->isValid()) {
             $entityManager->persist($reponse);
             $entityManager->flush();
             $this->addFlash('success', 'Réponse ajoutée avec succès !');
-            return $this->redirectToRoute('reponse_index');
+            return $this->redirectToRoute('app_reponse_index_admin');
         } else {
             $this->addFlash('danger', 'Veuillez corriger les erreurs du formulaire.');
         }
@@ -60,19 +69,22 @@ class ReponseController extends AbstractController
 
     // Modifier une réponse existante
     #[Route('/reponse/{id}/edit', name: 'reponse_edit')]
-    public function edit(Request $request, Reponse $reponse, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Reponse $reponse, EntityManagerInterface $entityManager, QuestionRepository $questionRepository): Response
     {
-        $form = $this->createForm(ReponseQuizType::class, $reponse);
-
+        $questions = $questionRepository->findAll(); // Récupérer toutes les questions
+    
+        $form = $this->createForm(ReponseQuizType::class, $reponse, [
+            'questions' => $questions, // Passer les questions au formulaire
+        ]);
+    
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
             $this->addFlash('success', 'Réponse modifiée avec succès !');
-            return $this->redirectToRoute('reponse_index');
+            return $this->redirectToRoute('app_reponse_index_admin');
         }
-
+    
         return $this->render('reponse/editReponse.html.twig', [
             'form' => $form->createView(),
             'reponse' => $reponse,

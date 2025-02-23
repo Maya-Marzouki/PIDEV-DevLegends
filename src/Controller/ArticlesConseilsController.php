@@ -12,18 +12,33 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Knp\Component\Pager\PaginatorInterface;
 
 
 
 class ArticlesConseilsController extends AbstractController
 {
     #[Route('/articles-conseils', name: 'app_articles_conseils_index')]
-    public function index(ArticlesConseilsRepository $articlesConseilsRepository): Response
+    public function index(ArticlesConseilsRepository $articlesConseilsRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        // Récupérer tous les centres
+        $query = $articlesConseilsRepository->createQueryBuilder('c')->getQuery();
+
+        // Paginer les résultats (3 centres par page)
+        $articleConseil = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), // Page actuelle (1 par défaut)
+            3 // Nombre d'éléments par page
+        );
+            
         // Affiche tous les articles conseils
         return $this->render('articles_conseils/listArticle.html.twig', [
-            'articlesConseils' => $articlesConseilsRepository->findAll(),
+            'articlesConseils' => $articleConseil, // ✅ Ceci est bien un objet de type SlidingPaginationInterface
         ]);
+        
+        // return $this->render('articles_conseils/listArticle.html.twig', [
+        //     'articlesConseils' => $articlesConseilsRepository->findAll(),
+        // ]);
     }
 
     #[Route('/articles-conseils/new', name: 'app_articles_conseils_new')]

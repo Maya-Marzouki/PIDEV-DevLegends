@@ -26,9 +26,9 @@
                                     <td>{{ reponse.score }}</td>
                                     <td>{{ reponse.question.questionText }}</td>
                                     <td>
-                                        {# <a href="{{ path('reponse_edit', {'id': reponse.id}) }}" class="btn btn-secondary btn-sm">
+                                        <a href="{{ path('reponse_edit', {'id': reponse.id}) }}" class="btn btn-secondary btn-sm">
                                             <i class="fa fa-edit"></i> Modifier
-                                        </a> #}
+                                        </a>
                                         <form action="{{ path('reponse_delete', {'id': reponse.id}) }}" method="post" class="d-inline"
                                               onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?');">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete_reponse') }}">
@@ -56,9 +56,9 @@
                         font-weight: bold;
                     }
                 </style>
-                {# <div class="d-flex justify-content-end mt-3">
+                <div class="d-flex justify-content-end mt-3">
                     <a href="{{ path('reponse_new') }}" class="btn btn-custom-green">Ajouter une Réponse</a>
-                </div> #}
+                </div>
     </div>
 </div>
 {% endblock %}

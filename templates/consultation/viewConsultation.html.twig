@@ -13,7 +13,6 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Date</th>
                         <th>Nom</th>
                         <th>Prénom</th>
@@ -26,7 +25,6 @@
                 <tbody>
                     {% for consultation in consultations %}
                         <tr>
-                            <td>{{ consultation.id }}</td>
                             <td>{{ consultation.dateCons|date('Y-m-d') }}</td>
                             <td>{{ consultation.Nom }}</td>
                             <td>{{ consultation.prenom }}</td>

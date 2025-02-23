@@ -28,13 +28,16 @@ class Question
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le type de réponse ne peut pas être vide.")]
-    #[Assert\Choice(choices: ['Oui', 'Non', 'Parfois'], message: "Choisissez une réponse valide.")]
+    #[Assert\Choice(choices: ['group1'], message: "Choisissez une réponse valide.")]
     private ?string $answerType = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\Type(type: "integer", message: "Les points doivent être un nombre entier.")]
     #[Assert\GreaterThanOrEqual(value: 0, message: "Les points doivent être supérieurs ou égaux à zéro.")]
     private ?int $points = null;
+
+    #[ORM\ManyToOne(inversedBy: 'questions')]
+    private ?Quiz $quiz = null;
 
     public function __construct()
     {
@@ -108,6 +111,18 @@ class Question
     public function setPoints(?int $points): static
     {
         $this->points = $points;
+
+        return $this;
+    }
+
+    public function getQuiz(): ?Quiz
+    {
+        return $this->quiz;
+    }
+
+    public function setQuiz(?Quiz $quiz): static
+    {
+        $this->quiz = $quiz;
 
         return $this;
     }

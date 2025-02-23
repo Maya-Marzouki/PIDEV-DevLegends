@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Quiz{% endblock %}
+
+{% block body %}
+    <h1>Liste des Quiz</h1>
+
+    <ul>
+        {% for quiz in quizzes %}
+            <li>
+                {{ quiz.name }} 
+                <a href="{{ path('quiz_start', {'quizId': quiz.id}) }}">Démarrer le quiz</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

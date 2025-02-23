@@ -29,7 +29,12 @@
                                     <td>{{ question.points }}</td>
                                     <td>
                                         <a href="{{ path('question_edit', {'id': question.id}) }}" class="btn btn-succes">Modifier</a>
-                                        <a href="{{ path('question_delete', { id: question.id }) }}" class="btn btn-succes" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?');">Supprimer</a>
+                                        {# Formulaire de suppression #}
+                                        <form method="POST" action="{{ path('question_delete', {'id': question.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette question ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ question.id) }}">
+                                            <button type="submit" class="btn btn-succes">Supprimer</button>
+                                        </form>
+                                        {# <a href="{{ path('question_delete', { id: question.id }) }}" class="btn btn-succes" onclick="return confirm('Voulez-vous vraiment supprimer cette question ?');">Supprimer</a> #}
 
                                         {# <form method="post" action="{{ path('question_delete', {'id': question.id}) }}" style="display:inline;">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ question.id) }}">

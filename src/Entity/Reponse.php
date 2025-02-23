@@ -38,6 +38,11 @@ class Reponse
     #[Assert\NotNull(message: "Une réponse doit être associée à une question.")]
     private ?Question $question = null;
 
+    // #[ORM\Column(length: 255)]
+    // #[Assert\NotBlank(message: "Le groupe de réponses ne peut pas être vide.")]
+    // #[Assert\Choice(choices: ['group1', 'group2', 'group3'], message: "Choisissez une réponse valide.")]
+    // private ?string $reponseGroup = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -78,4 +83,16 @@ class Reponse
 
         return $this;
     }
+
+    // public function getReponseGroup(): ?string
+    // {
+    //     return $this->reponseGroup;
+    // }
+
+    // public function setReponseGroup(string $reponseGroup): static
+    // {
+    //     $this->reponseGroup = $reponseGroup;
+
+    //     return $this;
+    // }
 }

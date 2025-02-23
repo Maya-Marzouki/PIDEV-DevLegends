@@ -1,97 +1,91 @@
-{% extends 'base.html.twig' %}
+{% extends 'baseAdmin.html.twig' %}
 
 {% block title %}Ajouter une Réponse{% endblock %}
 
 {% block body %}
-<div class="container-fluid py-5">
-    <div class="container">
-        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
-            <p class="fs-5 fw-bold text-primary">Nouvelle Réponse</p>
-            <h1 class="display-5 mb-5">Remplissez le formulaire</h1>
-        </div>
-        
-        {# Affichage des messages Flash
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success text-center">{{ message }}</div>
-        {% endfor %} #}
-        {# {% for message in app.flashes('danger') %}
-            <div class="alert alert-danger text-center">{{ message }}</div>
-        {% endfor %} #}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="bg-white border rounded p-4 p-sm-5 shadow-sm">
+                <!-- Titre de la page -->
+                <div class="text-center mx-auto mb-4" style="max-width: 500px;">
+                    <p class="fs-5 fw-bold text-primary">Nouvelle Réponse</p>
+                    <h1 class="display-5">Ajouter une Réponse</h1>
+                </div>
+                <!-- Afficher les erreurs globales du formulaire -->
+                {% if form.vars.errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        <strong>Des erreurs sont survenues :</strong>
+                        <ul>
+                            {% for error in form.vars.errors %}
+                                <li>{{ error.message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
 
-        <div class="row justify-content-center">
-            <div class="col-lg-7">
-                <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
-                    {{ form_start(form, {'attr': {'class': 'row g-3','novalidate': 'novalidate'}}) }}
-                    
-{# Champ Texte de la réponse #}
-<div class="col-12">
-    <div class="form-floating">
-        {{ form_widget(form.answerText, {
-            'attr': {
-                'class': 'form-control border-0 ' ~ (form.answerText.vars.errors|length > 0 ? 'is-invalid' : ''),
-                'placeholder': 'Entrez le texte de la réponse'
-            }
-        }) }}
-        {{ form_label(form.answerText) }}
-        <div class="invalid-feedback">
-            {{ form_errors(form.answerText) }}
-        </div>
-    </div>
-</div>
-{# Champ Score #}
-<div class="col-12">
-    <div class="form-floating">
-        {{ form_widget(form.score, {
-            'attr': {
-                'class': 'form-control border-0 ' ~ (form.score.vars.errors|length > 0 ? 'is-invalid' : ''),
-                'placeholder': 'Entrez le score'
-            }
-        }) }}
-        {{ form_label(form.score) }}
-        <div class="invalid-feedback">
-            {{ form_errors(form.score) }}
-        </div>
-    </div>
-</div>
+                <!-- Début du formulaire -->
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                <div class="row g-3">
+
+                    <!-- Champ Question liée -->
                     <div class="col-12">
                         <div class="form-floating">
-                            {{ form_widget(form.question, {'attr': {'class': 'form-control border-0'}}) }}
-                            {{ form_label(form.question) }}
-                            <div class="invalid-feedback">
-                                {{ form_errors(form.question) }}
+                            {{ form_label(form.question, 'Question liée') }}
+                            {{ form_widget(form.question, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="text-danger small mt-1">{{ form_errors(form.question) }}</div>
+                    </div>
+
+                    <!-- Champ Réponse (boutons radio) -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            {{ form_label(form.answerText, 'Réponse') }}
+                            <div class="reponse-options mt-2">
+                                {{ form_widget(form.answerText, {'attr': {'class': 'form-check-input'}}) }}
                             </div>
                         </div>
+                        <div class="text-danger small mt-1">{{ form_errors(form.answerText) }}</div>
                     </div>
 
-                    <div class="col-12 text-center mt-3">
-                        <button class="btn btn-success py-3 px-4" type="submit">Enregistrer</button>
+                    <!-- Champ Score -->
+                    <div class="col-12">
+                        <div class="form-floating">
+                            {{ form_label(form.score, 'Score') }}
+                            {{ form_widget(form.score, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le score'}}) }}
+                        </div>
+                        <div class="text-danger small mt-1">{{ form_errors(form.score) }}</div>
                     </div>
 
-                    {{ form_end(form) }}
-
+                    <!-- Bouton Enregistrer -->
                     <div class="col-12 text-center mt-3">
-                        <a href="{{ path('reponse_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                        <button class="btn btn-custom-green py-3 px-4" type="submit">Enregistrer</button>
                     </div>
                 </div>
+                {{ form_end(form) }}
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
 
-{% block stylesheets %}
-    <style>
-        .action-btn {
-            text-decoration: none;
-            font-weight: bold;
-            padding: 0.375rem 0.75rem; /* Custom padding to make the buttons consistent */
-            border-radius: 0.375rem;
-        }
 
-        .action-btn:hover {
-            text-decoration: underline;
-            color: blue !important;
-            border-color: blue;
-        }
-    </style>
+<!-- Style personnalisé pour le bouton -->
+<style>
+    .btn-custom-green {
+        background-color: #28a745 !important; /* Vert Bootstrap */
+        color: white !important; /* Texte blanc */
+        font-weight: bold;
+    }
+
+    .reponse-options .form-check {
+        margin-bottom: 10px;
+    }
+
+    .reponse-options .form-check-input {
+        margin-right: 10px;
+    }
+
+    .reponse-options label {
+        font-weight: normal;
+    }
+</style>
 {% endblock %}
