@@ -1,11 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Liste des Contrats {% endblock %}
+{% block title %}Liste des Contrats{% endblock %}
 
 {% block body %}
 <div class="container my-5">
     <h1 class="text-center text-success mb-4">Liste des Contrats</h1>
 
+    {# Formulaire de recherche par date #}
+    <form method="get" action="{{ path('contratclient') }}" class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="searchDate">Rechercher par date (début ou fin)</label>
+                <input type="date" name="searchDate" class="form-control" value="{{ searchDate ?? '' }}">
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-success">Rechercher</button>
+            </div>
+        </div>
+    </form>
+
+    {# Formulaire de tri #}
+    <form method="get" action="{{ path('contratclient') }}" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="orderBy">Trier par</label>
+                <select name="orderBy" class="form-control">
+                    <option value="datdebCont" {% if orderBy == 'datdebCont' %}selected{% endif %}>Date de début</option>
+                    <option value="datfinCont" {% if orderBy == 'datfinCont' %}selected{% endif %}>Date de fin</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="orderDirection">Ordre</label>
+                <select name="orderDirection" class="form-control">
+                    <option value="ASC" {% if orderDirection == 'ASC' %}selected{% endif %}>Croissant (A-Z)</option>
+                    <option value="DESC" {% if orderDirection == 'DESC' %}selected{% endif %}>Décroissant (Z-A)</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-success">Trier</button>
+            </div>
+        </div>
+    </form>
+
+    {# Affichage des contrats #}
     <div class="row">
         {% for contrat in contrats %}
             <div class="col-md-4 mb-4">
@@ -32,6 +69,11 @@
                 <p>Aucun contrat trouvé.</p>
             </div>
         {% endfor %}
+    </div>
+
+    {# Pagination #}
+    <div class="d-flex justify-content-center mt-4">
+        {{ knp_pagination_render(contrats) }}
     </div>
 </div>
 {% endblock %}

@@ -93,4 +93,26 @@
 </div>
 
 {{ form_end(form) }}
+
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    var input = document.querySelector("#{{ form.telCentre.vars.id }}");  // Utilisez l'ID généré par Symfony
+    var iti = window.intlTelInput(input, {
+        initialCountry: "TN",  // Pays par défaut: Tunisie
+        separateDialCode: true,
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",  // Pour les utilitaires supplémentaires
+    });
+
+    // Mettre à jour la valeur du champ 'telCentre' avec la valeur formatée lors de la soumission du formulaire
+    document.querySelector("form").addEventListener("submit", function(event) {
+        var telValue = iti.getNumber();  // Récupère la valeur formatée du numéro (ex : +216xxxxxxxxx)
+        input.value = telValue;  // Remplace la valeur de l'input avec la valeur formatée
+    });
+});
+    </script>
+{% endblock %}
+
 {% endblock %}

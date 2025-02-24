@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ContratRepository;
+use Knp\Component\Pager\PaginatorInterface;
+
 
 class ContratController extends AbstractController
 {
@@ -24,15 +26,43 @@ class ContratController extends AbstractController
     }
 
     #[Route('/contratclient', name: 'contratclient')]
-    public function showcontratclient(ManagerRegistry $mr): Response
+    public function showcontratclient(ContratRepository $contratRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        $contrats = $mr->getRepository(Contrat::class)->findAll();
-
+        // Récupérer la date de recherche depuis la requête
+        $searchDate = $request->query->get('searchDate');
+    
+        // Récupérer les paramètres de tri depuis la requête
+        $orderBy = $request->query->get('orderBy', 'datdebCont'); // Par défaut, tri par date de début
+        $orderDirection = $request->query->get('orderDirection', 'ASC'); // Par défaut, ordre croissant
+    
+        // Créer une requête Doctrine de base
+        $queryBuilder = $contratRepository->createQueryBuilder('c');
+    
+        // Appliquer le filtre par date si une date est spécifiée
+        if ($searchDate) {
+            $searchDate = new \DateTime($searchDate);
+            $queryBuilder->andWhere('c.datdebCont = :searchDate OR c.datfinCont = :searchDate')
+                ->setParameter('searchDate', $searchDate);
+        }
+    
+        // Appliquer le tri
+        $queryBuilder->orderBy('c.' . $orderBy, $orderDirection);
+    
+        // Paginer les résultats (3 contrats par page)
+        $contrats = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1), // Page actuelle (1 par défaut)
+            3 // Nombre d'éléments par page
+        );
+    
+        // Passer les variables au template
         return $this->render('contrat/showclientcontrat.html.twig', [
             'contrats' => $contrats,
+            'searchDate' => $searchDate ? $searchDate->format('Y-m-d') : null, // Passer la date de recherche au template
+            'orderBy' => $orderBy, // Passer le champ de tri
+            'orderDirection' => $orderDirection, // Passer la direction du tri
         ]);
     }
-
 
     #[Route('/addcontrat', name: 'insertContrat', methods: ['GET', 'POST'])]
     public function new(Request $request, ManagerRegistry $mr): Response

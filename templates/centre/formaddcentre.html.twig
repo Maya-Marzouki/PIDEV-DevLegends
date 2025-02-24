@@ -3,7 +3,7 @@
 {% block title %} Ajouter un Centre {% endblock %}
 
 {% block body %}
-{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 <div class="container-fluid py-5">
     <div class="container">
         <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
@@ -34,6 +34,7 @@
                                 {{ form_errors(form.telCentre) }}
                             </div>
                         </div>
+
                         <div class="col-sm-6">
                             <div class="form-floating">
                                 {{ form_label(form.emailCentre) }}
@@ -56,15 +57,15 @@
                             </div>
                         </div>
                         <div class="col-sm-12">
-                         <div class="form-floating">
-                         {{ form_label(form.photoCentre) }}
-                         {{ form_widget(form.photoCentre, {attr: {'class': 'form-control'}}) }}
-                         {{ form_errors(form.photoCentre) }}
-                         </div>
+                            <div class="form-floating">
+                                {{ form_label(form.photoCentre) }}
+                                {{ form_widget(form.photoCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.photoCentre) }}
+                            </div>
                         </div>
 
                         <style>
-                            .btn-custom-green{
+                            .btn-custom-green {
                                 background-color: #28a745 !important;
                                 color: white !important;
                                 font-weight: bold;
@@ -75,15 +76,31 @@
                         </div>
                     </div>
                 </div>
-            </div>    
+            </div>
         </div>
     </div>      
 </div>
 {{ form_end(form) }}
 
+{% block javascripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    var input = document.querySelector("#{{ form.telCentre.vars.id }}");  // Utilisez l'ID généré par Symfony
+    var iti = window.intlTelInput(input, {
+        initialCountry: "TN",  // Pays par défaut: Tunisie
+        separateDialCode: true,
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",  // Pour les utilitaires supplémentaires
+    });
+
+    // Mettre à jour la valeur du champ 'telCentre' avec la valeur formatée lors de la soumission du formulaire
+    document.querySelector("form").addEventListener("submit", function(event) {
+        var telValue = iti.getNumber();  // Récupère la valeur formatée du numéro (ex : +216xxxxxxxxx)
+        input.value = telValue;  // Remplace la valeur de l'input avec la valeur formatée
+    });
+});
+    </script>
 {% endblock %}
 
-
-
-
-
+{% endblock %}

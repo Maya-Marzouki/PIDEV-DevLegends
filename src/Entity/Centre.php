@@ -43,13 +43,18 @@ class Centre
     private ?string $adresseCentre = null;
 
 
-    #[ORM\Column(length: 12)] // Longueur maximale de 12 caractères (+21612345678)
+    #[ORM\Column(length: 12)]
     #[Assert\NotBlank(message: "Le numéro de téléphone est requis.")]
     // #[Assert\Regex(
-    //     pattern: '/^\+216\d{8}$/',
-    //     message: 'Le numéro de téléphone doit commencer par +216 et être suivi de 8 chiffres.'
+    //     pattern: '/^\+216\s?\d{8}$/',
+    //     message: 'Le numéro de téléphone doit commencer par +216 et être suivi de 8 chiffres, avec ou sans espaces.'
     // )]
-    private ?string $telCentre = null;
+private ?string $telCentre = null;
+
+    
+
+
+
 
 
 
@@ -125,15 +130,15 @@ class Centre
         return $this;
     }
 
-    public function getTelCentre(): ?int
+    public function getTelCentre(): ?string
     {
         return $this->telCentre;
     }
 
-    public function setTelCentre(?int $telCentre): static
+    
+    public function setTelCentre(?string $telCentre): self
     {
         $this->telCentre = $telCentre;
-
         return $this;
     }
 

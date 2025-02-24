@@ -30,9 +30,14 @@
             </div>
         {% else %}
             <div class="col-12 text-center text-muted">
-                <p>Aucun pack trouvé.</p>
+                <p>Aucun pack n'a été trouvé pour le moment. Veuillez revenir plus tard.</p>
             </div>
         {% endfor %}
+    </div>
+
+   {# Ajout de la pagination #}
+    <div class="d-flex justify-content-center mt-4">
+        {{ knp_pagination_render(packs) }}
     </div>
 </div>
 {% endblock %}

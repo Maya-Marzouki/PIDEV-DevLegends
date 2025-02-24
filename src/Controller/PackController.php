@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\PackRepository;
+use Knp\Component\Pager\PaginatorInterface;
+
 
 class PackController extends AbstractController
 {
@@ -24,9 +26,17 @@ class PackController extends AbstractController
     }
 
     #[Route('/packclient', name: 'packclient')]
-    public function showpackclient(ManagerRegistry $mr): Response
+    public function showpackclient(ManagerRegistry $mr, PaginatorInterface $paginator, Request $request): Response
     {
-        $packs = $mr->getRepository(Pack::class)->findAll();
+        // Récupère les packs via une requête Doctrine
+        $query = $mr->getRepository(Pack::class)->createQueryBuilder('p')->getQuery();
+
+        // Pagination des packs (3 packs par page)
+        $packs = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), // Page actuelle (1 par défaut)
+            3 // Nombre d'éléments par page
+        );
 
         return $this->render('pack/showclientpack.html.twig', [
             'packs' => $packs,
@@ -135,14 +145,50 @@ public function acheterPack(Pack $pack): Response
     ]);
 }
 
-    #[Route('/pack/{id}/paiement', name: 'paiementPack')]
-    public function paiement(int $id): Response
-    {
-        // Logique pour afficher la page de paiement
-        return $this->render('pack/achat.html.twig', [
-            'packId' => $id
-        ]);
+// src/Controller/PackController.php
+
+#[Route('/pack/{id}/achat', name: 'achatPack')]
+public function acheterPackAvecReduction(Request $request, Pack $pack): Response
+{
+    $codeReduction = $request->request->get('codeReduction');
+    $discountPrice = $pack->getPrixPack(); // prix original
+
+    // Vérifiez si le code de réduction est valide
+    if ($codeReduction && $codeReduction === 'reduc10%') { // Code de réduction à valider
+        $discountPrice = $discountPrice * 0.9; // Applique la réduction de 10%
+        $this->addFlash('success', 'Code de réduction appliqué avec succès !');
     }
+
+    return $this->render('pack/achat.html.twig', [
+        'pack' => $pack,
+        'codeReduction' => $codeReduction,
+        'discountPrice' => $discountPrice, // Passer le prix réduit
+    ]);
+}
+
+#[Route('/pack/{id}/paiement', name: 'paiementPack')]
+public function paiement(int $id, ManagerRegistry $mr, Request $request): Response
+{
+    // Récupérer le pack
+    $pack = $mr->getRepository(Pack::class)->find($id);
+
+    // Récupérer le code de réduction depuis la requête
+    $codeReduction = $request->request->get('codeReduction');
+    $discountPrice = $pack->getPrixPack(); // Prix original
+
+    // Appliquer la réduction si le code est valide
+    if ($codeReduction && $codeReduction === 'reduc10%') {
+        $discountPrice = $discountPrice * 0.9; // Réduction de 10%
+    }
+
+    // Passer les variables au template
+    return $this->render('pack/paiement.html.twig', [
+        'pack' => $pack,
+        'discountPrice' => $discountPrice, // Passer le prix réduit
+        'codeReduction' => $codeReduction, // Passer le code de réduction (optionnel)
+    ]);
+}
+
 }
 
 

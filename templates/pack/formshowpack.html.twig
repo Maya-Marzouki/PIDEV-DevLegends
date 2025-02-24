@@ -42,7 +42,7 @@
                     <td>
                         <a href="{{ path('editPack', {'id': pack.id}) }}" >Modifier</a>
                         <form method="post" action="{{ path('deletePack', { id: pack.id }) }}">
-					<a href="{{ path('deletePack', {'id': pack.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+					<a href="{{ path('deletePack', {'id': pack.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce pack ?');">
 						Supprimer
 					</a>
 					</form>
