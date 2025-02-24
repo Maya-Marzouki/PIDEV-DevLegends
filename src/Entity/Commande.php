@@ -15,11 +15,7 @@ class Commande
 {
 
 
-    public const STATUT_EN_ATTENTE = 'en attente';
-    public const STATUT_EXPEDIE = 'expédié';
-    public const STATUT_LIVRE = 'livré';
-    public const STATUT_ANNULE = 'annulé';
-
+   
 
 
 
@@ -28,13 +24,15 @@ class Commande
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 30)]
     #[Assert\NotBlank(message: "Le nom du client est obligatoire")]
     #[Assert\Length(
-        min: 2,
-        max: 255,
-        minMessage: "Le nom doit contenir au moins 2 caractères",
-        maxMessage: "Le nom ne peut dépasser 50 caractères"
+        max: 30,
+        maxMessage: "Le nom ne peut dépasser 30 caractères"
+    )]
+    #[Assert\Regex(
+        pattern: "/^[^\d]+$/",
+        message: "Le nom ne doit pas contenir de chiffres"
     )] private ?string $nomClient = null;
 
     #[ORM\Column(length: 255)]
@@ -45,6 +43,7 @@ class Commande
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(message: "La date de commande est obligatoire")]
     #[Assert\Type(\DateTimeInterface::class, message: "La date de commande doit être une date valide")]
+    #[Assert\GreaterThanOrEqual("today", message: "La date de commande ne peut pas être dans le passé.")]
     private ?\DateTimeInterface $dateCommande = null;
 
     #[ORM\Column(length: 255)]
@@ -54,19 +53,11 @@ class Commande
         max: 255,
         minMessage: "L'adresse doit contenir au moins {{ limit }} caractères",
         maxMessage: "L'adresse ne peut dépasser {{ limit }} caractères"
-    )]
-    private ?string $adresse = null;
+    )]    private ?string $adresse = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le statut est obligatoire")]
-    #[Assert\Choice(
-        choices: [self::STATUT_EN_ATTENTE, self::STATUT_EXPEDIE, self::STATUT_LIVRE, self::STATUT_ANNULE],
-        message: "Le statut doit être 'en attente', 'expédié', 'livré' ou 'annulé'"
-    )]
-    private ?string $statutCom = null;
+    
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: "Le total de la commande est obligatoire")]
     #[Assert\Positive(message: "Le total de la commande doit être un montant positif")]
     private ?float $totalCom = null;
     /**
@@ -75,9 +66,21 @@ class Commande
     #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'commandes')]
     #[ORM\JoinTable(name: 'commande_produit')]  // Ceci crée une table d'association
     private $produits;
+
+    #[ORM\Column(length: 255)]
+    private ?string $pays = null;
+
+    #[ORM\Column]
+    #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire")]
+    #[Assert\Regex(
+    pattern: "/^\d{8}$/",
+    message: "Le numéro de téléphone doit contenir exactement 8 chiffres."
+)]
+    private ?int $NumTelephone = null;
     public function __construct()
     {
         $this->produits = new ArrayCollection();
+        $this->dateCommande = new \DateTime(); // Définit la date actuelle
     }
 
 
@@ -135,17 +138,9 @@ class Commande
         return $this;
     }
 
-    public function getStatutCom(): ?string
-    {
-        return $this->statutCom;
-    }
+   
 
-    public function setStatutCom(string $statutCom): static
-    {
-        $this->statutCom = $statutCom;
-
-        return $this;
-    }
+   
 
     public function getTotalCom(): ?float
     {
@@ -178,6 +173,30 @@ class Commande
     public function removeProduit(Produit $produit): static
     {
         $this->produits->removeElement($produit);
+
+        return $this;
+    }
+
+    public function getPays(): ?string
+    {
+        return $this->pays;
+    }
+
+    public function setPays(string $pays): static
+    {
+        $this->pays = $pays;
+
+        return $this;
+    }
+
+    public function getNumTelephone(): ?int
+    {
+        return $this->NumTelephone;
+    }
+
+    public function setNumTelephone(int $NumTelephone): static
+    {
+        $this->NumTelephone = $NumTelephone;
 
         return $this;
     }

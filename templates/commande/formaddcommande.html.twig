@@ -1,6 +1,6 @@
-{% extends 'baseAdmin.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %} Ajouter un Produit {% endblock %}
+{% block title %} Ajouter une commande {% endblock %}
 
 {% block body %}
 {{ form_start(form,{'attr': {'novalidate': 'novalidate'}}
@@ -17,54 +17,105 @@
                         <div class="col-sm-6">
                          <div class="col-sm-12">
                             <div class="form-floating">
+                               {{ form_widget(form.nomClient, {attr: {'class': 'form-control', 'placeholder': 'Nom client'}}) }}
                                 {{ form_label(form.nomClient) }}
-                                {{ form_widget(form.nomClient, {attr: {'class': 'form-control'}}) }}
                                 {{ form_errors(form.nomClient) }}
                             </div>
                         </div>
                          <div class="col-sm-12">
                             <div class="form-floating">
+                                 {{ form_widget(form.adresseEmail, {attr: {'class': 'form-control', 'placeholder': 'AdresseEmail'}}) }}
                                 {{ form_label(form.adresseEmail) }}
-                                {{ form_widget(form.adresseEmail, {attr: {'class': 'form-control'}}) }}
                                 {{ form_errors(form.adresseEmail) }}
                             </div>
                         </div>
                             <div class="form-floating">
+                                 {{ form_widget(form.adresse, {attr: {'class': 'form-control', 'placeholder': 'Adresse'}}) }}
                                 {{ form_label(form.adresse) }}
-                                {{ form_widget(form.adresse, {attr: {'class': 'form-control'}}) }}
                                 {{ form_errors(form.adresse) }}
                             </div>
                         </div>
                     
                         <div class="col-sm-12">
                             <div class="form-floating">
+                            
+                                {{ form_widget(form.dateCommande, {attr: {'class': 'form-control', 'placeholder': 'Date Commande'}}) }}
                                 {{ form_label(form.dateCommande) }}
-                                {{ form_widget(form.dateCommande, {attr: {'class': 'form-control'}}) }}
                                 {{ form_errors(form.dateCommande) }}
                             </div>
                         </div>
-
-                        
-                         <div class="col-sm-12">
+                        <div class="col-sm-6">
                             <div class="form-floating">
-                                {{ form_label(form.statutCom) }}
-                                {{ form_widget(form.statutCom, {attr: {'class': 'form-control'}}) }}
-                                {{ form_errors(form.statutCom) }}
-                            </div>
-                        </div>
-                        <div class="col-sm-12">
-                            <div class="form-floating">
-                                {{ form_label(form.totalCom) }}
-                                {{ form_widget(form.totalCom, {attr: {'class': 'form-control'}}) }}
-                                {{ form_errors(form.totalCom) }}
+                                {{ form_widget(form.pays, {attr: {'class': 'form-control', 'placeholder': 'Pays'}}) }}
+                                {{ form_label(form.pays) }}
+                                {{ form_errors(form.pays) }}
                             </div>
                         </div>
 
-                       
-                        
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_widget(form.NumTelephone, {attr: {'class': 'form-control', 'placeholder': 'Numéro de téléphone'}}) }}
+                                {{ form_label(form.NumTelephone) }}
+                                {{ form_errors(form.NumTelephone) }}
+                            </div>
+                        </div>
+                       <fieldset>
+    <legend>Paiement</legend>
+    <p>Choisissez un mode de paiement :</p>
+
+    <div class="form-group">
+        {{ form_widget(form.modePaiement) }}
+    </div>
+
+    <!-- Carte Bancaire -->
+    <div class="form-group mt-3" id="carte-container" style="display: none;">
+        <label for="carte">Numéro de Carte Bancaire :</label>
+        {{ form_widget(form.numeroCarte, {'attr': {'class': 'form-control', 'placeholder': 'Numéro de carte'}}) }}
+    </div>
+
+    <!-- Virement Bancaire -->
+    <div class="form-group mt-3" id="virement-container" style="display: none;">
+        <label for="virement">Numéro de Virement :</label>
+        {{ form_widget(form.numeroVirement, {'attr': {'class': 'form-control', 'placeholder': 'Numéro de virement'}}) }}
+    </div>
+
+    <!-- PayPal -->
+    <div class="form-group mt-3" id="paypal-container" style="display: none;">
+        <label for="paypal">Email PayPal :</label>
+        {{ form_widget(form.paypalEmail, {'attr': {'class': 'form-control', 'placeholder': 'Email PayPal'}}) }}
+    </div>
+</fieldset>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const modePaiementRadios = document.querySelectorAll('input[name="commande[modePaiement]"]');
+    
+    function togglePaiementFields() {
+        document.getElementById("carte-container").style.display = "none";
+        document.getElementById("virement-container").style.display = "none";
+        document.getElementById("paypal-container").style.display = "none";
+
+        const selectedMode = document.querySelector('input[name="commande[modePaiement]"]:checked')?.value;
+        if (selectedMode === "carte") {
+            document.getElementById("carte-container").style.display = "block";
+        } else if (selectedMode === "virement") {
+            document.getElementById("virement-container").style.display = "block";
+        } else if (selectedMode === "paypal") {
+            document.getElementById("paypal-container").style.display = "block";
+        }
+    }
+
+    modePaiementRadios.forEach(radio => {
+        radio.addEventListener("change", togglePaiementFields);
+    });
+
+    togglePaiementFields(); // Appel initial
+});
+</script>
+
 
                         <div class="col-12 text-center">
-                            <button class="btn btn-primary py-3 px-4" type="submit">Enregistrer</button>
+                            <button class="btn btn-primary py-3 px-4" type="submit" >valider commande</button>
                         </div>
                     </div>
                 </div>

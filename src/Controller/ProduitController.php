@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\ProduitRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class ProduitController extends AbstractController
 {
@@ -35,20 +36,18 @@ final class ProduitController extends AbstractController
 public function new(Request $request, EntityManagerInterface $entityManager): Response
 {
     $produit = new Produit();
-    // Définir le statut par défaut à 'Indisponible'
-    $produit->setStatutProduit(false);  // Indisponible par défaut
+    
 
     $form = $this->createForm(ProduitType::class, $produit);
     $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Vérifier la quantité et ajuster le statut
-        if ($produit->getQteProduit() > 0) {
-            $produit->setStatutProduit(true);  // Disponible si quantité > 0
-        } else {
-            $produit->setStatutProduit(false);  // Indisponible si quantité = 0
-        }
-
+    
+   if ($form->isSubmitted() && $form->isValid()) {
+        // Mettre à jour le statut du produit en fonction de la quantité
+       
+        
+        $produit->updateStatut();
+    
+        
         $entityManager->persist($produit);
         $entityManager->flush();
 
@@ -77,6 +76,10 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+             
+            $produit->updateStatut();
+    
+            $entityManager->persist($produit);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_produit');
@@ -107,67 +110,125 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     
 
 
-    // Route pour ajouter un produit au panier
-    #[Route('/panier', name: 'panier', methods: ['POST'])]
-    public function ajouterAuPanier(Request $request, RequestStack $requestStack): Response
-    {
+     // Route pour afficher le panier
+     #[Route('/panier', name: 'panier', methods: ['GET', 'POST'])]
+public function panier(Request $request, RequestStack $requestStack): Response
+{
+    // Récupération de la session et du panier
+    $session = $requestStack->getCurrentRequest()->getSession();
+    $panier = $session->get('panier', []);
+
+    // Calcul du total du panier
+    $total = 0;
+    foreach ($panier as $item) {
+        $total += $item['prixProduit'] * $item['quantiteProduit'];
+    }
+
+    // Affichage du contenu du panier pour débogage
+    dump($panier);  // Ajout de cette ligne pour afficher le contenu du panier
+
+    return $this->render('produit/panier.html.twig', [
+        'panier' => $panier,
+        'total' => $total,
+    ]);
+}
+
+ 
+     #[Route('/panier/ajouter', name: 'ajouter_au_panier', methods: ['GET', 'POST'])]
+     public function ajouterAuPanier(Request $request, RequestStack $requestStack): Response
+     {
+        
+   
         $idProduit = $request->request->get('idProduit');
         $nomProduit = $request->request->get('nomProduit');
         $prixProduit = $request->request->get('prixProduit');
         $quantiteProduit = $request->request->get('quantiteProduit');
-
-        // Vérification des données envoyées
+    
         if (!$idProduit || !$nomProduit || !$prixProduit || !$quantiteProduit || $quantiteProduit <= 0) {
-            // Ajout d'un message d'erreur si les données sont invalides
             $this->addFlash('error', 'Les données sont invalides, veuillez vérifier.');
             return $this->redirectToRoute('panier');
         }
-
-        // Récupération de la session et du panier
+    
+        // Récupération de la session
         $session = $requestStack->getCurrentRequest()->getSession();
         $panier = $session->get('panier', []);
-
+    
         // Si le produit existe déjà dans le panier, on augmente la quantité
         if (isset($panier[$idProduit])) {
             $panier[$idProduit]['quantiteProduit'] += $quantiteProduit;
         } else {
-            // Sinon, on l'ajoute au panier avec sa quantité
+            // Sinon, on l'ajoute au panier avec son ID
             $panier[$idProduit] = [
+                'idProduit' => $idProduit,
                 'nomProduit' => $nomProduit,
                 'prixProduit' => $prixProduit,
                 'quantiteProduit' => $quantiteProduit,
+                
             ];
+        }
+    
+        // Mise à jour du panier dans la session
+        $session->set('panier', $panier);
+    
+        $this->addFlash('success', 'Produit ajouté au panier avec succès !');
+    
+        return $this->redirectToRoute('panier');
+    }
+    #[Route('/panier/supprimer/{id}', name: 'supprimer_du_panier', methods: ['POST'])]
+public function supprimerDuPanier(Request $request, RequestStack $requestStack, $id): Response
+{
+    // Vérification du token CSRF
+    if ($this->isCsrfTokenValid('supprimer' . $id, $request->request->get('_token'))) {
+        // Récupération de la session et du panier
+        $session = $requestStack->getCurrentRequest()->getSession();
+        $panier = $session->get('panier', []);
+
+        // Suppression du produit du panier
+        if (isset($panier[$id])) {
+            unset($panier[$id]);
         }
 
         // Mise à jour du panier dans la session
         $session->set('panier', $panier);
 
-        // Ajout d'un message de succès
-        $this->addFlash('success', 'Produit ajouté au panier avec succès !');
-
-        // Redirection vers la page du panier
-        return $this->redirectToRoute('panier');
+        $this->addFlash('success', 'Produit supprimé du panier.');
     }
 
-    // Route pour afficher le contenu du panier
-    #[Route('/panier', name: 'panier')]
-    public function panier(RequestStack $requestStack): Response
-    {
-        // Récupération de la session et du panier
-        $session = $requestStack->getCurrentRequest()->getSession();
-        $panier = $session->get('panier', []);
-
-        // Calcul du total du panier
-        $total = 0;
-        foreach ($panier as $item) {
-            $total += $item['prixProduit'] * $item['quantiteProduit'];
-        }
-
-        // Rendu de la page du panier avec les produits et le total
-        return $this->render('produit/panier.html.twig', [
-            'panier' => $panier,
-            'total' => $total,
-        ]);
-    }
+    return $this->redirectToRoute('panier');
 }
+#[Route('/panier/modifier/{id}', name: 'modifier_quantite', methods: ['POST'])]
+public function modifierQuantite(Request $request, RequestStack $requestStack, $id): Response
+{
+    // Récupérer la nouvelle quantité
+    $data = json_decode($request->getContent(), true);
+    $quantiteProduit = $data['quantiteProduit'];
+
+    if ($quantiteProduit <= 0) {
+        return $this->json(['success' => false, 'message' => 'La quantité doit être supérieure à zéro.']);
+    }
+
+    // Récupération de la session et du panier
+    $session = $requestStack->getCurrentRequest()->getSession();
+    $panier = $session->get('panier', []);
+
+    // Modifier la quantité du produit
+    if (isset($panier[$id])) {
+        $panier[$id]['quantiteProduit'] = $quantiteProduit;
+    }
+
+    // Mise à jour du panier dans la session
+    $session->set('panier', $panier);
+
+    // Calcul du total du panier
+    $total = 0;
+    foreach ($panier as $item) {
+        $total += $item['prixProduit'] * $item['quantiteProduit'];
+    }
+
+    return $this->json(['success' => true, 'total' => $total]);
+}
+
+
+ }
+
 

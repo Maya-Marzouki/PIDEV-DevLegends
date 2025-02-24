@@ -1,55 +1,51 @@
 {% extends 'baseAdmin.html.twig' %}
-{# {% if userList is defined and userList is not empty%} #}
+
 {% block body %}
- <a href="{{ path('valider_commande') }}" class="btn btn-success">Ajouter une Commande</a>
+<a href="{{ path('valider_commande') }}" class="btn btn-success">Ajouter une Commande</a>
 <div class="row">
-    <!-- column -->
     <div class="col-lg-12">
         <div class="card">
             <div class="card-block">
-			    <h4 class="card-title">Basic Table</h4>
-                    <h6 class="card-subtitle">Add class <code>.table</code></h6>
-                        <div class="table-responsive">
-                            <table class="table">
-                               <tr>
-		<th>NomClient</th>
-        <th>AdresseEmail</th>
-        <th>Adresse</th>
-        <th>DateCommande</th>
-        <th>StatutCommande</th>
-        <th>total</th>
-
-	</tr>
-	{% for commande in commandes %}
-		<tr>
-			        <td>{{ commande.nomClient }}</td>
-                    <td>{{ commande.adresseEmail }}</td>
-                    <td>{{ commande.adresse }}</td>
-                    <td>{{ commande.dateCommande|date('d-m-Y') }}</td>
-                    <td>{{ commande.statutCom }}</td>
-                    <td>{{ commande.totalCom }}</td>
-
+                <h4 class="card-title">Liste des Commandes</h4>
+                
+                <div class="table-responsive">
                     
-                   <td>
-    <a href="{{ path('editCommande', {'id': commande.id}) }}" class="btn btn-warning">Modifier</a>
-    
-    {# Formulaire de suppression CORRIGÉ #}
-    <form 
-        method="POST" 
-        action="{{ path('deleteCommande', { id: commande.id }) }}" 
-        onsubmit="return confirm('Êtes-vous sûr ?')"
-        style="display: inline-block"
-    >
-        {# Token CSRF #}
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commande.id) }}">
-        
-        <button type="submit" class="btn btn-danger">Supprimer</button>
-    </form>
-</td>
-		</tr>
-								{% endfor %}      
-                        	</table>
-                		</div>
+                        <table class="table">
+    <thead>
+        <tr>
+            <th>Nom Client</th>
+            <th>Email</th>
+            <th>Adresse</th>
+            <th>Date Commande</th>
+            <th>pays</th>
+            <th>Num Telephone</th>
+            <th>Total</th>
+            
+            
+        </tr>
+    </thead>
+    <tbody>
+        {% for commande in commandes %}
+            <tr>
+                <td>{{ commande.nomClient }}</td>
+                <td>{{ commande.adresseEmail }}</td>
+                <td>{{ commande.adresse }}</td>
+                <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
+                <td>{{ commande.pays ?? 'Tunisie' }}</td> 
+                <td>{{ commande.numTelephone ?? 'Non renseigné' }}</td> 
+                <td>{{ commande.totalCom }} €</td>
+                
+                
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">Aucune commande enregistrée.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+                </div>
             </div>
         </div>
     </div>

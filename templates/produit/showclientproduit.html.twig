@@ -23,7 +23,7 @@
                             <p class="card-text"><strong>Catégorie:</strong> {{ produit.categorieProduit.nomCategorie }}</p>
                         </div>
                         {% if produit.statutProduit != 'indisponible' %}
-                            <form action="{{ path('panier') }}" method="POST">
+                            <form action="{{ path('ajouter_au_panier') }}" method="POST">
                             <input type="hidden" name="idProduit" value="{{ produit.id }}">
                             <input type="hidden" name="nomProduit" value="{{ produit.nomProduit }}">
                             <input type="hidden" name="prixProduit" value="{{ produit.prixProduit}}">

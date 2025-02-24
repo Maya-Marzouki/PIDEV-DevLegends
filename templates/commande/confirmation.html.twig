@@ -1,0 +1,13 @@
+{# templates/commande/confirmation.html.twig #}
+
+<h1>Confirmation de la commande</h1>
+<p>Commande #{{ commande.id }} validée avec succès !</p>
+<p>Date de la commande : {{ commande.dateCommande|date('d/m/Y H:i') }}</p>
+<p>Total de la commande : {{ commande.totalCom }} €</p>
+
+<h2>Produits commandés :</h2>
+<ul>
+    {% for produit in commande.produits %}
+        <li>{{ produit.nomProduit }} - {{ produit.prixProduit }} € (Quantité : {{ produit.quantiteProduit }})</li>
+    {% endfor %}
+</ul>

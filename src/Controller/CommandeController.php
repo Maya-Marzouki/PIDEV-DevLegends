@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Commande;
 use App\Form\CommandeType;
 use App\Repository\CommandeRepository;
-use App\Repository\ProduitRepository;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,117 +15,131 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CommandeController extends AbstractController
 {
-    // Afficher la liste des commandes
-    #[Route('/commande', name: 'app_commande')]
-    public function index(CommandeRepository $commandeRepository): Response
-    {
-        return $this->render('commande/formshowcommande.html.twig', [
-            'commandes' => $commandeRepository->findAll(),
-        ]);
-    }
-
-    // Afficher les commandes pour le client
+    
     #[Route('/commandeclient', name: 'commandeclient')]
     public function showcommandeclient(CommandeRepository $commandeRepository): Response
     {
-        return $this->render('commande/showclientcommande.html.twig', [
-            'commandes' => $commandeRepository->findAll(),
-        ]);
+        $commande = $commandeRepository->findAll(); // Devrait être find($id) si on attend un seul ID
+
+    if (!$commande) {
+        throw $this->createNotFoundException('Commande non trouvée.');
     }
 
-    // Route pour ajouter une commande depuis le panier
-    
-    #[Route('/addcommande', name: 'valider_commande', methods: ['GET' ,'POST'])]
-public function validerCommande(
-    RequestStack $requestStack, 
-    EntityManagerInterface $entityManager, 
-    ProduitRepository $produitRepository
-): Response {
-    $session = $requestStack->getCurrentRequest()->getSession();
-    $panier = $session->get('panier', []);
-
-    if (empty($panier)) {
-        $this->addFlash('error', 'Votre panier est vide.');
-        return $this->redirectToRoute('panier');
+    return $this->render('commande/showclientcommande.html.twig', [
+        'commande' => $commande,
+    ]);
     }
-
-    // Création d'une nouvelle commande
-    $commande = new Commande();
-    $commande->setNomClient('Nom Client Exemple');  // Remplacer par des valeurs dynamiques si nécessaire
-    $commande->setAdresseEmail('client@example.com');  
-    $commande->setAdresse('123 Rue Exemple');
-    $commande->setStatutCom('en cours');
-    $commande->setDateCommande(new \DateTime());
-
-    $totalCommande = 0;
-
-    foreach ($panier as $idProduit => $produitData) {
-        $produit = $produitRepository->find($idProduit);
-        if ($produit) {
-            $commande->addProduit($produit);
-            $totalCommande += $produit->getPrixProduit() * $produitData['quantiteProduit'];
-        }
-    }
-
-    $commande->setTotalCom($totalCommande);
-
-    // Enregistrement en base de données
-    $entityManager->persist($commande);
-    $entityManager->flush();
-
-    // Vider le panier
-    $session->remove('panier');
-
-    // Message de succès
-    $this->addFlash('success', 'Votre commande a été validée avec succès.');
-
-    return $this->redirectToRoute('app_commande');
-}
-
-    
-
-    // Afficher une commande spécifique
-    #[Route('/commande/{id}', name: 'app_commande_show', methods: ['GET'])]
-    public function show(Commande $commande): Response
+    #[Route('/addcommande', name: 'valider_commande', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('commande/formshowcommande.html.twig', [
-            'commande' => $commande,
+        $commande = new Commande();
+        
+        if (!$commande->getDateCommande()) {
+            $commande->setDateCommande(new \DateTime());
+        }
+        
+        $form = $this->createForm(CommandeType::class, $commande);
+        $form->handleRequest($request);
+        $totalCommande = 0;
+        foreach ($commande->getProduits() as $produit) {
+            $totalCommande += $produit->getPrixProduit() * $produit->getQteProduit();
+        }
+    
+        // Assigner le total à la commande
+        $commande->setTotalCom($totalCommande);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+            $modePaiement = $form->get('modePaiement')->getData();
+            $numeroCarte = $form->get('numeroCarte')->getData();
+            $numeroVirement = $form->get('numeroVirement')->getData();
+            $paypalEmail = $form->get('paypalEmail')->getData();
+        
+            if ($modePaiement === 'carte') {
+                // Traitement paiement par carte
+                // Par exemple, enregistrer le numéro temporairement ou valider la carte
+            } elseif ($modePaiement === 'virement') {
+                // Traitement paiement par virement
+            } elseif ($modePaiement === 'paypal') {
+                // Traitement paiement PayPal
+            }
+            $pays = $form->get('pays')->getData();
+            $numTelephone = $form->get('NumTelephone')->getData();
+
+            // Assigner les valeurs des nouveaux champs à la commande
+            $commande->setPays($pays);
+            $commande->setNumTelephone($numTelephone);
+            // Persister la commande
+            $entityManager->persist($commande);
+            $entityManager->flush();
+    
+            $this->addFlash('success', 'Commande validée avec le mode de paiement : ' . $modePaiement);
+    
+            return $this->redirectToRoute('app_commande', ['id' => $commande->getId()]);
+            
+        }else {
+            // Si le formulaire n'est pas valide, affiche les erreurs dans la console
+            dump($form->getErrors(true));  // Debugging des erreurs de formulaire
+        }
+    
+        return $this->render('commande/formaddcommande.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
-
-    // Modifier une commande existante
-    #[Route('/commande/{id}/edit', name: 'editCommande', methods: ['GET', 'POST'])]
+    #[Route('/commandes', name: 'app_commande', methods: ['GET'])]
+    public function showAll(CommandeRepository $commandeRepository): Response
+{
+    $commandes = $commandeRepository->findAll();
+    
+    return $this->render('commande/formshowcommande.html.twig', [
+        'commandes' => $commandes, // Note bien 'commandes' au pluriel
+    ]);
+}
+    #[Route('/commande/edit', name: 'editCommande', methods: ['GET', 'POST'])]
     public function edit(Request $request, Commande $commande, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CommandeType::class, $commande);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+    
             return $this->redirectToRoute('app_commande');
         }
-
+    
         return $this->render('commande/formeditcommande.html.twig', [
             'commande' => $commande,
             'form' => $form->createView(),
         ]);
     }
+    
+  
 
-    // Supprimer une commande
-    #[Route('/{id}/delete', name: 'deleteCommande', methods: ['POST'])]
-    public function delete(
-        Request $request,
-        Commande $commande,
-        EntityManagerInterface $entityManager
-    ): Response {
-        if ($this->isCsrfTokenValid('delete' . $commande->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($commande);
-            $entityManager->flush();
 
-            $this->addFlash('success', 'Commande supprimée avec succès.');
-        }
+    
+#[Route('/commande/delete', name: 'deleteCommande', methods: ['POST'])]
+public function delete(Request $request, Commande $commande, EntityManagerInterface $entityManager): Response
+{
+    if ($this->isCsrfTokenValid('delete' . $commande->getId(), $request->request->get('_token'))) {
+        $entityManager->remove($commande);
+        $entityManager->flush();
 
-        return $this->redirectToRoute('app_commande');
+        $this->addFlash('success', 'Commande supprimée avec succès.');
     }
+
+    return $this->redirectToRoute('app_commande');
+}
+
+
+    //  #[Route('/commande/client', name: 'commandeclient')]
+    // public function commandeClient(CommandeRepository $commandeRepository): Response
+    // {
+    //     // Vous pouvez afficher ici les commandes spécifiques d'un client
+    //     return $this->render('commande/showclientcommande.html.twig', [
+    //         'commandes' => $commandeRepository->findAll(),  // Ajustez selon votre logique
+    //     ]);
+    // }
+
+   
+
+    
 }

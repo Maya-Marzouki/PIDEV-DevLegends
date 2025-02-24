@@ -50,8 +50,8 @@ class Produit
      * Cette propriété est ajoutée pour gérer la relation avec la commande
      * Elle n'est pas nécessairement persistée si tu ne souhaites pas avoir une relation à travers une entité intermédiaire
      */
-    #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'produits')]
-    private $commandes;
+   #[ORM\ManyToMany(targetEntity: Commande::class, mappedBy: 'produits')]
+private $commandes;
 
     public function __construct()
     {
@@ -66,12 +66,16 @@ class Produit
     }
 
     #[ORM\PreUpdate]
+    #[ORM\PrePersist]
+
     public function updateStatut(): void
     {
-        // Met à jour le statut UNIQUEMENT lors d'une modification
-        $this->statutProduit = $this->qteProduit > 0 
-            ? self::STATUT_DISPONIBLE 
-            : self::STATUT_INDISPONIBLE;
+        // Vérifie si la quantité est supérieure à 0 pour ajuster le statut
+    if ($this->qteProduit > 0) {
+        $this->statutProduit = self::STATUT_DISPONIBLE;
+    } else {
+        $this->statutProduit = self::STATUT_INDISPONIBLE;
+    }
     }
 
     // Getters et Setters

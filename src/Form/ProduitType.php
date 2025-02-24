@@ -26,7 +26,10 @@ class ProduitType extends AbstractType
                 ],
                 'label' => 'Statut',
                 'data' => false,  // Par défaut, l'état du statut est "Indisponible"
-                'attr' => ['class' => 'form-control'],
+                'attr' => ['class' => 'form-control',
+            
+
+        ],
                 
             ])
             ->add('categorieProduit', EntityType::class, [

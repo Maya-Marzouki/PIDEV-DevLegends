@@ -1,38 +1,45 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Liste des Commandes {% endblock %}
+{% block title %}Mes Commandes{% endblock %}
 
 {% block body %}
 <div class="container my-5">
-    <h1 class="text-center text-success mb-4">les commandes</h1>
+    <h1 class="text-center text-success mb-4">Mes Commandes</h1>
 
     <div class="row">
-        {% for commande in commandes %}
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
-                    <div class="card-body d-flex flex-column flex-grow-1 text-center">
-                        <h5 class="card-title text-success">{{ commande.nomClient }}</h5>
-                        <div class="mt-auto">
-                            <p class="card-text"><strong>AdresseEmail:</strong> {{ commande.adresseEmail }}</p>
-                            <p class="card-text"><strong>Adresse:</strong> {{ commande.adresse }} </p>
-                            <p class="card-text"><strong>Statut:</strong> 
-                                <span class="badge bg-{% if commande.statutCom == 'en cours' %}danger{% else %}success{% endif %}">
-                                    {{ commande.statutCom|capitalize }}
-                                </span>
-                            </p>
-                            <p class="card-text"><strong>DateCommande:</strong> {{ commande.dateCommande|date('d-m-Y H:i') }}</p>
-
-                           
-                            
-                        </div>
-                    </div>
-                </div>
+        {% if commandes is empty %}
+            <div class="col-12 text-center text-muted">
+                <p>Vous n'avez pas encore passé de commande.</p>
             </div>
         {% else %}
-            <div class="col-12 text-center text-muted">
-                <p>Aucune commande trouvé.</p>
+            <div class="col-12">
+                {% for Commande in commandes %}
+                    <form class="border p-4 mb-4">
+                        <div class="mb-3">
+                            <label class="form-label">Nom Client</label>
+                            <input type="text" class="form-control" value="{{ commande.nomClient }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ commande.adresseEmail }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date de Commande</label>
+                            <input type="text" class="form-control" value="{{ commande.dateCommande }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Adresse</label>
+                            <input type="text" class="form-control" value="{{ commande.adresse }}" readonly>
+                        </div>
+                       
+                        <div class="mb-3">
+                            <label class="form-label">Total</label>
+                            <input type="text" class="form-control" value="{{ commande.totalCom }} €" readonly>
+                        </div>
+                    </form>
+                {% endfor %}
             </div>
-        {% endfor %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}
