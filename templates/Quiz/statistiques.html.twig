@@ -1,0 +1,67 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Statistiques par État Mental{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Statistiques par État Mental</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Répartition des Quiz par État Mental</h5>
+            <canvas id="etatMentalChart"></canvas>
+        </div>
+    </div>
+
+        {# Bouton "Démarrer un Quiz" en bas à droite #}
+        <style>
+            .btn-custom-green {
+                background-color: #28a745 !important; /* Vert Bootstrap */
+                color: white !important; /* Texte blanc */
+                font-weight: bold;
+            }
+        </style>
+        <div class="d-flex justify-content-end mt-3">
+            <a href="{{ path('quiz_list_admin') }}" class="btn btn-custom-green">Retour à la liste</a>
+        </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('etatMentalChart').getContext('2d');
+    const etatMentalChart = new Chart(ctx, {
+        type: 'bar', // Type de graphique (bar, pie, line, etc.)
+        data: {
+            labels: {{ etatsMentaux|json_encode|raw }}, // États mentaux
+            datasets: [{
+                label: 'Nombre de Quiz', // Légende du graphique
+                data: {{ nombreQuiz|json_encode|raw }}, // Nombre de quiz par état mental
+                backgroundColor: [
+                    '#FF6384', // Couleur pour "Stressé"
+                    '#36A2EB', // Couleur pour "Détendu"
+                    '#FFCE56', // Couleur pour "Fatigué"
+                    '#4BC0C0', // Couleur pour un autre état
+                    '#9966FF', // Couleur pour encore un autre état
+                ],
+            }]
+        },
+        options: {
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Répartition des Quiz par État Mental' // Titre du graphique
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom' // Position de la légende
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true // Commencer l'axe Y à 0
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

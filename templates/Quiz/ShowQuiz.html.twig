@@ -1,43 +1,21 @@
-{% extends 'baseAdmin.html.twig' %}
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Quiz #{{ quiz.id }}{% endblock %}
 
 {% block body %}
-<div class="container">
-    <h1>Détails du Quiz</h1>
-    
-    <table class="table">
-        <tr>
-            <th>ID :</th>
-            <td>{{ quiz.id }}</td>
-        </tr>
-        <tr>
-            <th>Question :</th>
-            <td>{{ quiz.questionQuiz }}</td>
-        </tr>
-        <tr>
-            <th>Catégorie :</th>
-            <td>{{ quiz.categorieSant }}</td>
-        </tr>
-        <tr>
-            <th>Réponse :</th>
-            <td>{{ quiz.reponseQuiz }}</td>
-        </tr>
-        <tr>
-            <th>Score :</th>
-            <td>{{ quiz.scoreQuiz }}</td>
-        </tr>
-        <tr>
-            <th>Consultation associée :</th>
-            <td>{{ quiz.consultationQ.id }}</td>
-        </tr>
-    </table>
-
-    <a href="{{ path('quiz_edit', { id: quiz.id }) }}" class="btn btn-warning">Modifier</a>
-    
-    <form method="post" action="{{ path('quiz_delete', { id: quiz.id }) }}" style="display:inline;">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ quiz.id) }}">
-        <button type="submit" class="btn btn-danger">Supprimer</button>
-    </form>
-
-    <a href="{{ path('quiz_index') }}" class="btn btn-secondary">Retour à la liste</a>
+<div class="container py-5">
+    <h1>Détails du Quiz #{{ quiz.id }}</h1>
+    <div class="card shadow-lg rounded">
+        <div class="card-body">
+            <h2>Score : {{ quiz.score }}</h2>
+            <p>État mental : {{ quiz.etatMental }}</p>
+            {% if imageUrl %}
+                <img src="{{ imageUrl }}" class="img-fluid" alt="Illustration de l'état mental">
+            {% else %}
+                <p>Pas d'image disponible pour ce quiz.</p>
+            {% endif %}
+        </div>
+    </div>
+    <a href="{{ path('quiz_list') }}" class="btn btn-primary mt-3">Retour à la liste</a>
 </div>
 {% endblock %}

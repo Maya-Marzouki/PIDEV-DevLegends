@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\Question;
+use App\Entity\Reponse;
 use App\Repository\QuestionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormInterface;
@@ -22,17 +23,34 @@ class QuizService
         return $this->entityManager->getRepository(Question::class)->findBy([], [], $limit);
     }
 
+    // public function calculateScore(FormInterface $form, array $questions): int
+    // {
+    //     $score = 0;
+
+    //     foreach ($questions as $question) {
+    //         $answer = $form->get('question_' . $question->getId())->getData();
+    //         $score += $answer;
+    //     }
+
+    //     return $score;
+    // }
+
     public function calculateScore(FormInterface $form, array $questions): int
-    {
-        $score = 0;
+{
+    $score = 0;
 
-        foreach ($questions as $question) {
-            $answer = $form->get('question_' . $question->getId())->getData();
-            $score += $answer;
+    foreach ($questions as $question) {
+        // Récupérer la réponse sélectionnée pour cette question
+        $reponse = $form->get('question_' . $question->getId())->getData();
+
+        // Vérifier que la réponse est un objet Reponse et a une valeur de score
+        if ($reponse instanceof Reponse) {
+            $score += $reponse->getScore();
         }
-
-        return $score;
     }
+
+    return $score;
+}
 
     public function interpretScore(int $score): string
     {

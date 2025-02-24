@@ -1,0 +1,59 @@
+{# templates/consultation/pdf_template.html.twig #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Consultations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Liste des Consultations</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Âge</th>
+                <th>Profession</th>
+                <th>Raison(s) de la consultation thérapeutique</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for consultation in consultations %}
+                <tr>
+                    <td>{{ consultation.id }}</td>
+                    <td>{{ consultation.dateCons|date('Y-m-d') }}</td>
+                    <td>{{ consultation.Nom }}</td>
+                    <td>{{ consultation.prenom }}</td>
+                    <td>{{ consultation.age }}</td>
+                    <td>{{ consultation.lienVisioCons }}</td>
+                    <td>{{ consultation.notesCons }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">Aucune consultation disponible.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

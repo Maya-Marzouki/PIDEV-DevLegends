@@ -9,13 +9,51 @@
             <div class="card-block text-center p-4"> {# Centre le texte dans la carte #}
                 <h4 class="card-title">Liste des Réponses</h4>
                 <h6 class="card-subtitle mb-3">Gestion des réponses</h6>
+
+                {# Barre de recherche manuelle #}
+                <div class="mb-4 text-left"> {# Aligner à gauche #}
+                    <form action="{{ path('app_reponse_index_admin') }}" method="GET" class="form-inline">
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ searchQuery }}"
+                            class="form-control mr-2"
+                            placeholder="Rechercher une réponse..."
+                        >
+                        <button type="submit" class="btn btn-secondary ml-2">Rechercher</button>
+                        <a href="{{ path('app_reponse_index_admin') }}" class="btn btn-secondary ml-2">Réinitialiser</a>
+                    </form>
+                </div>
+
+                {# Nombre de résultats #}
+                <div class="text-left mb-3"> {# Aligner à gauche #}
+                    {% if reponses|length > 0 %}
+                        <p>Nombre de résultats : {{ reponses|length }}</p>
+                    {% else %}
+                        <p>Aucun résultat trouvé.</p>
+                    {% endif %}
+                </div>
+
+                {# Tableau des réponses #}
                 <div class="table-responsive">
                     <table class="table table-bordered text-center"> {# Centre le texte dans le tableau #}
                         <thead class="table-dark">
                             <tr>
-                                <th>Réponse</th>
-                                <th>Score</th>
-                                <th>Question</th>
+                                <th>
+                                    <a href="{{ path('app_reponse_index_admin', {'sort_by': 'answerText', 'order': sort_by == 'answerText' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Réponse {% if sort_by == 'answerText' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ path('app_reponse_index_admin', {'sort_by': 'score', 'order': sort_by == 'score' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Score {% if sort_by == 'score' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ path('app_reponse_index_admin', {'sort_by': 'question', 'order': sort_by == 'question' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Question {% if sort_by == 'question' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -48,17 +86,20 @@
                 </div>
             </div>
         </div>
-                {# Bouton "Ajouter une Réponse" en bas à droite #}
-                <style>
-                    .btn-custom-green {
-                        background-color: #28a745 !important; /* Vert Bootstrap */
-                        color: white !important; /* Texte blanc */
-                        font-weight: bold;
-                    }
-                </style>
-                <div class="d-flex justify-content-end mt-3">
-                    <a href="{{ path('reponse_new') }}" class="btn btn-custom-green">Ajouter une Réponse</a>
-                </div>
+
+        {# Bouton "Ajouter une Réponse" en bas à droite #}
+        <style>
+            .btn-custom-green {
+                background-color: #28a745 !important; /* Vert Bootstrap */
+                color: white !important; /* Texte blanc */
+                font-weight: bold;
+            }
+        </style>
+        {# Boutons en bas à droite #}
+        <div class="d-flex justify-content-end mt-3">
+            <a href="{{ path('reponse_new') }}" class="btn btn-custom-green mr-2">Ajouter une Réponse</a>
+            <a href="{{ path('app_reponse_export_pdf') }}" class="btn btn-custom-green">Exporter en PDF</a>
+        </div>
     </div>
 </div>
 {% endblock %}

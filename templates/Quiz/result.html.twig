@@ -59,10 +59,13 @@
             border-radius: 8px;
             text-decoration: none;
             transition: 0.3s ease-in-out;
+            argin-top: 20px; /* Espacement par rapport au contenu */
         }
 
         .btn-quiz:hover {
             background: #0056b3;
+            transform: translateY(-2px); /* Effet de survol */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombre au survol */
         }
 
         /* Couleurs et icônes */
@@ -75,46 +78,27 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div class="card shadow-lg rounded">
-                    <div class="card-body text-center">
-                        <h1 class="card-title">Résultat de votre Quiz</h1>
-                        <hr>
-
-                        <p class="text-muted"><strong>Votre score :</strong> <span class="badge bg-primary fs-5">{{ score }}</span></p>
-
-                        {% if etatMental == "Bonne santé mentale" %}
-                            <h2 class="text-success">💚 Bonne santé mentale</h2>
-                            <p class="card-text">Bravo ! Continuez à prendre soin de votre bien-être.</p>
-
-                        {% elseif etatMental == "Légère fatigue émotionnelle" %}
-                            <h2 class="text-info">😌 Légère fatigue émotionnelle</h2>
-                            <p class="card-text">Prenez du temps pour vous reposer et vous détendre.</p>
-
-                        {% elseif etatMental == "Signes d’anxiété ou de stress" %}
-                            <h2 class="text-warning">⚠️ Signes de stress ou d’anxiété</h2>
-                            <p class="card-text">Essayez des exercices de respiration ou des activités relaxantes.</p>
-
-                        {% elseif etatMental == "État dépressif modéré" %}
-                            <h2 class="text-danger">😢 Dépression modérée</h2>
-                            <p class="card-text">Parlez à un proche ou consultez un spécialiste.</p>
-
-                        {% else %}
-                            <h2 class="text-danger">🚨 État préoccupant</h2>
-                            <p class="card-text">Il est fortement conseillé de consulter un professionnel.</p>
-                        {% endif %}
-
-                        <hr>
-                        <div class="d-flex justify-content-center">
-                            <a href="{{ path('quiz_start') }}" class="btn btn-primary">
-                                <i class="fas fa-redo-alt"></i> Reprendre le quiz
-                            </a>
-                        </div>
-                    </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg rounded text-center">
+                {% if imageUrl %}
+                    <img src="{{ imageUrl }}" class="card-img-top" alt="Illustration de votre état mental">
+                {% else %}
+                    <p>Pas d'image disponible pour cette condition.</p>
+                {% endif %}
+                <div class="card-body">
+                    <h2>Votre score : {{ score }}</h2>
+                    <p>État mental : {{ etatMental }}</p>
                 </div>
+            </div>
+            <!-- Bouton de retour centré sous la carte -->
+            <div class="text-center mt-4">
+                <a href="{{ path('quiz_list') }}" class="btn-quiz">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}

@@ -12,17 +12,93 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use App\Service\PdfGeneratorService;
+use App\Service\QrCodeGeneratorService;
+use App\Service\QrCodeService;
 
 #[Route('/consultation')]
 class ConsultationController extends AbstractController
 {
+
+    private $qrCodeService;
+    private $entityManager;
+
+    public function __construct(QrCodeService $qrCodeService, EntityManagerInterface $entityManager)
+    {
+        $this->qrCodeService = $qrCodeService;
+        $this->entityManager = $entityManager;
+    }
+
+    #[Route('/qr-code', name: 'consultation_qr_code')]
+
+    public function generateQrCode(): Response
+    {
+        // Récupérer toutes les consultations depuis la base de données
+        $consultations = $this->entityManager
+            ->getRepository(Consultation::class)
+            ->findAll();
+
+        // Convertir les consultations en tableau pour le QR code
+        $consultationData = [];
+        foreach ($consultations as $consultation) {
+            $consultationData[] = [
+                'id' => $consultation->getId(),
+                'date' => $consultation->getDateCons()->format('Y-m-d'),
+                'nom' => $consultation->getNom(),
+                'prenom' => $consultation->getPrenom(),
+                'age' => $consultation->getAge(),
+                'profession' => $consultation->getLienVisioCons(),
+                'notes' => $consultation->getNotesCons(),
+            ];
+        }
+        
+        // Debug : Afficher les données des consultations
+        dump($consultationData);
+
+        // Générer le QR code avec les données des consultations
+        $qrCodeUrl = $this->qrCodeService->generateQrCode($consultationData);
+
+        // Debug : Afficher l'URL du QR code
+        dump($qrCodeUrl);
+
+        // Afficher le QR code dans une vue
+        return $this->render('consultation/qr_code.html.twig', [
+            'qrCodeUrl' => $qrCodeUrl,
+        ]);
+    }
+
 // Affiche la liste des consultation pour l'Admin
     #[Route('/list', name: 'consultation_index', methods: ['GET'])]
-    public function index(ConsultationRepository $consultationRepository): Response
+    public function index(ConsultationRepository $consultationRepository, Request $request): Response
     {
+        // Récupérer le terme de recherche depuis l'URL (query parameter 'q')
+        $query = $request->query->get('q', '');
+
+        // Récupérer les paramètres de tri depuis l'URL
+        $sortBy = $request->query->get('sort_by', 'id'); // Colonne par défaut : 'id'
+        $order = $request->query->get('order', 'asc');   // Ordre par défaut : 'asc'
+
+        // Initialiser le query builder
+        $queryBuilder = $consultationRepository->createQueryBuilder('c');
+
+        // Appliquer la recherche si un terme est fourni
+        if (!empty($query)) {
+            $queryBuilder
+                ->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query')
+                ->setParameter('query', '%' . $query . '%');
+        }
+
+        // Appliquer le tri
+        $queryBuilder->orderBy('c.' . $sortBy, $order);
+
+        // Récupérer tous les résultats sans pagination
+        $consultations = $queryBuilder->getQuery()->getResult();
+
         return $this->render('consultation/ShowConsultation.html.twig', [
-            'consultations' => $consultationRepository->findAll(),
+            'consultations' => $consultations,
+            'searchQuery' => $query, // Passer le terme de recherche au template
+            'sort_by' => $sortBy,    // Passer la colonne de tri au template
+            'order' => $order,       // Passer l'ordre de tri au template
         ]);
     }
 
@@ -172,4 +248,66 @@ class ConsultationController extends AbstractController
 
         return $this->json(['success' => 'Date valide.']);
     }
+
+    #[Route('/consultation/export-pdf', name: 'consultation_export_pdf')]
+    public function exportPdf(ConsultationRepository $consultationRepository, PdfGeneratorService $pdfGenerator): Response
+    {
+        // Récupérer toutes les consultations
+        $consultations = $consultationRepository->findAll();
+
+        // Générer le HTML pour le PDF
+        $html = $this->renderView('consultation/pdf_template.html.twig', [
+            'consultations' => $consultations,
+        ]);
+
+        // Générer le PDF
+        $pdfContent = $pdfGenerator->generatePdfFromHtml($html);
+
+        // Retourner le PDF en tant que réponse
+        return new Response(
+            $pdfContent,
+            Response::HTTP_OK,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="consultations.pdf"',
+            ]
+        );
+    }
+
+    // #[Route('/consultation/qr-code', name: 'consultation_qr_code')]
+    // public function generateQrCode(ConsultationRepository $consultationRepository, QrCodeGeneratorService $qrCodeGenerator): Response
+    // {
+    //     // Récupérer toutes les consultations
+    //     $consultations = $consultationRepository->findAll();
+
+    //     // Formater les consultations en une chaîne de caractères
+    //     $data = "Liste des Consultations:\n\n";
+    //     foreach ($consultations as $consultation) {
+    //         $data .= sprintf(
+    //             "ID: %d\nDate: %s\nNom: %s\nPrénom: %s\nÂge: %d\nProfession: %s\nRaison: %s\n\n",
+    //             $consultation->getId(),
+    //             $consultation->getDateCons()->format('Y-m-d'),
+    //             $consultation->getNom(),
+    //             $consultation->getPrenom(),
+    //             $consultation->getAge(),
+    //             $consultation->getLienVisioCons(),
+    //             $consultation->getNotesCons()
+    //         );
+    //     }
+
+    //     // Générer le QR code
+    //     $qrCode = $qrCodeGenerator->generateQrCode($data);
+
+    //     // Retourner le QR code en tant que réponse
+    //     return new Response(
+    //         $qrCode,
+    //         Response::HTTP_OK,
+    //         [
+    //             'Content-Type' => 'image/png',
+    //             // permettre à l'utilisateur de télécharger le QR code
+    //             'Content-Disposition' => 'attachment; filename="consultations_qr_code.png"',
+    //             // 'Content-Disposition' => 'inline; filename="consultations_qr_code.png"',
+    //         ]
+    //     );
+    // }
 }

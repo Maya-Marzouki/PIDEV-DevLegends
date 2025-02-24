@@ -3,14 +3,39 @@
 {% block title %}Liste des Quiz{% endblock %}
 
 {% block body %}
+<div class="container py-5">
     <h1>Liste des Quiz</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Score</th>
+                <th>État Mental</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for quiz in quizzes %}
+                <tr>
+                    <td>{{ quiz.score }}</td>
+                    <td>{{ quiz.etatMental }}</td>
+                    <td>
+                        {# <a href="{{ path('quiz_show', {'id': quiz.id}) }}" class="btn btn-info btn-sm">Voir</a> #}
+                        <a href="{{ path('quiz_show', {'id': quiz.id}) }}" class="btn btn-light btn-sm">
+                            <i class="fas fa-eye"></i> Voir
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+        <!-- Bouton pour démarrer un quiz -->
+        <div class="text-center">
+            <a href="{{ path('quiz_start') }}" class="btn btn-success btn-quiz">Démarrer un Quiz</a>
+        </div>
+    </div>
+{# <div class="navigation">
+    {{ knp_pagination_render(quizzes) }}
+</div> #}
+</div>
 
-    <ul>
-        {% for quiz in quizzes %}
-            <li>
-                {{ quiz.name }} 
-                <a href="{{ path('quiz_start', {'quizId': quiz.id}) }}">Démarrer le quiz</a>
-            </li>
-        {% endfor %}
-    </ul>
 {% endblock %}

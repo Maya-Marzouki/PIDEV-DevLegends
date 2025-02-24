@@ -7,53 +7,119 @@
             <div class="card-block text-center"> {# Centre le texte dans la carte #}
                 <h4 class="card-title">Liste des Consultations</h4>
                 <h6 class="card-subtitle">Gestion des consultations</h6>
+
+                {# Barre de recherche manuelle #}
+                <div class="mb-4 text-left"> {# Aligner à gauche #}
+                    <form action="{{ path('consultation_index') }}" method="GET" class="form-inline">
+                        <input
+                            type="text"
+                            name="q"
+                            value="{{ searchQuery }}"
+                            class="form-control mr-2"
+                            placeholder="Rechercher une consultation..."
+                        >
+                        <button type="submit" class="btn btn-secondary ml-2">Rechercher</button>
+                        <a href="{{ path('consultation_index') }}" class="btn btn-secondary ml-2">Réinitialiser</a>
+                    </form>
+                </div>
+
+                {# Nombre de résultats #}
+                <div class="text-left mb-3"> {# Aligner à gauche #}
+                    {% if consultations|length > 0 %}
+                        <p>Nombre de résultats : {{ consultations|length }}</p>
+                    {% else %}
+                        <p>Aucun résultat trouvé.</p>
+                    {% endif %}
+                </div>
+
+                {# Tableau des consultations #}
                 <div class="table-responsive">
                     <table class="table table-bordered text-center"> {# Centre le texte dans le tableau #}
-                        <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Âge</th>
-                            <th>Profession</th>
-                            <th>Raison(s) de la consultation thérapeutique</th>
-                            <th>Actions</th>
-                        </tr>
-                        {% for consultation in consultations %}
-                        <tr>
-                            <td>{{ consultation.id }}</td>
-                            <td>{{ consultation.dateCons|date('Y-m-d') }}</td>
-                            <td>{{ consultation.Nom }}</td>
-                            <td>{{ consultation.prenom }}</td>
-                            <td>{{ consultation.age }}</td>
-                            <td>{{ consultation.lienVisioCons }}</td>
-                            <td>{{ consultation.notesCons }}</td>
-                            <td>
-                                <a href="{{ path('edit_consultation_Admin', { id: consultation.id }) }}" class="btn btn-succes">Modifier</a>
-                                <form action="{{ path('delete_consultation_Admin', {'id': consultation.id}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ consultation.id) }}">
-                                    <button type="submit" class="btn btn-danger">Supprimer</button>
-                                </form>
-
-                                {# <a href="{{ path('delete_consultation_Admin', { id: consultation.id }) }}" class="btn btn-succes" onclick="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">Supprimer</a> #}
-                            </td>
-                        </tr>
-                        {% endfor %}      
+                        <thead class="table-dark">
+                            <tr>
+                                <th>
+                                    <a href="{{ path('consultation_index', {'sort_by': 'id', 'order': sort_by == 'id' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        ID {% if sort_by == 'id' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ path('consultation_index', {'sort_by': 'dateCons', 'order': sort_by == 'dateCons' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Date {% if sort_by == 'dateCons' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ path('consultation_index', {'sort_by': 'Nom', 'order': sort_by == 'Nom' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Nom {% if sort_by == 'Nom' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ path('consultation_index', {'sort_by': 'prenom', 'order': sort_by == 'prenom' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Prénom {% if sort_by == 'prenom' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ path('consultation_index', {'sort_by': 'age', 'order': sort_by == 'age' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Âge {% if sort_by == 'age' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ path('consultation_index', {'sort_by': 'lienVisioCons', 'order': sort_by == 'lienVisioCons' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Profession {% if sort_by == 'lienVisioCons' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="{{ path('consultation_index', {'sort_by': 'notesCons', 'order': sort_by == 'notesCons' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                        Raison(s) de la consultation thérapeutique {% if sort_by == 'notesCons' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                                    </a>
+                                </th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for consultation in consultations %}
+                                <tr>
+                                    <td>{{ consultation.id }}</td>
+                                    <td>{{ consultation.dateCons|date('Y-m-d') }}</td>
+                                    <td>{{ consultation.Nom }}</td>
+                                    <td>{{ consultation.prenom }}</td>
+                                    <td>{{ consultation.age }}</td>
+                                    <td>{{ consultation.lienVisioCons }}</td>
+                                    <td>{{ consultation.notesCons }}</td>
+                                    <td>
+                                        <a href="{{ path('edit_consultation_Admin', { id: consultation.id }) }}" class="btn btn-secondary btn-sm">Modifier</a>
+                                        <form action="{{ path('delete_consultation_Admin', {'id': consultation.id}) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cette consultation ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ consultation.id) }}">
+                                            <button type="submit" class="btn btn-secondary btn-sm">Supprimer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center">Aucune consultation disponible.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
-                {# Bouton "Ajouter une Consultation" en bas à droite #}
-                <style>
-                    .btn-custom-green {
-                        background-color: #28a745 !important; /* Vert Bootstrap */
-                        color: white !important; /* Texte blanc */
-                        font-weight: bold;
-                    }
-                </style>
-                {# <div class="d-flex justify-content-end mt-3">
-                    <a href="{{ path('consultation_new') }}" class="btn btn-custom-green">Ajouter une Consultation</a>
-                </div> #}
+
+        {# Bouton "Ajouter une Consultation" en bas à droite #}
+        <style>
+            .btn-custom-green {
+                background-color: #28a745 !important; /* Vert Bootstrap */
+                color: white !important; /* Texte blanc */
+                font-weight: bold;
+            }
+        </style>
+        <div class="d-flex justify-content-end mt-3">
+            <a href="{{ path('consultation_export_pdf') }}" class="btn btn-custom-green">
+                <i class="fas fa-file-pdf"></i> Exporter en PDF
+            </a>
+            <a href="{{ path('consultation_qr_code') }}" class="btn btn-custom-green">
+                <i class="fas fa-qrcode"></i> Générer QR Code
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

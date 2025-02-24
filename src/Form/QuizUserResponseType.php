@@ -32,6 +32,22 @@ class QuizUserResponseType extends AbstractType
         }
     }
 
+
+// public function buildForm(FormBuilderInterface $builder, array $options)
+// {
+//     $questions = $options['questions'];
+
+//     foreach ($questions as $question) {
+//         $builder->add('question_' . $question->getId(), ChoiceType::class, [
+//             'label' => $question->getText(),
+//             'choices' => $question->getReponses(), // Supposons que getReponses() retourne une collection d'objets Reponse
+//             'choice_label' => 'answerText', // Le texte à afficher pour chaque réponse
+//             'choice_value' => 'id', // La valeur à utiliser pour chaque réponse
+//             'expanded' => true, // Afficher les réponses sous forme de boutons radio
+//             'multiple' => false, // Une seule réponse possible par question
+//         ]);
+//     }
+// }
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
