@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\FormationRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class FormationController extends AbstractController
 {
@@ -32,7 +33,6 @@ class FormationController extends AbstractController
             'formations' => $formations,
         ]);
     }
-
 
     #[Route('/addformation', name: 'insertformation', methods: ['GET', 'POST'])]
     public function new(Request $request, ManagerRegistry $mr): Response
@@ -63,7 +63,6 @@ class FormationController extends AbstractController
         ]);
     }
 
-    // Décommentez la route pour l'édition
     #[Route('/formation/{id}/edit', name: 'editFormation')]
     public function edit(Request $request, Formation $formation, ManagerRegistry $mr): Response
     {
@@ -72,7 +71,7 @@ class FormationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $manager = $mr->getManager();
-            $manager->flush(); // Sauvegarde les modifications
+            $manager->flush();
 
             return $this->redirectToRoute('app_formation_index');
         }
@@ -83,16 +82,43 @@ class FormationController extends AbstractController
         ]);
     }
 
-#[Route('/formation/{id}/delete', name: 'deleteFormation')]
+    #[Route('/formation/{id}/delete', name: 'deleteFormation', methods: ['POST', 'DELETE'])]
     public function deleteFormation(ManagerRegistry $mr, FormationRepository $repo, $id): Response
     {
         $manager = $mr->getManager();
-        $formations = $repo->find($id);
-        $manager->remove($formations);
+        $formation = $repo->find($id);
+
+        if (!$formation) {
+            throw $this->createNotFoundException('Formation non trouvée.');
+        }
+
+        $manager->remove($formation);
         $manager->flush();
 
         return $this->redirectToRoute("app_formation_index");
     }
 
-    
+    #[Route('/calendar/events', name: 'calendar_events', methods: ['GET'])]
+    public function getEvents(ManagerRegistry $mr): JsonResponse
+    {
+        $formations = $mr->getRepository(Formation::class)->findAll();
+        $events = [];
+
+        foreach ($formations as $formation) {
+            $events[] = [
+                'title Formation' => $formation->getTitreFor(),
+                'Date Formation' => $formation->getDateFor()->format('Y-m-d H:i:s'),
+                'Lieu Formation' => $formation->getLieuFor(),
+                'Statut' => $formation->getStatutFor(),
+            ];
+        }
+
+        return new JsonResponse($events);
+    }
+
+    #[Route('/calendar', name: 'calendar_view')]
+    public function calendar(): Response
+    {
+        return $this->render('formation/calendar.html.twig');
+    }
 }

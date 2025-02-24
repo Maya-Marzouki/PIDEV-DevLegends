@@ -2,30 +2,27 @@
 
 namespace App\Form;
 
-use App\Entity\Formation;
+use App\Entity\Participation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class FormationType extends AbstractType
+class ParticipationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('titreFor')
-            ->add('dateFor', null, [
-                'widget' => 'single_text',
+            ->add('nomParticipant')
+            ->add('emailParticipant')
+            ->add('dateParticipation', null, [
             ])
-            ->add('lieuFor')
-            ->add('statutFor')
-            
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Formation::class,
+            'data_class' => Participation::class,
         ]);
     }
 }

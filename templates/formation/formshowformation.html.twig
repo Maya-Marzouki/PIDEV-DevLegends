@@ -20,6 +20,7 @@
 								<th>Date Formation</th>
 								<th>Lieu Formation</th>
 								<th>Statut</th>
+								<th>Actions</th>
 							</tr>
 							{% for formation in formations %}
 								<tr>
@@ -29,21 +30,26 @@
 									<td>{{ formation.statutFor }}</td>
 
 
-									<td>
-										<a class="text-themecolor" href="{{ path('editFormation', {'id': formation.id}) }}">Modifier</a>
-										<form method="post" action="{{ path('deleteFormation', { id: formation.id }) }}">
-											<a class="text-themecolor" href="{{ path('deleteFormation', {'id': formation.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette formation ?');">Supprimer</a>
-
-										</form>
-
-									</td>
+            <td>
+                <a class="text-themecolor" href="{{ path('editFormation', {'id': formation.id}) }}">Modifier</a>
+                <form method="post" action="{{ path('deleteFormation', { id: formation.id }) }}" style="display:inline;">
+                    <a class="text-themecolor" href="{{ path('deleteFormation', {'id': formation.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette formation ?');">Supprimer</a>
+                </form>
+                {# ✅ Bouton "S'inscrire" ajouté ici dans la même ligne que la formation #}
+                <a href="{{ path('formation_participation', { 'id': formation.id }) }}" class="btn btn-success">S'inscrire</a>
+            </td>
 								</tr>
 							{% endfor %}
 						</table>
+						<a href="{{ path('calendar_events') }}" class="btn btn-primary">Voir le calendrier</a>
+
+
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+	
+
 
 {% endblock %}

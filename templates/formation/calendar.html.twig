@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier des Formations{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2 class="text-center">Calendrier des Formations</h2>
+        <div id='calendar'></div>
+    </div>
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.css'/>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.js'></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                events: '/calendar/events',
+                eventClick: function(info) {
+                    alert('Formation: ' + info.event.title + '\nLieu: ' + info.event.extendedProps.location);
+                }
+            });
+            calendar.render();
+        });
+    </script>
+{% endblock %}

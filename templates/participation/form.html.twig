@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Participation à la formation{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="mb-4">Participation à la formation : {{ formation.titreFor }}</h2>
+
+    <div class="card p-4 shadow-sm">
+        {{ form_start(form) }}
+        
+        <div class="mb-3">
+            {{ form_label(form.nomParticipant, 'Nom du participant') }}
+            {{ form_widget(form.nomParticipant, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.emailParticipant, 'Email du participant') }}
+            {{ form_widget(form.emailParticipant, { 'attr': {'class': 'form-control'} }) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">S'inscrire</button>
+
+        {{ form_end(form) }}
+    </div>
+
+    <a href="{{ path('app_formation_index') }}" class="btn btn-secondary mt-3">Retour aux formations</a>
+</div>
+{% endblock %}

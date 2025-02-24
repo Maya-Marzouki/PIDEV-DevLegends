@@ -103,6 +103,7 @@ class Formation
         return $this->statutFor;
     }
 
+
     public function setStatutFor(string $statutFor): static
     {
         $this->statutFor = $statutFor;
@@ -114,4 +115,5 @@ class Formation
     {
         return $this->evenements;
     }
+    
 }
