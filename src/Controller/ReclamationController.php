@@ -11,18 +11,29 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ReclamationRepository;
 use App\Repository\UserRepository;
+use Knp\Component\Pager\PaginatorInterface;
 
 class ReclamationController extends AbstractController
 {
     #[Route('/reclamation', name: 'app_reclamation_index')]
-    public function index(ManagerRegistry $mr): Response
+    public function index(ReclamationRepository $reclamRepo, PaginatorInterface $paginator, Request $request): Response
     {
-        $reclamations = $mr->getRepository(Reclamation::class)->findAll();
+        $search = $request->query->get('search', '');
+        $queryBuilder = $reclamRepo->searchReclamation($search); // Maintenant, c'est un QueryBuilder
+
+        // Pagination
+        $reclamations = $paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            5 // Nombre d'éléments par page
+        );
 
         return $this->render('reclamation/formshowreclamation.html.twig', [
             'reclamations' => $reclamations,
         ]);
     }
+
+
 
     #[Route('/reclamationclient', name: 'reclamationclient')]
     public function showreclamationclient(ManagerRegistry $mr): Response

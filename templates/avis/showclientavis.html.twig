@@ -27,7 +27,18 @@
 								{{ avis.contenuAvis }}</p>
 							<p class="card-text">
 								<strong>Note :</strong>
-								{{ avis.noteAvis }}/10</p>
+								<span class="text-warning" data-bs-toggle="tooltip" title="{{ avis.noteAvis }}/10">
+									{% for i in 1..5 %}
+										{% if i <= (avis.noteAvis / 2) %}
+											<i class="fas fa-star"></i>
+										{% elseif i - 0.5 == (avis.noteAvis / 2) %}
+											<i class="fas fa-star-half-alt"></i>
+										{% else %}
+											<i class="far fa-star"></i>
+										{% endif %}
+									{% endfor %}
+								</span>
+							</p>
 							<p class="card-text">
 								<strong>Date :</strong>
 								{{ avis.dateAvis|date('d-m-Y H:i') }}</p>
@@ -52,4 +63,15 @@
 			{% endfor %}
 		</div>
 	</div>
+
+	{# Activation des tooltips Bootstrap #}
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+			var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+				return new bootstrap.Tooltip(tooltipTriggerEl);
+			});
+		});
+	</script>
+
 {% endblock %}
