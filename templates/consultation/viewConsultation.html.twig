@@ -10,15 +10,55 @@
         </div>
 
         <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+            {# Formulaire de recherche #}
+            <div class="mb-4">
+                <form id="searchForm" action="{{ path('consultation_index') }}" method="GET">
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ searchQuery }}"
+                        class="form-control"
+                        placeholder="Rechercher une consultation..."
+                        id="searchInput"
+                    >
+                    <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+                </form>
+            </div>
+
+            {# Tableau des consultations #}
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Âge</th>
-                        <th>Profession</th>
-                        <th>Raison(s) de la consultation thérapeutique</th>
+                        <th>
+                            <a href="{{ path('consultation_index', {'sort_by': 'dateCons', 'order': sort_by == 'dateCons' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                Date {% if sort_by == 'dateCons' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('consultation_index', {'sort_by': 'Nom', 'order': sort_by == 'Nom' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                Nom {% if sort_by == 'Nom' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('consultation_index', {'sort_by': 'prenom', 'order': sort_by == 'prenom' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                Prénom {% if sort_by == 'prenom' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('consultation_index', {'sort_by': 'age', 'order': sort_by == 'age' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                Âge {% if sort_by == 'age' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('consultation_index', {'sort_by': 'lienVisioCons', 'order': sort_by == 'lienVisioCons' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                Profession {% if sort_by == 'lienVisioCons' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path('consultation_index', {'sort_by': 'notesCons', 'order': sort_by == 'notesCons' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
+                                Raison(s) de la consultation thérapeutique {% if sort_by == 'notesCons' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
+                            </a>
+                        </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -39,16 +79,72 @@
                                 </form>
                             </td>
                         </tr>
-                    {% endfor %}      
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center">Aucune consultation trouvée.</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
 
+{# Pagination #}
+<div class="d-flex justify-content-center mt-4">
+    <nav>
+        <ul class="pagination">
+            {% if currentPage > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('consultation_index', {'page': currentPage - 1, 'sort_by': sort_by, 'order': order, 'q': searchQuery}) }}">Précédent</a>
+                </li>
+            {% endif %}
+            {% for i in 1..totalPages %}
+                <li class="page-item {{ i == currentPage ? 'active' : '' }}">
+                    <a class="page-link" href="{{ path('consultation_index', {'page': i, 'sort_by': sort_by, 'order': order, 'q': searchQuery}) }}">{{ i }}</a>
+                </li>
+            {% endfor %}
+            {% if currentPage < totalPages %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('consultation_index', {'page': currentPage + 1, 'sort_by': sort_by, 'order': order, 'q': searchQuery}) }}">Suivant</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+            {# Bouton "Ajouter une Consultation" #}
             <div class="text-center mt-3">
                 <a href="{{ path('consultation_new') }}" class="btn btn-success py-3 px-4">Ajouter une Consultation</a>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    // Recherche AJAX
+    document.getElementById('searchInput').addEventListener('input', function () {
+        const searchQuery = this.value;
+
+        // Envoyer une requête AJAX
+        fetch(`{{ path('consultation_index') }}?q=${searchQuery}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Mettre à jour le tableau des consultations
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, 'text/html');
+            const newTableBody = doc.querySelector('tbody');
+            document.querySelector('tbody').innerHTML = newTableBody.innerHTML;
+
+            // Mettre à jour la pagination
+            const newPagination = doc.querySelector('.pagination');
+            document.querySelector('.pagination').innerHTML = newPagination.innerHTML;
+        });
+    });
+</script>
 {% endblock %}
 
 {% block stylesheets %}

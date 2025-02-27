@@ -69,6 +69,9 @@ class Consultation
     )]
     private ?int $age = null;
 
+    #[ORM\ManyToOne(inversedBy: 'consultations')]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->quizzes = new ArrayCollection();
@@ -201,6 +204,18 @@ class Consultation
     public function setAge(?int $age): static
     {
         $this->age = $age;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

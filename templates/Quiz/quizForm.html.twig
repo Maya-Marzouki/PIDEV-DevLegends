@@ -73,6 +73,13 @@
             <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
                 <p class="fs-5 fw-bold text-primary">Quiz Santé Mentale</p>
                 <h1 class="display-5 mb-5">Répondez aux questions</h1>
+
+                {# Timer ajouté ici en noir juste après "Quiz Santé Mentale" #}
+                <p id="timer-text" style="font-size: 18px; font-weight: bold; color: black;">
+                    Temps restant : <span id="timer">03:00</span>
+                </p>
+                
+
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-7">
@@ -125,98 +132,165 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const quizForm = document.getElementById('quiz-form');
-            const questions = document.querySelectorAll('.question');
-            const progressBar = document.getElementById('progress-bar');
-            const currentQuestionElement = document.getElementById('current-question');
-            const totalQuestions = questions.length;
-            const quizCompleteMessage = document.getElementById('quiz-complete-message');
 
-            let currentQuestionIndex = 0;
+document.addEventListener('DOMContentLoaded', () => {
+    const quizForm = document.getElementById('quiz-form');
+    const questions = document.querySelectorAll('.question');
+    const progressBar = document.getElementById('progress-bar');
+    const currentQuestionElement = document.getElementById('current-question');
+    const totalQuestions = questions.length;
+    const quizCompleteMessage = document.getElementById('quiz-complete-message');
+    let currentQuestionIndex = 0;
 
-            // Masquer toutes les questions sauf la première
-            questions.forEach((question, index) => {
-                if (index !== 0) {
-                    question.style.display = 'none';
-                }
-            });
+    // Start timer
+    let timeLeft = 180;
+    const timerElement = document.getElementById('timer');
+    const quizContainer = quizForm.parentElement;
 
-            // Mettre à jour la barre de progression et le compteur
-            function updateProgress() {
-                const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
-                progressBar.style.width = `${progress}%`;
-                currentQuestionElement.textContent = currentQuestionIndex + 1;
-            }
+    const timerInterval = setInterval(() => {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        let formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-            // Vérifier si une réponse a été sélectionnée
-            function hasAnswerSelected(question) {
-                const inputs = question.querySelectorAll('input');
-                return Array.from(inputs).some(input => input.checked);
-            }
+        timerElement.textContent = formattedTime;
 
-            // Vérifier si toutes les questions ont été répondues
-            function allQuestionsAnswered() {
-                return Array.from(questions).every(question => hasAnswerSelected(question));
-            }
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            quizTimeOut();
+        }
+        timeLeft--;
+    }, 1000);
 
-            // Passer à la question suivante
-            function showNextQuestion() {
-                const currentQuestion = questions[currentQuestionIndex];
+    function quizTimeOut() {
+        quizForm.style.display = 'none';
 
-                // Vérifier si une réponse a été sélectionnée
-                if (!hasAnswerSelected(currentQuestion)) {
-                    alert('Veuillez sélectionner une réponse avant de continuer.');
-                    return;
-                }
+        const message = document.createElement('div');
+        message.classList.add('alert', 'alert-danger', 'text-center', 'mt-3');
+        message.innerHTML = `
+            <h4>⏳ Temps écoulé !</h4>
+            <p>Le temps imparti pour répondre aux questions est terminé.</p>
+            <button id="retryQuiz" class="btn btn-primary mt-2">🔄 Recommencer</button>
+            <button id="quitQuiz" class="btn btn-secondary mt-2">❌ Quitter</button>
+        `;
 
-                if (currentQuestionIndex < totalQuestions - 1) {
-                    // Masquer la question actuelle avec une animation
-                    currentQuestion.classList.remove('active');
-                    setTimeout(() => {
-                        currentQuestion.style.display = 'none';
+        quizContainer.appendChild(message);
 
-                        // Afficher la question suivante avec une animation
-                        currentQuestionIndex++;
-                        const nextQuestion = questions[currentQuestionIndex];
-                        nextQuestion.style.display = 'block';
-                        setTimeout(() => {
-                            nextQuestion.classList.add('active');
-                        }, 10);
-                        updateProgress();
-
-                        // Afficher le message de fin si c'est la dernière question
-                        if (currentQuestionIndex === totalQuestions - 1) {
-                            quizCompleteMessage.style.display = 'block';
-                        }
-                    }, 500);
-                }
-            }
-
-            // Empêcher la soumission du formulaire si toutes les questions ne sont pas répondues
-            quizForm.addEventListener('submit', (event) => {
-                if (!allQuestionsAnswered()) {
-                    event.preventDefault(); // Bloquer la soumission du formulaire
-                    alert('Veuillez répondre à toutes les questions avant de soumettre le quiz.');
-                }
-            });
-
-            // Afficher la première question avec une animation
-            questions[0].style.display = 'block';
-            setTimeout(() => {
-                questions[0].classList.add('active');
-            }, 10);
-
-            // Écouter les changements de réponse pour passer à la question suivante
-            questions.forEach(question => {
-                const inputs = question.querySelectorAll('input');
-                inputs.forEach(input => {
-                    input.addEventListener('change', showNextQuestion);
-                });
-            });
-
-            // Initialiser la barre de progression
-            updateProgress();
+        document.getElementById('retryQuiz').addEventListener('click', () => {
+            location.reload();
         });
+
+        document.getElementById('quitQuiz').addEventListener('click', () => {
+            window.location.href = "{{ path('quiz_list') }}"; // Redirection
+        });
+    }
+
+    // Masquer toutes les questions sauf la première
+    questions.forEach((question, index) => {
+        if (index !== 0) {
+            question.style.display = 'none';
+        }
+    });
+
+    // Mettre à jour la barre de progression et le compteur
+    function updateProgress() {
+        const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+        progressBar.style.width = `${progress}%`;
+        currentQuestionElement.textContent = currentQuestionIndex + 1;
+    }
+
+    // Vérifier si une réponse a été sélectionnée
+    function hasAnswerSelected(question) {
+        const inputs = question.querySelectorAll('input');
+        return Array.from(inputs).some(input => input.checked);
+    }
+
+    // Vérifier si toutes les questions ont été répondues
+    function allQuestionsAnswered() {
+        return Array.from(questions).every(question => hasAnswerSelected(question));
+    }
+
+    // Passer à la question suivante
+    function showNextQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+
+        // Vérifier si une réponse a été sélectionnée
+        if (!hasAnswerSelected(currentQuestion)) {
+            alert('Veuillez sélectionner une réponse avant de continuer.');
+            return;
+        }
+
+        if (currentQuestionIndex < totalQuestions - 1) {
+            // Masquer la question actuelle avec une animation
+            currentQuestion.classList.remove('active');
+            setTimeout(() => {
+                currentQuestion.style.display = 'none';
+
+                // Afficher la question suivante avec une animation
+                currentQuestionIndex++;
+                const nextQuestion = questions[currentQuestionIndex];
+                nextQuestion.style.display = 'block';
+                setTimeout(() => {
+                    nextQuestion.classList.add('active');
+                }, 10);
+                updateProgress();
+
+                // Afficher le message de fin si c'est la dernière question
+                if (currentQuestionIndex === totalQuestions - 1) {
+                    quizCompleteMessage.style.display = 'block';
+                }
+            }, 500);
+        }
+    }
+
+    // Empêcher la soumission du formulaire si toutes les questions ne sont pas répondues
+    quizForm.addEventListener('submit', (event) => {
+        if (!allQuestionsAnswered()) {
+            event.preventDefault(); // Bloquer la soumission du formulaire
+            alert('Veuillez répondre à toutes les questions avant de soumettre le quiz.');
+        }
+    });
+
+    // Afficher la première question avec une animation
+    questions[0].style.display = 'block';
+    setTimeout(() => {
+        questions[0].classList.add('active');
+    }, 10);
+
+    // Écouter les changements de réponse pour passer à la question suivante
+    questions.forEach(question => {
+        const inputs = question.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('change', showNextQuestion);
+        });
+    });
+
+    // Initialiser la barre de progression
+    updateProgress();
+});
+
     </script>
+    {# timer secondes #}
+    {# const timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    quizTimeOut();
+                }
+            }, 1000);
+
+            function quizTimeOut() {
+                quizForm.style.display = 'none';
+                const message = document.createElement('div');
+                message.classList.add('alert', 'alert-danger', 'text-center', 'mt-3');
+                message.innerHTML = `
+                    <h4>⏳ Temps écoulé !</h4>
+                    <p>Le temps imparti pour répondre aux questions est terminé.</p>
+                    <button id="retryQuiz" class="btn btn-primary mt-2">🔄 Recommencer</button>
+                    <button id="quitQuiz" class="btn btn-secondary mt-2">❌ Quitter</button>
+                `;
+                quizContainer.appendChild(message);
+                document.getElementById('retryQuiz').addEventListener('click', () => location.reload());
+                document.getElementById('quitQuiz').addEventListener('click', () => window.location.href = "{{ path('quiz_list') }}");
+            } #}
 {% endblock %}

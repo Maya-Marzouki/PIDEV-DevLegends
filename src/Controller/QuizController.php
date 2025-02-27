@@ -4,9 +4,7 @@ namespace App\Controller;
 
 use App\Service\UnsplashService;
 use App\Entity\Quiz;
-use App\Form\SearchQuizType;
 use App\Form\QuizUserResponseType;
-use App\Repository\ReponseRepository;
 use App\Repository\QuestionRepository;
 use App\Repository\QuizRepository;
 use App\Service\QuizService;
@@ -73,7 +71,7 @@ class QuizController extends AbstractController
 
         if (count($questions) < 10) {
             $this->addFlash('warning', 'Il n’y a pas assez de questions disponibles.');
-            return $this->redirectToRoute('quiz_list');
+            return $this->redirectToRoute('homepage');
         }
 
         // Créer le formulaire avec les questions récupérées
@@ -149,169 +147,186 @@ class QuizController extends AbstractController
     // }
     
     #[Route('/quiz/result', name: 'quiz_result')]
-    public function result(Request $request, UnsplashService $unsplashService, EntityManagerInterface $entityManager,
-    ReponseRepository $reponseRepository): Response
-    {
-        // // Récupérer les paramètres de la requête
-        // $score = $request->query->get('score');
-        // $etatMental = $request->query->get('etatMental');
+public function result(Request $request, UnsplashService $unsplashService, EntityManagerInterface $entityManager): Response
+{
+    // Récupérer les paramètres de la requête
+    $score = $request->query->get('score');
+    $etatMental = $request->query->get('etatMental');
 
-        // // Vérifier si les paramètres sont présents
-        // if (!$score || !$etatMental) {
-        //     throw $this->createNotFoundException('Paramètres manquants pour afficher le résultat.');
-        // }
+    // Vérifier si les paramètres sont présents
+    if (!$score || !$etatMental) {
+        throw $this->createNotFoundException('Paramètres manquants pour afficher le résultat.');
+    }
 
-        // Récupérer les réponses depuis la session
-        $session = $request->getSession();
-        $reponses = $session->get('quiz_reponses', []);
-        // $score = 24; // Exemple de score (remplace-le avec la vraie valeur)
-        // Calculer le score en fonction des réponses
-        $score = 0;
-        foreach ($reponses as $reponse) {
-            $score += $reponse->getValeur(); // Adaptez cette ligne en fonction de votre entité Reponse
-        }
+    // Associer un mot-clé pour Unsplash
+    $keywords = [
+        'Bonne santé mentale' => 'happy mind',
+        'Légère fatigue émotionnelle' => 'calm nature',
+        'Signes d’anxiété ou de stress' => 'stress relief',
+        'État dépressif modéré' => 'dark mood',
+        'État très préoccupant' => 'mental health struggle'
+    ];
 
-            // Déterminer l'état mental
-            $etatMental = match (true) {
-            $score <= 10 => 'Bonne santé mentale',
-            $score <= 20 => 'Légère fatigue émotionnelle',
-            $score <= 30 => 'Signes d’anxiété ou de stress',
-            $score <= 40 => 'État dépressif modéré',
-            default => 'État très préoccupant',
-        };
+    $keyword = $keywords[$etatMental] ?? 'mental health';
+    $imageUrl = $unsplashService->getImageByKeyword($keyword);
 
-        // Associer un mot-clé pour Unsplash
-        $keywords = [
-            'Bonne santé mentale' => 'happy mind',
-            'Légère fatigue émotionnelle' => 'calm nature',
-            'Signes d’anxiété ou de stress' => 'stress relief',
-            'État dépressif modéré' => 'dark mood',
-            'État très préoccupant' => 'mental health struggle'
-        ];
+    // Créer une nouvelle instance de Quiz
+    $quiz = new Quiz();
+    $quiz->setScore($score);
+    $quiz->setEtatMental($etatMental);
+    // $quiz->setImageUrl($imageUrl); // Décommentez si vous souhaitez enregistrer l'URL de l'image
 
-        $keyword = $keywords[$etatMental] ?? 'mental health';
-        $imageUrl = $unsplashService->getImageByKeyword($keyword);
+    // Enregistrer le quiz dans la base de données
+    $entityManager->persist($quiz);
+    $entityManager->flush();
 
-            // Créer une nouvelle instance de Quiz
-            $quiz = new Quiz();
-            $quiz->setScore($score);
-            $quiz->setEtatMental($etatMental);
-            // $quiz->setImageUrl($imageUrl);
+    // Debugging pour voir si l'URL de l'image est récupérée correctement
+    // dd($imageUrl); // Décommentez pour vérifier
+
+    return $this->render('quiz/result.html.twig', [
+        'score' => $score,
+        'etatMental' => $etatMental,
+        'imageUrl' => $imageUrl
+    ]);
+}
+
+//     #[Route('/quiz/result', name: 'quiz_result')]
+// public function result(Request $request, UnsplashService $unsplashService, EntityManagerInterface $entityManager): Response
+// {
+//     // Récupérer les paramètres de la requête
+//     $score = $request->query->get('score');
+//     $etatMental = $request->query->get('etatMental');
+
+//     // Vérifier si les paramètres sont présents
+//     if (!$score || !$etatMental) {
+//         throw $this->createNotFoundException('Paramètres manquants pour afficher le résultat.');
+//     }
         
-            // Enregistrer le quiz dans la base de données
-            $entityManager->persist($quiz);
-            $entityManager->flush();
-
-            // Nettoyer la session (optionnel)
-            $session->remove('quiz_reponses');
-
-        // Debugging pour voir si l'URL de l'image est récupérée correctement
-        // dd($imageUrl); // Décommentez pour vérifier
-
-        return $this->render('quiz/result.html.twig', [
-            'score' => $score,
-            'etatMental' => $etatMental,
-            'imageUrl' => $imageUrl
-        ]);
-    }
-
-    #[Route('/list', name: 'quiz_list', methods: ['GET'])]
-    public function listQuizzes(QuizRepository $quizRepository): Response
-    {
-        // Récupérer tous les quiz sans pagination
-        $quizzes = $quizRepository->findAll();
-
-        return $this->render('quiz/list.html.twig', [
-            'quizzes' => $quizzes,
-        ]);
-    }
-
-    #[Route('/admin/list', name: 'quiz_list_admin', methods: ['GET'])]    public function list(QuizRepository $quizRepository, Request $request): Response
-    {
-        // Récupérer le terme de recherche depuis l'URL (query parameter 'q')
-        $query = $request->query->get('q', '');
-
-        // Récupérer les paramètres de tri depuis l'URL
-        $sortBy = $request->query->get('sort_by', 'id'); // Colonne par défaut : 'id'
-        $order = $request->query->get('order', 'desc');   // Ordre par défaut : 'asc'
+//     $score = 24; // Exemple de score (remplace-le avec la vraie valeur)
     
-        // Initialiser le query builder
-        $queryBuilder = $quizRepository->createQueryBuilder('q');
+//         // Déterminer l'état mental
+//         $etatMental = match (true) {
+//         $score <= 10 => 'Bonne santé mentale',
+//         $score <= 20 => 'Légère fatigue émotionnelle',
+//         $score <= 30 => 'Signes d’anxiété ou de stress',
+//         $score <= 40 => 'État dépressif modéré',
+//         default => 'État très préoccupant',
+//     };
 
-        // Appliquer la recherche si un terme est fourni
-        if (!empty($query)) {
-            $queryBuilder
-            ->where('q.etatMental LIKE :query OR q.score LIKE :query')
-            ->setParameter('query', '%' . $query . '%');
-        }
+//     // Associer un mot-clé pour Unsplash
+//     $keywords = [
+//         'Bonne santé mentale' => 'happy mind',
+//         'Légère fatigue émotionnelle' => 'calm nature',
+//         'Signes d’anxiété ou de stress' => 'stress relief',
+//         'État dépressif modéré' => 'dark mood',
+//         'État très préoccupant' => 'mental health struggle'
+//     ];
 
-        // Appliquer le tri
-        $queryBuilder->orderBy('q.' . $sortBy, $order);
+//     $keyword = $keywords[$etatMental] ?? 'mental health';
+//     $imageUrl = $unsplashService->getImageByKeyword($keyword);
 
-        // Récupérer tous les résultats sans pagination
-        // $quizzes = $quizRepository->findAll();
-        $quizzes = $queryBuilder->getQuery()->getResult();
+//         // Créer une nouvelle instance de Quiz
+//         $quiz = new Quiz();
+//         $quiz->setScore($score);
+//         $quiz->setEtatMental($etatMental);
+//         // $quiz->setImageUrl($imageUrl);
+    
+//         // Enregistrer le quiz dans la base de données
+//         $entityManager->persist($quiz);
+//         $entityManager->flush();
 
-        return $this->render('quiz/AdminShowQuiz.html.twig', [
-            'quizzes' => $quizzes,
-            'searchQuery' => $query, // Passer le terme de recherche au template
-            'sort_by' => $sortBy,    // Passer la colonne de tri au template
-            'order' => $order,       // Passer l'ordre de tri au template
-        ]);
+//     // Debugging pour voir si l'URL de l'image est récupérée correctement
+//     // dd($imageUrl); // Décommentez pour vérifier
+
+//     return $this->render('quiz/result.html.twig', [
+//         'score' => $score,
+//         'etatMental' => $etatMental,
+//         'imageUrl' => $imageUrl
+//     ]);
+// }
+
+#[Route('/admin/list', name: 'quiz_list_admin', methods: ['GET'])]    
+public function list(QuizRepository $quizRepository, Request $request): Response
+{
+    // Récupérer le terme de recherche depuis l'URL (query parameter 'q')
+    $query = $request->query->get('q', '');
+
+    // Récupérer les paramètres de tri depuis l'URL
+    $sortBy = $request->query->get('sort_by', 'id'); // Colonne par défaut : 'id'
+    $order = $request->query->get('order', 'desc');   // Ordre par défaut : 'asc'
+
+    // Initialiser le query builder
+    $queryBuilder = $quizRepository->createQueryBuilder('q');
+
+    // Appliquer la recherche si un terme est fourni
+    if (!empty($query)) {
+        $queryBuilder
+        ->where('q.etatMental LIKE :query OR q.score LIKE :query')
+        ->setParameter('query', '%' . $query . '%');
     }
 
-// WITH PAGINATION
-    // #[Route('/list', name: 'quiz_list', methods: ['GET'])]
-    // public function listQuizzes(QuizRepository $quizRepository, PaginatorInterface $paginator, Request $request): Response
-    // {
-    //     // // Récupérer tous les quiz
-    //     // $quizzes = $quizRepository->findAll();
+    // Appliquer le tri
+    $queryBuilder->orderBy('q.' . $sortBy, $order);
 
-    //     // Récupérer tous les quiz
-    //     $query = $quizRepository->createQueryBuilder('q')->getQuery();
+    // Récupérer tous les résultats sans pagination
+    // $quizzes = $quizRepository->findAll();
+    $quizzes = $queryBuilder->getQuery()->getResult();
 
-    //     // Paginer les résultats
-    //     $quizzes = $paginator->paginate(
-    //         $query, // Requête à paginer
-    //         $request->query->getInt('page', 1), // Numéro de page par défaut
-    //         2 // Nombre d'éléments par page
-    //     );
+    return $this->render('quiz/AdminShowQuiz.html.twig', [
+        'quizzes' => $quizzes,
+        'searchQuery' => $query, // Passer le terme de recherche au template
+        'sort_by' => $sortBy,    // Passer la colonne de tri au template
+        'order' => $order,       // Passer l'ordre de tri au template
+    ]);
+}
 
-    //     return $this->render('quiz/list.html.twig', [
-    //         'quizzes' => $quizzes,
-    //     ]);
-    // }
+#[Route('/list', name: 'quiz_list', methods: ['GET'])]
+public function listQuizzes(QuizRepository $quizRepository, PaginatorInterface $paginator, Request $request): Response
+{
+    // Récupérer tous les quiz
+    $query = $quizRepository->createQueryBuilder('q')->getQuery();
 
-    #[Route('/quiz/{id}', name: 'quiz_show', methods: ['GET'])]
-    public function showQuiz(Quiz $quiz, UnsplashService $unsplashService): Response
-    {
-        // Associer un mot-clé pour Unsplash en fonction de l'état mental
-        $keywords = [
-            'Bonne santé mentale' => 'happy mind',
-            'Légère fatigue émotionnelle' => 'calm nature',
-            'Signes d’anxiété ou de stress' => 'stress relief',
-            'État dépressif modéré' => 'dark mood',
-            'État très préoccupant' => 'mental health struggle'
-        ];
+    // Paginer les résultats
+    $quizzes = $paginator->paginate(
+        $query, // Requête à paginer
+        $request->query->getInt('page', 1), // Numéro de page par défaut
+        6 // Nombre d'éléments par page
+    );
 
-        $keyword = $keywords[$quiz->getEtatMental()] ?? 'mental health';
-        $imageUrl = $unsplashService->getImageByKeyword($keyword);
+    return $this->render('quiz/list.html.twig', [
+        'quizzes' => $quizzes,
+    ]);
+}
+#[Route('/quiz/{id}', name: 'quiz_show', methods: ['GET'])]
+public function showQuiz(Quiz $quiz, UnsplashService $unsplashService): Response
+{
+    // Associer un mot-clé pour Unsplash en fonction de l'état mental
+    $keywords = [
+        'Bonne santé mentale' => 'happy mind',
+        'Légère fatigue émotionnelle' => 'calm nature',
+        'Signes d’anxiété ou de stress' => 'stress relief',
+        'État dépressif modéré' => 'dark mood',
+        'État très préoccupant' => 'mental health struggle'
+    ];
 
-        return $this->render('quiz/ShowQuiz.html.twig', [
-            'quiz' => $quiz,
-            'imageUrl' => $imageUrl, // Passer l'URL de l'image au template
-        ]);
+    $keyword = $keywords[$quiz->getEtatMental()] ?? 'mental health';
+    $imageUrl = $unsplashService->getImageByKeyword($keyword);
+
+    return $this->render('quiz/ShowQuiz.html.twig', [
+        'quiz' => $quiz,
+        'imageUrl' => $imageUrl, // Passer l'URL de l'image au template
+    ]);
+}
+
+#[Route('/deleteAdmin/{id}', name: 'quiz_delete', methods: ['POST'])]
+public function deleteAdmin(Request $request, Quiz $quiz, EntityManagerInterface $entityManager): Response
+{
+    if ($this->isCsrfTokenValid('delete'.$quiz->getId(), $request->request->get('_token'))) {
+        $entityManager->remove($quiz);
+        $entityManager->flush();
     }
 
-    #[Route('/deleteAdmin/{id}', name: 'quiz_delete', methods: ['POST'])]
-    public function deleteAdmin(Request $request, Quiz $quiz, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$quiz->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($quiz);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('quiz_list_admin');
-    }
+    return $this->redirectToRoute('quiz_list_admin');
+}
 
 }

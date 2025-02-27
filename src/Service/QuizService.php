@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Question;
 use App\Entity\Reponse;
 use App\Repository\QuestionRepository;
+use App\Repository\ReponseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormInterface;
 
@@ -23,6 +24,13 @@ class QuizService
         return $this->entityManager->getRepository(Question::class)->findBy([], [], $limit);
     }
 
+    // public function getRandomQuestions(int $limit = 10): array
+    // {
+    //     $questions = $this->entityManager->getRepository(Question::class)->findAll();
+    //     shuffle($questions);
+    //     return array_slice($questions, 0, $limit);
+    // }
+
     // public function calculateScore(FormInterface $form, array $questions): int
     // {
     //     $score = 0;
@@ -40,12 +48,19 @@ class QuizService
     $score = 0;
 
     foreach ($questions as $question) {
-        // Récupérer la réponse sélectionnée pour cette question
-        $reponse = $form->get('question_' . $question->getId())->getData();
+        // Récupérer le champ du formulaire pour cette question
+        $fieldName = 'question_' . $question->getId();
+        if ($form->has($fieldName)) {
+            // Récupérer la réponse sélectionnée par l'utilisateur
+            $selectedAnswerId = $form->get($fieldName)->getData();
 
-        // Vérifier que la réponse est un objet Reponse et a une valeur de score
-        if ($reponse instanceof Reponse) {
-            $score += $reponse->getScore();
+            // Récupérer l'entité Reponse correspondante depuis la base de données
+            $selectedAnswer = $this->entityManager->getRepository(Reponse::class)->find($selectedAnswerId);
+
+            // Ajouter les points de la réponse au score
+            if ($selectedAnswer) {
+                $score += $selectedAnswer->getScore(); // Supposons que getPoints() retourne les points de la réponse
+            }
         }
     }
 
