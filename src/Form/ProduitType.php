@@ -21,17 +21,13 @@ class ProduitType extends AbstractType
              // Statut, avec "Indisponible" par défaut
              ->add('statutProduit', ChoiceType::class, [
                 'choices' => [
-                    'Disponible' => true,    
-                    'Indisponible' => false  
+                    'Disponible' => Produit::STATUT_DISPONIBLE,
+                    'Indisponible' => Produit::STATUT_INDISPONIBLE
                 ],
                 'label' => 'Statut',
-                'data' => false,  // Par défaut, l'état du statut est "Indisponible"
-                'attr' => ['class' => 'form-control',
-            
-
-        ],
-                
+                'disabled' => true,  // Désactiver pour éviter une modification manuelle
             ])
+            
             ->add('categorieProduit', EntityType::class, [
                 'class' => Categorie::class,
                 'choice_label' => 'nomCategorie',

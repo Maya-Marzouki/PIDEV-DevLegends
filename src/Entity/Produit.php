@@ -115,6 +115,7 @@ private $commandes;
     public function setQteProduit(int $qteProduit): static
     {
         $this->qteProduit = $qteProduit;
+        $this->updateStatut(); // Mettre à jour le statut immédiatement
         return $this;
     }
 

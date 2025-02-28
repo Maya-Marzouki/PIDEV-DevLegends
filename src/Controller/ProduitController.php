@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Produit;
+use App\Entity\Categorie;
 use App\Form\ProduitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,11 +11,15 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\ProduitRepository;
+use App\Repository\CategorieRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 
 final class ProduitController extends AbstractController
-{
+{ 
+    private $requestStack;
     #[Route('/produit', name: 'app_produit')]
     public function index(ProduitRepository $produitRepository): Response
     {
@@ -25,10 +30,18 @@ final class ProduitController extends AbstractController
     }
 
     #[Route('/produitclient', name: 'produitclient')]
-    public function showproduitclient(ProduitRepository $produitRepository): Response
-    {
+    public function showproduitclient(ProduitRepository $produitRepository, CategorieRepository $categorieRepository, Request $request): Response
+      {  $searchTerm = $request->query->get('search', '');
+        $selectedCategorie = $request->query->get('categorie', ''); // Récupérer la catégorie sélectionnée
+        
+        // Récupération des données via le Repository
+        $categories = $categorieRepository->findAll();
+        $produits = $produitRepository->findBySearch($searchTerm, $selectedCategorie);
         return $this->render('produit/showclientproduit.html.twig', [
-            'produits' => $produitRepository->findAll(),
+            'produits' => $produits,
+            'categories' => $categories,
+            'searchTerm' => $searchTerm,
+            'selectedCategorie' => $selectedCategorie,
         ]);
     }
 
@@ -41,11 +54,9 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     $form = $this->createForm(ProduitType::class, $produit);
     $form->handleRequest($request);
     
-   if ($form->isSubmitted() && $form->isValid()) {
-        // Mettre à jour le statut du produit en fonction de la quantité
-       
+    if ($form->isSubmitted() && $form->isValid()) {
+        $produit->setQteProduit($produit->getQteProduit()); // Mise à jour pour s'assurer que le statut change
         
-        $produit->updateStatut();
     
         
         $entityManager->persist($produit);
@@ -134,68 +145,82 @@ public function panier(Request $request, RequestStack $requestStack): Response
 }
 
  
-     #[Route('/panier/ajouter', name: 'ajouter_au_panier', methods: ['GET', 'POST'])]
-     public function ajouterAuPanier(Request $request, RequestStack $requestStack): Response
-     {
-        
-   
-        $idProduit = $request->request->get('idProduit');
-        $nomProduit = $request->request->get('nomProduit');
-        $prixProduit = $request->request->get('prixProduit');
-        $quantiteProduit = $request->request->get('quantiteProduit');
-    
-        if (!$idProduit || !$nomProduit || !$prixProduit || !$quantiteProduit || $quantiteProduit <= 0) {
-            $this->addFlash('error', 'Les données sont invalides, veuillez vérifier.');
-            return $this->redirectToRoute('panier');
-        }
-    
-        // Récupération de la session
-        $session = $requestStack->getCurrentRequest()->getSession();
-        $panier = $session->get('panier', []);
-    
-        // Si le produit existe déjà dans le panier, on augmente la quantité
-        if (isset($panier[$idProduit])) {
-            $panier[$idProduit]['quantiteProduit'] += $quantiteProduit;
-        } else {
-            // Sinon, on l'ajoute au panier avec son ID
-            $panier[$idProduit] = [
-                'idProduit' => $idProduit,
-                'nomProduit' => $nomProduit,
-                'prixProduit' => $prixProduit,
-                'quantiteProduit' => $quantiteProduit,
-                
-            ];
-        }
-    
-        // Mise à jour du panier dans la session
-        $session->set('panier', $panier);
-    
-        $this->addFlash('success', 'Produit ajouté au panier avec succès !');
-    
-        return $this->redirectToRoute('panier');
-    }
-    #[Route('/panier/supprimer/{id}', name: 'supprimer_du_panier', methods: ['POST'])]
-public function supprimerDuPanier(Request $request, RequestStack $requestStack, $id): Response
+#[Route('/ajouter-au-panier', name: 'ajouter_au_panier', methods: ['POST'])]
+public function ajouterAuPanier(Request $request, SessionInterface $session, ProduitRepository $produitRepository, EntityManagerInterface $entityManager): JsonResponse
 {
-    // Vérification du token CSRF
-    if ($this->isCsrfTokenValid('supprimer' . $id, $request->request->get('_token'))) {
-        // Récupération de la session et du panier
-        $session = $requestStack->getCurrentRequest()->getSession();
-        $panier = $session->get('panier', []);
+    $id = $request->request->get('idProduit');
+    $quantite = (int) $request->request->get('quantiteProduit', 1);
+    
+    // Vérifier si le produit existe
+    $produit = $produitRepository->find($id);
+    if (!$produit) {
+        return new JsonResponse(['success' => false, 'message' => 'Produit introuvable.'], 404);
+    }
+   
+    // Vérifier si la quantité demandée est disponible
+    if ($quantite > $produit->getQteProduit()) {
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Stock insuffisant. Quantité disponible : ' . $produit->getQteProduit()
+        ], 400);
+    }
+    
 
-        // Suppression du produit du panier
-        if (isset($panier[$id])) {
-            unset($panier[$id]);
-        }
+    // Récupérer le panier de la session
+    $panier = $session->get('panier', []);
 
-        // Mise à jour du panier dans la session
-        $session->set('panier', $panier);
-
-        $this->addFlash('success', 'Produit supprimé du panier.');
+    // Ajouter ou mettre à jour la quantité du produit dans le panier
+    if (isset($panier[$id])) {
+        $panier[$id]['quantiteProduit'] += $quantite;
+    } else {
+        $panier[$id] = [
+            'nomProduit' => $produit->getNomProduit(),
+            'prixProduit' => $produit->getPrixProduit(),
+            'quantiteProduit' => $quantite
+        ];
     }
 
-    return $this->redirectToRoute('panier');
+    $session->set('panier', $panier);
+
+    // Mise à jour du stock en base de données
+    $nouveauStock = max($produit->getQteProduit() - $quantite, 0);
+    $produit->setQteProduit($nouveauStock);
+    $produit->updateStatut(); // Vérifie et met à jour le statut
+    $entityManager->persist($produit);
+    $entityManager->flush();
+
+    return new JsonResponse([
+        'success' => true,
+        'message' => 'Produit ajouté au panier.',
+        'stock' => $nouveauStock
+    ]);
 }
+
+    #[Route('/supprimer-du-panier/{id}', name: 'supprimer_du_panier', methods: ['POST'])]
+public function supprimerDuPanier(int $id, SessionInterface $session, ProduitRepository $produitRepository, EntityManagerInterface $entityManager): JsonResponse
+{
+    $panier = $session->get('panier', []);
+
+    if (!isset($panier[$id])) {
+        return new JsonResponse(['success' => false, 'message' => 'Produit non trouvé dans le panier'], 400);
+    }
+
+    $quantiteAjoutee = $panier[$id]['quantiteProduit'];
+    unset($panier[$id]);
+    $session->set('panier', $panier);
+
+    // Restaurer la quantité dans la base de données
+    $produit = $produitRepository->find($id);
+    if ($produit) {
+        $produit->setQteProduit($produit->getQteProduit() + $quantiteAjoutee);
+        $produit->updateStatut(); // Vérifie et met à jour le statut
+        $entityManager->persist($produit);
+        $entityManager->flush();
+    }
+
+    return new JsonResponse(['success' => true, 'stock' => $produit->getQteProduit()]);
+}
+
 #[Route('/panier/modifier/{id}', name: 'modifier_quantite', methods: ['POST'])]
 public function modifierQuantite(Request $request, RequestStack $requestStack, $id): Response
 {

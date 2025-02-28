@@ -77,6 +77,9 @@ class Commande
     message: "Le numéro de téléphone doit contenir exactement 8 chiffres."
 )]
     private ?int $NumTelephone = null;
+
+    #[ORM\ManyToOne(inversedBy: 'commandes')]
+    private ?User $user = null;
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -197,6 +200,18 @@ class Commande
     public function setNumTelephone(int $NumTelephone): static
     {
         $this->NumTelephone = $NumTelephone;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
