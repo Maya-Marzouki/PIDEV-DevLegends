@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\AvisRepository;
 use App\Repository\UserRepository;
+use App\Service\EmailService;
 use Knp\Component\Pager\PaginatorInterface;
 
 class AvisController extends AbstractController
@@ -118,16 +119,19 @@ class AvisController extends AbstractController
     }
 
     #[Route('/avis/{id}/traiter', name: 'traiterAvis')]
-    public function traiterAvis(Avis $avis, ManagerRegistry $mr): Response
+    public function traiterAvis(Avis $avis, ManagerRegistry $mr , EmailService $emailService): Response
     {
         if ($avis->getStatutAvis() === 'Pas traitée') {
             $avis->setStatutAvis('Traitée');
             $manager = $mr->getManager();
             $manager->flush();
 
-            $this->addFlash('success', 'La réclamation a été traitée avec succès.');
+            // Envoi de l'email de confirmation
+            $emailService->sendAvisConfirmation($avis->getEmailAvis());
+
+            $this->addFlash('success', 'Cet avis a été traité avec succès et un email de confirmation a été envoyé.');
         } else {
-            $this->addFlash('warning', 'Cette réclamation est déjà traitée.');
+            $this->addFlash('warning', 'Cette avis est déjà traité.');
         }
 
         return $this->redirectToRoute('app_avis_index');
