@@ -46,6 +46,22 @@ class ProduitRepository extends ServiceEntityRepository
     $this->_em->persist($produit);
     $this->_em->flush();
 }
+public function findBySearchQuery(string $searchTerm)
+{
+    $qb = $this->createQueryBuilder('p');
+
+    if (!empty($searchTerm)) {
+        $qb->andWhere('p.nomProduit LIKE :searchTerm')
+           ->setParameter('searchTerm', '%' . $searchTerm . '%');
+    }
+
+    if (!empty($categorie)) {
+        $qb->andWhere('p.categorie = :categorie')
+           ->setParameter('categorie', $categorie);
+    }
+
+    return $qb->getQuery();
+}
 
 }
 

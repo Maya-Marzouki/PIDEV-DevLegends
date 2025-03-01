@@ -15,6 +15,7 @@ use App\Repository\CategorieRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 
 final class ProduitController extends AbstractController
@@ -30,13 +31,23 @@ final class ProduitController extends AbstractController
     }
 
     #[Route('/produitclient', name: 'produitclient')]
-    public function showproduitclient(ProduitRepository $produitRepository, CategorieRepository $categorieRepository, Request $request): Response
+    public function showproduitclient(ProduitRepository $produitRepository, CategorieRepository $categorieRepository, Request $request, PaginatorInterface $paginator): Response
       {  $searchTerm = $request->query->get('search', '');
         $selectedCategorie = $request->query->get('categorie', ''); // Récupérer la catégorie sélectionnée
         
         // Récupération des données via le Repository
         $categories = $categorieRepository->findAll();
         $produits = $produitRepository->findBySearch($searchTerm, $selectedCategorie);
+         
+    // Récupération des produits
+    $query = $produitRepository->findBySearchQuery($searchTerm, $selectedCategorie);
+    // Pagination des produits
+    $produits = $paginator->paginate(
+        $query, // Requête
+        $request->query->getInt('page', 1), // Page actuelle
+        2// Nombre d'éléments par page
+        
+    );
         return $this->render('produit/showclientproduit.html.twig', [
             'produits' => $produits,
             'categories' => $categories,

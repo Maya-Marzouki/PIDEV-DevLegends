@@ -144,6 +144,11 @@ document.addEventListener("DOMContentLoaded", function () {
 					<p>Aucun produit trouvé.</p>
 				</div>
 			{% endfor %}
+			<!-- Pagination -->
+<div class="pagination">
+    {{ knp_pagination_render(produits) }}
+</div>
+
 		</div>
 	</div>
 {% endblock %}
