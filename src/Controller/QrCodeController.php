@@ -32,4 +32,11 @@ class QrCodeController extends AbstractController
             'qrCodeUrl' => $qrCodeUrl,
         ]);
     }
+
+    public function show($filename)
+{
+    $filePath = $this->getParameter('kernel.project_dir') . '/public/qr_codes/' . $filename;
+    return $this->file($filePath);
+}
+
 }

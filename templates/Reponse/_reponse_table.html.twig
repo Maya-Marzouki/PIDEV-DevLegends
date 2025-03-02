@@ -1,0 +1,14 @@
+<tbody id="reponse-body">
+    {% for reponse in reponses %}
+        <tr>
+            <td>{{ reponse.id }}</td>
+            <td>{{ reponse.contenu }}</td>
+            <td>{{ reponse.dateRep|date('Y-m-d H:i:s') }}</td>
+            <!-- Ajoutez d'autres colonnes si nécessaire -->
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="3" class="text-center">Aucune réponse trouvée.</td>
+        </tr>
+    {% endfor %}
+</tbody>

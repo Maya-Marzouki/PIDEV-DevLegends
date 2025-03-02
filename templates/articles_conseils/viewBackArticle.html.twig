@@ -9,6 +9,29 @@
             <div class="card-block text-center p-4"> {# Centre le texte dans la carte #}
                 <h4 class="card-title">Liste des Articles de Conseils</h4>
                 <h6 class="card-subtitle mb-3">Gestion des articles</h6>
+
+                <form method="get" class="mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" name="titre" class="form-control" placeholder="Rechercher par titre" value="{{ app.request.query.get('titre') }}">
+        </div>
+        <div class="col-md-4">
+            <select name="categorie" class="form-control">
+                <option value="">Toutes les catégories</option>
+                <option value="Gestion du Stress et Bien-être Mental" {% if app.request.query.get('categorie') == 'Gestion du Stress et Bien-être Mental' %}selected{% endif %}>Gestion du Stress et Bien-être Mental</option>
+                <option value="Sommeil et Santé Mentale" {% if app.request.query.get('categorie') == 'Sommeil et Santé Mentale' %}selected{% endif %}>Sommeil et Santé Mentale</option>
+                <option value="santé" {% if app.request.query.get('categorie') == 'santé' %}selected{% endif %}>santé</option>
+                <option value="Dépression" {% if app.request.query.get('categorie') == 'Dépression' %}selected{% endif %}>Dépression</option>
+
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-secondary">Rechercher</button>
+            <a href="{{ path('app_articles_conseils_admin') }}" class="btn btn-secondary">Réinitialiser</a>
+        </div>
+    </div>
+</form>
+
                 <div class="table-responsive">
                     <table class="table table-bordered text-center"> {# Centre le texte dans le tableau #}
                         <thead class="table-dark">

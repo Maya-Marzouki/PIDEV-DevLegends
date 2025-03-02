@@ -12,7 +12,7 @@
         <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
             {# Formulaire de recherche #}
             <div class="mb-4">
-                <form id="searchForm" action="{{ path('consultation_index') }}" method="GET">
+                <form id="searchForm" action="{{ path('consultation_view') }}" method="GET">
                     <input
                         type="text"
                         name="q"
@@ -22,6 +22,8 @@
                         id="searchInput"
                     >
                     <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+                    <a href="{{ path('consultation_view') }}" class="btn btn-secondary ml-2">Réinitialiser</a>
+
                 </form>
             </div>
 

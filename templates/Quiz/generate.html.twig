@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Générer un Quiz{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <h1>Quiz généré sur la santé mentale</h1>
+        <form action="{{ path('quiz_submit') }}" method="POST">
+            <ul>
+                {% for question in questions %}
+                    <li>
+                        <label>{{ question }}</label>
+                        <div>
+                            <input type="radio" name="question_{{ loop.index }}" value="yes"> Oui
+                            <input type="radio" name="question_{{ loop.index }}" value="no"> Non
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <button type="submit" class="btn btn-primary">Soumettre le quiz</button>
+        </form>
+    </div>
+{% endblock %}

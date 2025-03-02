@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chatbot{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                <p class="fs-5 fw-bold text-primary">Chatbot de Consultation</p>
+                <h1 class="display-5 mb-5">Posez vos questions</h1>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                        <div id="chatbot" style="height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+                            <!-- Le contenu du chatbot sera affiché ici -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #chatbot {
+            padding: 20px;
+            overflow-y: auto; /* Permet le défilement si le contenu dépasse la hauteur */
+            height: 400px; /* Ajuste la hauteur selon tes besoins */
+        }
+    </style>
+
+    <!-- Chargez Vue.js en premier -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.min.js"></script>
+    <!-- Chargez BotUI ensuite -->
+    <script src="https://unpkg.com/botui@1.5.0/build/botui.min.js"></script>
+
+    <script>
+        // Attendre que le DOM soit entièrement chargé
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialiser BotUI
+            var botui = new BotUI('chatbot');
+
+            // Message de bienvenue
+            botui.message.add({
+                content: 'Bonjour ! Comment puis-je vous aider ?'
+            });
+
+            // Action pour saisir le texte
+            botui.action.text({
+                action: {
+                    placeholder: 'Écrivez votre message ici...'
+                }
+            }).then(function (res) {
+                // Envoyer le message à Rasa
+                return botui.message.add({
+                    content: res.value
+                });
+            }).then(function () {
+                // Appeler le serveur Rasa
+                return fetch('http://localhost:5005', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ sender: 'user', message: res.value })
+                });
+            }).then(function (response) {
+                return response.json();
+            }).then(function (data) {
+                // Afficher la réponse du bot
+                botui.message.add({
+                    content: data[0].text
+                });
+            }).catch(function (error) {
+                console.error('Erreur lors de la communication avec le serveur Rasa :', error);
+            });
+        });
+    </script>
+{% endblock %}

@@ -8,15 +8,20 @@ use App\Repository\QuestionRepository;
 use App\Repository\ReponseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormInterface;
+// use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 
 class QuizService
 {
     private EntityManagerInterface $entityManager;
+    // private HttpClientInterface $httpClient;
+    // private string $apiKey;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+        // $this->httpClient = $httpClient;
+        // $this->apiKey = $apiKey;
     }
 
     public function getRandomQuestions(int $limit = 10): array
@@ -77,6 +82,38 @@ class QuizService
             default => 'État très préoccupant',
         };
     }
+    // public function generateQuiz(): array
+    // {
+    //     $response = $this->httpClient->request('POST', 'https://api.openai.com/v1/chat/completions', [
+    //         'headers' => [
+    //             'Authorization' => 'Bearer ' . $this->apiKey,
+    //             'Content-Type' => 'application/json',
+    //         ],
+    //         'json' => [
+    //             'model' => 'gpt-4',
+    //             'messages' => [
+    //                 ['role' => 'system', 'content' => 'Tu es un psychologue générant des tests de santé mentale.'],
+    //                 ['role' => 'user', 'content' => 'Génère un test de santé mentale avec 10 questions. Chaque question a 3 réponses possibles : "Jamais" (0 points), "Parfois" (3 points), "Souvent" (5 points).']
+    //             ]
+    //         ],
+    //     ]);
+
+    //     $data = $response->toArray();
+    //     return json_decode($data['choices'][0]['message']['content'], true);
+    // }
+
+    // public function evaluateQuiz(array $answers): string
+    // {
+    //     $totalScore = array_sum($answers);
+
+    //     if ($totalScore < 10) {
+    //         return "Votre état mental semble bon. Continuez à prendre soin de vous !";
+    //     } elseif ($totalScore < 25) {
+    //         return "Vous pourriez ressentir du stress ou de l’anxiété. Pensez à consulter un professionnel.";
+    //     } else {
+    //         return "Votre état mental semble préoccupant. Nous vous recommandons de parler à un spécialiste.";
+    //     }
+    // }
 }
 
     // public function calculateScore(array $answers): int

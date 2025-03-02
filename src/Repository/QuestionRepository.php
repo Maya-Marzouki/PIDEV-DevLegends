@@ -23,6 +23,23 @@ class QuestionRepository extends ServiceEntityRepository
             ->getResult();
     }
     
+    public function searchQuestions(?string $text, ?string $type): array
+{
+    $qb = $this->createQueryBuilder('q');
+
+    if ($text) {
+        $qb->andWhere('q.questionText LIKE :text')
+           ->setParameter('text', "%$text%");
+    }
+
+    if ($type) {
+        $qb->andWhere('q.answerType = :type')
+           ->setParameter('type', $type);
+    }
+
+    return $qb->getQuery()->getResult();
+}
+
 
 //    /**
 //     * @return Question[] Returns an array of Question objects

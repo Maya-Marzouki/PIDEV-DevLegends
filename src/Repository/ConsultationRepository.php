@@ -16,6 +16,39 @@ class ConsultationRepository extends ServiceEntityRepository
         parent::__construct($registry, Consultation::class);
     }
 
+
+    public function findBySearchQueryAndSort(string $searchQuery, string $nomFilter, string $prenomFilter, string $ageFilter, string $sortBy, string $order)
+    {
+        $qb = $this->createQueryBuilder('c')
+            ->where('c.nom LIKE :nom')
+            ->andWhere('c.prenom LIKE :prenom')
+            ->andWhere('c.age LIKE :age')
+            ->setParameter('nom', '%'.$searchQuery.'%')
+            ->setParameter('prenom', '%'.$searchQuery.'%')
+            ->setParameter('age', '%'.$searchQuery.'%')
+            ->orderBy('c.' . $sortBy, $order);
+    
+        if ($nomFilter) {
+            $qb->andWhere('c.nom LIKE :nomFilter')
+               ->setParameter('nomFilter', '%'.$nomFilter.'%');
+        }
+    
+        if ($prenomFilter) {
+            $qb->andWhere('c.prenom LIKE :prenomFilter')
+               ->setParameter('prenomFilter', '%'.$prenomFilter.'%');
+        }
+    
+        if ($ageFilter) {
+            $qb->andWhere('c.age LIKE :ageFilter')
+               ->setParameter('ageFilter', '%'.$ageFilter.'%');
+        }
+    
+        return $qb->getQuery()->getResult();
+    }
+    
+    
+
+
 //    /**
 //     * @return Consultation[] Returns an array of Consultation objects
 //     */

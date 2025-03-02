@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test de Santé Mentale{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h2 class="text-center">Test de Santé Mentale</h2>
+        <div id="quiz-container">
+            <button id="start-quiz" class="btn btn-primary">Démarrer le Test</button>
+        </div>
+        <div id="result" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.getElementById('start-quiz').addEventListener('click', async function () {
+            const response = await fetch('/api/generate-quiz');
+            const data = await response.json();
+            displayQuiz(data.questions);
+        });
+
+        function displayQuiz(questions) {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '<form id="quiz-form"></form>';
+            const form = document.getElementById('quiz-form');
+
+            questions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.innerHTML = `<p><strong>${index + 1}. ${q.question}</strong></p>`;
+                
+                Object.entries(q.choices).forEach(([key, value]) => {
+                    div.innerHTML += `
+                        <label>
+                            <input type="radio" name="q${index}" value="${value}" required> ${key}
+                        </label><br>
+                    `;
+                });
+
+                form.appendChild(div);
+            });
+
+            form.innerHTML += '<button type="submit" class="btn btn-success mt-3">Envoyer</button>';
+            
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const answers = Array.from(document.querySelectorAll('input[type="radio"]:checked'))
+                                    .map(input => parseInt(input.value));
+
+                const result = await fetch('/api/evaluate-quiz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answers })
+                });
+
+                const resultData = await result.json();
+                document.getElementById('result').innerHTML = `<h3>${resultData.evaluation}</h3>`;
+            });
+        }
+    </script>
+{% endblock %}

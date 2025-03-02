@@ -17,6 +17,8 @@ use App\Service\QrCodeGeneratorService;
 use App\Service\QrCodeService;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 
 #[Route('/consultation')]
 class ConsultationController extends AbstractController
@@ -31,128 +33,307 @@ class ConsultationController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/qr-code', name: 'consultation_qr_code')]
+#[Route('/qr-code', name: 'consultation_qr_code')]
+public function generateQrCode(QrCodeService $qrCodeService, UrlGeneratorInterface $urlGenerator): Response
+{
+    // Générer une URL qui redirige vers la liste des consultations
+    $url = $urlGenerator->generate('consultation_affichage', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-    public function generateQrCode(): Response
-    {
-        // Récupérer toutes les consultations depuis la base de données
-        $consultations = $this->entityManager
-            ->getRepository(Consultation::class)
-            ->findAll();
+    // Générer le QR Code avec cette URL
+    $qrCodeUrl = $qrCodeService->generateQrCode($url);
 
-        // Convertir les consultations en tableau pour le QR code
-        $consultationData = [];
-        foreach ($consultations as $consultation) {
-            $consultationData[] = [
-                'id' => $consultation->getId(),
-                'date' => $consultation->getDateCons()->format('Y-m-d'),
-                'nom' => $consultation->getNom(),
-                'prenom' => $consultation->getPrenom(),
-                'age' => $consultation->getAge(),
-                'profession' => $consultation->getLienVisioCons(),
-                'notes' => $consultation->getNotesCons(),
-            ];
-        }
-        
-        // Debug : Afficher les données des consultations
-        dump($consultationData);
+    return $this->render('consultation/qr_code.html.twig', [
+        'qrCodeUrl' => $qrCodeUrl,
+    ]);
+}
 
-        // Générer le QR code avec les données des consultations
-        $qrCodeUrl = $this->qrCodeService->generateQrCode($consultationData);
 
-        // Debug : Afficher l'URL du QR code
-        dump($qrCodeUrl);
+#[Route('/consultations', name: 'consultation_affichage')]
+public function afficherConsultations(): Response
+{
+    $consultations = $this->entityManager->getRepository(Consultation::class)->findAll();
 
-        // Afficher le QR code dans une vue
-        return $this->render('consultation/qr_code.html.twig', [
-            'qrCodeUrl' => $qrCodeUrl,
-        ]);
-    }
+    return $this->render('consultation/affichage.html.twig', [
+        'consultations' => $consultations,
+    ]);
+}
 
-// Affiche la liste des consultation pour l'Admin
-    #[Route('/list', name: 'consultation_index', methods: ['GET'])]
-    public function index(ConsultationRepository $consultationRepository, Request $request): Response
-    {
-        // Récupérer le terme de recherche depuis l'URL (query parameter 'q')
-        $query = $request->query->get('q', '');
 
-        // Récupérer les paramètres de tri depuis l'URL
-        $sortBy = $request->query->get('sort_by', 'id'); // Colonne par défaut : 'id'
-        $order = $request->query->get('order', 'asc');   // Ordre par défaut : 'asc'
+// Affiche la liste des consultations pour l'Admin
+#[Route('/list', name: 'consultation_index', methods: ['GET'])]
+public function index(ConsultationRepository $consultationRepository, Request $request, PaginatorInterface $paginator): Response
+{
+    // Récupérer le paramètre de recherche
+    $searchQuery = $request->query->get('q', '');
+    $page = $request->query->getInt('page', 1);
+    $limit = 10; // Nombre de résultats par page
 
-        // Initialiser le query builder
-        $queryBuilder = $consultationRepository->createQueryBuilder('c');
-
-        // Appliquer la recherche si un terme est fourni
-        if (!empty($query)) {
-            $queryBuilder
-                ->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query')
-                ->setParameter('query', '%' . $query . '%');
-        }
-
-        // Appliquer le tri
-        $queryBuilder->orderBy('c.' . $sortBy, $order);
-
-        // Récupérer tous les résultats sans pagination
-        $consultations = $queryBuilder->getQuery()->getResult();
-
-        return $this->render('consultation/ShowConsultation.html.twig', [
-            'consultations' => $consultations,
-            'searchQuery' => $query, // Passer le terme de recherche au template
-            'sort_by' => $sortBy,    // Passer la colonne de tri au template
-            'order' => $order,       // Passer l'ordre de tri au template
-        ]);
-    }
-
-    // Affiche la liste des consultation pour l'utilisateur
-    // #[Route('/view/consultation', name: 'consultation_view')]
-    // public function viewConsultation(ConsultationRepository $consultationRepository): Response
-    // {
-    //     return $this->render('consultation/viewConsultation.html.twig', [
-    //         'consultations' => $consultationRepository->findAll(),
-    //     ]);
-    // }
-    #[Route('/view/consultation', name: 'consultation_view', methods: ['GET'])]
-    public function viewConsultation(Request $request, ConsultationRepository $consultationRepository): Response
-    {
-    // Récupérer les paramètres de tri, de recherche et de pagination
-    $sortBy = $request->query->get('sort_by', 'dateCons'); // Colonne par défaut : 'dateCons'
-    $order = $request->query->get('order', 'asc');         // Ordre par défaut : 'asc'
-    $searchQuery = $request->query->get('q', '');          // Terme de recherche
-    $page = $request->query->getInt('page', 1);            // Page par défaut : 1
-    $limit = 10;                                           // Nombre de résultats par page
-
-    // Créer une requête Query Builder
+    // Créer le QueryBuilder pour la recherche
     $queryBuilder = $consultationRepository->createQueryBuilder('c');
 
-    // Appliquer la recherche si un terme est fourni
+    // Appliquer la recherche
     if (!empty($searchQuery)) {
-        $queryBuilder
-            ->where('c.Nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query')
-            ->setParameter('query', '%' . $searchQuery . '%');
+        $queryBuilder->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
+                     ->setParameter('query', '%' . $searchQuery . '%');
+    }
+
+    // Appliquer la pagination
+    $query = $queryBuilder->getQuery()
+                          ->setFirstResult(($page - 1) * $limit) // Offset
+                          ->setMaxResults($limit);               // Limit
+
+    $paginator = $paginator->paginate($query, $page, $limit);
+
+    return $this->render('consultation/ShowConsultation.html.twig', [
+        'consultations' => $paginator,
+        'searchQuery' => $searchQuery,
+        'currentPage' => $page,
+        'totalPages' => ceil(count($paginator) / $limit),
+    ]);
+}
+
+    // #[Route('/list', name: 'consultation_index', methods: ['GET'])]
+    // public function index(ConsultationRepository $consultationRepository, Request $request): Response
+    // {
+    //     // Récupérer le terme de recherche depuis l'URL (query parameter 'q')
+    //     $query = $request->query->get('q', '');
+
+    //     // Récupérer les paramètres de tri depuis l'URL
+    //     $sortBy = $request->query->get('sort_by', 'id'); // Colonne par défaut : 'id'
+    //     $order = $request->query->get('order', 'asc');   // Ordre par défaut : 'asc'
+
+    //     // Initialiser le query builder
+    //     $queryBuilder = $consultationRepository->createQueryBuilder('c');
+
+    //     // Appliquer la recherche si un terme est fourni
+    //     if (!empty($query)) {
+    //         $queryBuilder
+    //             ->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query')
+    //             ->setParameter('query', '%' . $query . '%');
+    //     }
+
+    //     // Appliquer le tri
+    //     $queryBuilder->orderBy('c.' . $sortBy, $order);
+
+    //     // Récupérer tous les résultats sans pagination
+    //     $consultations = $queryBuilder->getQuery()->getResult();
+
+    //     return $this->render('consultation/ShowConsultation.html.twig', [
+    //         'consultations' => $consultations,
+    //         'searchQuery' => $query, // Passer le terme de recherche au template
+    //         'sort_by' => $sortBy,    // Passer la colonne de tri au template
+    //         'order' => $order,       // Passer l'ordre de tri au template
+    //     ]);
+    // }
+
+    
+    // Route AJAX pour la recherche et le tri
+#[Route('/search', name: 'consultation_search', methods: ['GET'])]
+public function ajaxSearch(ConsultationRepository $consultationRepository, Request $request): Response
+{
+    $searchQuery = $request->query->get('q', '');
+    $sortBy = $request->query->get('sort_by', 'id');
+    $order = $request->query->get('order', 'asc');
+
+    // Créer le QueryBuilder pour la recherche
+    $queryBuilder = $consultationRepository->createQueryBuilder('c');
+
+    // Appliquer la recherche
+    if (!empty($searchQuery)) {
+        $queryBuilder->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
+                     ->setParameter('query', '%' . $searchQuery . '%');
     }
 
     // Appliquer le tri
     $queryBuilder->orderBy('c.' . $sortBy, $order);
 
-    // Pagination
-    $query = $queryBuilder->getQuery()
-        ->setFirstResult(($page - 1) * $limit) // Offset
-        ->setMaxResults($limit);               // Limite
+    // Récupérer les résultats sans pagination
+    $consultations = $queryBuilder->getQuery()->getResult();
 
-    $paginator = new Paginator($query);
-    $totalConsultations = count($paginator);   // Nombre total de résultats
-    $totalPages = ceil($totalConsultations / $limit); // Nombre total de pages
+    // Renvoyer la réponse JSON
+    return $this->json([
+        'consultations' => $consultations,
+    ]);
+}
+
+
+    // #[Route('/view/consultation', name: 'consultation_view', methods: ['GET'])]
+    // public function viewConsultation(Request $request, ConsultationRepository $consultationRepository): Response
+    // {
+    // // Récupérer les paramètres de tri, de recherche et de pagination
+    // $sortBy = $request->query->get('sort_by', 'dateCons'); // Colonne par défaut : 'dateCons'
+    // $order = $request->query->get('order', 'asc');         // Ordre par défaut : 'asc'
+    // $searchQuery = $request->query->get('q', '');          // Terme de recherche
+    // $page = $request->query->getInt('page', 1);            // Page par défaut : 1
+    // $limit = 10;                                           // Nombre de résultats par page
+
+    // // Créer une requête Query Builder
+    // $queryBuilder = $consultationRepository->createQueryBuilder('c');
+
+    // // Appliquer la recherche si un terme est fourni
+    // if (!empty($searchQuery)) {
+    //     $queryBuilder
+    //         ->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
+    //         ->setParameter('query', '%' . $searchQuery . '%');
+    // }
+
+    // // Appliquer le tri
+    // $queryBuilder->orderBy('c.' . $sortBy, $order);
+
+    // // Pagination
+    // $query = $queryBuilder->getQuery()
+    //     ->setFirstResult(($page - 1) * $limit) // Offset
+    //     ->setMaxResults($limit);               // Limite
+
+    // $paginator = new Paginator($query);
+    // $totalConsultations = count($paginator);   // Nombre total de résultats
+    // $totalPages = ceil($totalConsultations / $limit); // Nombre total de pages
+
+    // return $this->render('consultation/viewConsultation.html.twig', [
+    //     'consultations' => $paginator,
+    //     'searchQuery' => $searchQuery, // Passer le terme de recherche au template
+    //     'sort_by' => $sortBy,          // Passer la colonne de tri au template
+    //     'order' => $order,             // Passer l'ordre de tri au template
+    //     'currentPage' => $page,        // Passer la page actuelle au template
+    //     'totalPages' => $totalPages,   // Passer le nombre total de pages au template
+    //     ]);
+    // }
+
+    #[Route('/view/consultation', name: 'consultation_view')]
+    public function viewConsultation(Request $request, ConsultationRepository $consultationRepository, PaginatorInterface $paginator): Response
+    {
+    // Récupérer les paramètres de recherche et de tri
+    $searchQuery = $request->query->get('q', '');
+    $sortBy = $request->query->get('sort_by', 'id');
+    $order = $request->query->get('order', 'asc');
+    $page = $request->query->getInt('page', 1);
+    $limit = 10; // Nombre de résultats par page
+
+    // Créer le QueryBuilder pour la recherche
+    $queryBuilder = $consultationRepository->createQueryBuilder('c');
+
+    // Appliquer la recherche
+    if (!empty($searchQuery)) {
+        $queryBuilder->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
+                     ->setParameter('query', '%' . $searchQuery . '%');
+    }
+
+    // Appliquer le tri
+    $queryBuilder->orderBy('c.' . $sortBy, $order);
+
+    // Appliquer la pagination
+    $query = $queryBuilder->getQuery()
+                          ->setFirstResult(($page - 1) * $limit) // Offset
+                          ->setMaxResults($limit);               // Limit
+
+    $paginator = $paginator->paginate($query, $page, $limit);
 
     return $this->render('consultation/viewConsultation.html.twig', [
         'consultations' => $paginator,
-        'searchQuery' => $searchQuery, // Passer le terme de recherche au template
-        'sort_by' => $sortBy,          // Passer la colonne de tri au template
-        'order' => $order,             // Passer l'ordre de tri au template
-        'currentPage' => $page,        // Passer la page actuelle au template
-        'totalPages' => $totalPages,   // Passer le nombre total de pages au template
-        ]);
+        'searchQuery' => $searchQuery,
+        'sort_by' => $sortBy,
+        'order' => $order,
+        'currentPage' => $page,
+        'totalPages' => ceil(count($paginator) / $limit),
+    ]);
     }
+    
+
+
+// Le contrôleur avec tri par date
+// #[Route('/view/consultation', name: 'consultation_view')]
+// public function viewConsultation(Request $request, ConsultationRepository $consultationRepository): Response
+// {
+//     // Récupérer les paramètres de recherche et de tri
+//     $searchQuery = $request->query->get('q', '');  // Terme de recherche
+//     $sortBy = $request->query->get('sort_by', 'dateCons');  // Par défaut, trier par 'dateCons'
+//     $order = $request->query->get('order', 'asc');  // Par défaut, ordre ascendant
+
+//     // Créer la requête pour récupérer les consultations triées
+//     $consultations = $consultationRepository->findBySearchQueryAndSort($searchQuery, $sortBy, $order);
+
+//     // Si la requête est AJAX, retourner une réponse JSON
+//     if ($request->isXmlHttpRequest()) {
+//         $data = [];
+//         foreach ($consultations as $consultation) {
+//             $data[] = [
+//                 'id' => $consultation->getId(),
+//                 'dateCons' => $consultation->getDateCons()->format('Y-m-d'),
+//                 'nom' => $consultation->getNom(),
+//                 'prenom' => $consultation->getPrenom(),
+//                 'age' => $consultation->getAge(),
+//                 'lienVisioCons' => $consultation->getLienVisioCons(),
+//                 'notesCons' => $consultation->getNotesCons(),
+//             ];
+//         }
+//         return $this->json($data);
+//     }
+
+//     // Pagination (exemple simplifié)
+//     $currentPage = $request->query->getInt('page', 1);
+//     $perPage = 10;
+//     $totalConsultations = count($consultations);
+//     $totalPages = ceil($totalConsultations / $perPage);
+
+//     // Appliquer la pagination
+//     $consultations = array_slice($consultations, ($currentPage - 1) * $perPage, $perPage);
+
+//     return $this->render('consultation/viewConsultation.html.twig', [
+//         'consultations' => $consultations,
+//         'searchQuery' => $searchQuery,
+//         'sort_by' => $sortBy,
+//         'order' => $order,
+//         'currentPage' => $currentPage,
+//         'totalPages' => $totalPages,
+//     ]);
+// }
+
+
+//     #[Route('/view/consultation', name: 'consultation_view', methods: ['GET'])]
+// public function viewConsultation(Request $request, ConsultationRepository $consultationRepository, PaginatorInterface $paginator): Response
+// {
+//     // Récupérer les paramètres de tri, de recherche et de pagination
+//     $sortBy = $request->query->get('sort_by', 'id'); // Colonne par défaut : 'dateCons'
+//     $order = $request->query->get('order', 'asc');         // Ordre par défaut : 'asc'
+//     $searchQuery = $request->query->get('q', '');          // Terme de recherche
+//     $page = $request->query->getInt('page', 1);            // Page par défaut : 1
+//     $limit = 10;                                           // Nombre de résultats par page
+
+//     // Créer une requête Query Builder
+//     $queryBuilder = $consultationRepository->createQueryBuilder('c');
+
+//     // Appliquer la recherche si un terme est fourni
+//     if (!empty($searchQuery)) {
+//         $queryBuilder
+//             ->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
+//             ->setParameter('query', '%' . $searchQuery . '%');
+//     }
+
+//     // Récupérer les consultations triées par ID et ordre
+//     $consultations = $this->entityManager->getRepository(Consultation::class)
+//     ->findBySearchQuery($searchQuery, $sortBy, $order);
+
+//     // Pagination
+//     $consultations = $paginator->paginate(
+//         $queryBuilder->getQuery(),
+//         $request->query->getInt('page', 1), // Page actuelle
+//         $limit // Nombre d'éléments par page
+//     );
+
+//     // Nombre total de résultats et de pages pour la pagination
+//     $totalConsultations = count($consultations);
+//     $totalPages = ceil($totalConsultations / $limit); // Nombre total de pages
+
+//     return $this->render('consultation/viewConsultation.html.twig', [
+//         'consultations' => $consultations,
+//         'searchQuery' => $searchQuery, // Passer le terme de recherche au template
+//         'sort_by' => $sortBy,          // Passer la colonne de tri au template
+//         'order' => $order,             // Passer l'ordre de tri au template
+//         'currentPage' => $page,        // Passer la page actuelle au template
+//         'totalPages' => $totalPages,   // Passer le nombre total de pages au template
+//     ]);
+// }
+
 
     #[Route('/new', name: 'consultation_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -191,25 +372,6 @@ class ConsultationController extends AbstractController
         ]);
     }
 
-    // #[Route('/new', name: 'consultation_new', methods: ['GET', 'POST'])]
-    // public function new(Request $request, EntityManagerInterface $entityManager): Response
-    // {
-    //     $consultation = new Consultation();
-    //     $form = $this->createForm(ConsultationType::class, $consultation);
-    //     $form->handleRequest($request);
-
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $entityManager->persist($consultation);
-    //         $entityManager->flush();
-
-    //         $this->addFlash('success', 'Consultation ajoutée avec succès !');
-    //         return $this->redirectToRoute('consultation_index');
-    //     }
-
-    //     return $this->render('consultation/addConsultation.html.twig', [
-    //         'form' => $form->createView(),
-    //     ]);
-    // }
 
     #[Route('/edit/{id}', name: 'edit_consultation', methods: ['GET', 'POST'])]
     public function edit(Request $request, Consultation $consultation, EntityManagerInterface $entityManager): Response
@@ -317,41 +479,4 @@ class ConsultationController extends AbstractController
             ]
         );
     }
-
-    // #[Route('/consultation/qr-code', name: 'consultation_qr_code')]
-    // public function generateQrCode(ConsultationRepository $consultationRepository, QrCodeGeneratorService $qrCodeGenerator): Response
-    // {
-    //     // Récupérer toutes les consultations
-    //     $consultations = $consultationRepository->findAll();
-
-    //     // Formater les consultations en une chaîne de caractères
-    //     $data = "Liste des Consultations:\n\n";
-    //     foreach ($consultations as $consultation) {
-    //         $data .= sprintf(
-    //             "ID: %d\nDate: %s\nNom: %s\nPrénom: %s\nÂge: %d\nProfession: %s\nRaison: %s\n\n",
-    //             $consultation->getId(),
-    //             $consultation->getDateCons()->format('Y-m-d'),
-    //             $consultation->getNom(),
-    //             $consultation->getPrenom(),
-    //             $consultation->getAge(),
-    //             $consultation->getLienVisioCons(),
-    //             $consultation->getNotesCons()
-    //         );
-    //     }
-
-    //     // Générer le QR code
-    //     $qrCode = $qrCodeGenerator->generateQrCode($data);
-
-    //     // Retourner le QR code en tant que réponse
-    //     return new Response(
-    //         $qrCode,
-    //         Response::HTTP_OK,
-    //         [
-    //             'Content-Type' => 'image/png',
-    //             // permettre à l'utilisateur de télécharger le QR code
-    //             'Content-Disposition' => 'attachment; filename="consultations_qr_code.png"',
-    //             // 'Content-Disposition' => 'inline; filename="consultations_qr_code.png"',
-    //         ]
-    //     );
-    // }
 }

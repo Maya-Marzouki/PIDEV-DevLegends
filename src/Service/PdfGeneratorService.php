@@ -4,10 +4,11 @@ namespace App\Service;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Symfony\Component\HttpFoundation\Response;
 
 class PdfGeneratorService
 {
-    public function generatePdfFromHtml(string $html): string
+    public function generatePdfFromHtml(string $html): Response
     {
         // Configuration de Dompdf
         $options = new Options();
@@ -19,11 +20,20 @@ class PdfGeneratorService
         // Charger le HTML
         $dompdf->loadHtml($html);
 
+        // Définir le format de la page
+        $dompdf->setPaper('A4', 'portrait'); 
+
         // Rendre le PDF
-        $dompdf->setPaper('A4', 'portrait'); // Format A4, orientation portrait
         $dompdf->render();
 
-        // Retourner le contenu du PDF
-        return $dompdf->output();
+        // Retourner le PDF sous forme de réponse HTTP
+        return new Response(
+            $dompdf->output(),
+            Response::HTTP_OK,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="export.pdf"',
+            ]
+        );
     }
 }

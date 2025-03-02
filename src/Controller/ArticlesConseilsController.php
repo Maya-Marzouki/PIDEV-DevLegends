@@ -13,6 +13,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 
@@ -21,24 +22,27 @@ class ArticlesConseilsController extends AbstractController
     #[Route('/articles-conseils', name: 'app_articles_conseils_index')]
     public function index(ArticlesConseilsRepository $articlesConseilsRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        // Récupérer tous les centres
-        $query = $articlesConseilsRepository->createQueryBuilder('c')->getQuery();
+        $searchTerm = $request->query->get('search');
+        $sortBy = $request->query->get('sortBy', 'titreArticle');
+        $sortOrder = $request->query->get('sortOrder', 'ASC');
 
-        // Paginer les résultats (3 centres par page)
+        $query = $articlesConseilsRepository->searchAndSort($searchTerm, $sortBy, $sortOrder);
+
         $articleConseil = $paginator->paginate(
             $query,
-            $request->query->getInt('page', 1), // Page actuelle (1 par défaut)
-            3 // Nombre d'éléments par page
+            $request->query->getInt('page', 1),
+            3
         );
-            
-        // Affiche tous les articles conseils
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('articles_conseils/_list.html.twig', [
+                'articlesConseils' => $articleConseil,
+            ]);
+        }
+
         return $this->render('articles_conseils/listArticle.html.twig', [
-            'articlesConseils' => $articleConseil, // ✅ Ceci est bien un objet de type SlidingPaginationInterface
+            'articlesConseils' => $articleConseil,
         ]);
-        
-        // return $this->render('articles_conseils/listArticle.html.twig', [
-        //     'articlesConseils' => $articlesConseilsRepository->findAll(),
-        // ]);
     }
 
     #[Route('/articles-conseils/new', name: 'app_articles_conseils_new')]
@@ -78,29 +82,16 @@ class ArticlesConseilsController extends AbstractController
         ]);
     }
 
-    // #[Route('/articles-conseils/{id}', name: 'app_articles_conseils_show')]
-    // public function show(ArticlesConseils $articleConseil): Response
-    // {
-    //     // Affiche un seul article conseil
-    //     return $this->render('articles_conseils/ShowArticle.html.twig', [
-    //         'articleConseil' => $articleConseil,
-    //     ]);
-    // }
-
     #[Route('/articles-conseils/{id}', name: 'app_articles_conseils_show')]
-public function show(ArticlesConseilsRepository $articlesConseilsRepository, int $id): Response
-{
-    $articleConseil = $articlesConseilsRepository->find($id);
-
-    if (!$articleConseil) {
-        $this->addFlash('error', 'Article non trouvé.');
-        return $this->redirectToRoute('app_articles_conseils_index');
+    public function show(ArticlesConseils $articleConseil): Response
+    {
+        // Affiche un seul article conseil
+        return $this->render('articles_conseils/ShowArticle.html.twig', [
+            'articleConseil' => $articleConseil,
+        ]);
     }
 
-    return $this->render('articles_conseils/ShowArticle.html.twig', [
-        'articleConseil' => $articleConseil,
-    ]);
-}
+
 
 
     #[Route('/articles-conseils/{id}/edit', name: 'app_articles_conseils_edit')]
@@ -162,12 +153,52 @@ public function show(ArticlesConseilsRepository $articlesConseilsRepository, int
 
     // Redirection vers la Vue d’Admin
     #[Route('/admin/articles-conseils', name: 'app_articles_conseils_admin')]
-public function adminIndex(ArticlesConseilsRepository $articlesConseilsRepository): Response
+public function adminIndex(Request $request, ArticlesConseilsRepository $articlesConseilsRepository): Response
 {
-    // Affiche la liste des articles pour l'admin
+    $titre = $request->query->get('titre');
+    $categorie = $request->query->get('categorie');
+
+    $articlesConseils = $articlesConseilsRepository->searchArticles($titre, $categorie);
+
     return $this->render('articles_conseils/viewBackArticle.html.twig', [
-        'articlesConseils' => $articlesConseilsRepository->findAll(),
+        'articlesConseils' => $articlesConseils,
     ]);
 }
+
+//     #[Route('/admin/articles-conseils', name: 'app_articles_conseils_admin')]
+// public function adminIndex(ArticlesConseilsRepository $articlesConseilsRepository): Response
+// {
+//     $articlesConseils = $articlesConseilsRepository->findAllOrderedByTitre();
+
+//     return $this->render('articles_conseils/viewBackArticle.html.twig', [
+//         'articlesConseils' => $articlesConseils,
+//     ]);
+// }
+
+#[Route('/articles-conseils/search', name: 'app_articles_conseils_search', methods: ['GET'])]
+public function search(Request $request, ArticlesConseilsRepository $articlesConseilsRepository): JsonResponse
+{
+    $criteria = [
+        'titre' => $request->query->get('titre'),
+        'categorie' => $request->query->get('categorie'),
+        'order' => $request->query->get('order'),
+    ];
+
+    $articlesConseils = $articlesConseilsRepository->findByCriteria($criteria);
+
+    $data = [];
+    foreach ($articlesConseils as $article) {
+        $data[] = [
+            'id' => $article->getId(),
+            'titreArticle' => $article->getTitreArticle(),
+            'contenuArticle' => substr($article->getContenuArticle(), 0, 100) . '...',
+            'categorieMentalArticle' => $article->getCategorieMentalArticle(),
+            'image' => $article->getImage() ? $this->getParameter('kernel.project_dir') . '/public' . $article->getImage() : null,
+        ];
+    }
+
+    return new JsonResponse($data);
+}
+
 
 }

@@ -39,22 +39,9 @@
                     <table class="table table-bordered text-center"> {# Centre le texte dans le tableau #}
                         <thead class="table-dark">
                             <tr>
-                                <th>
-                                    <a href="{{ path('app_reponse_index_admin', {'sort_by': 'answerText', 'order': sort_by == 'answerText' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
-                                        Réponse {% if sort_by == 'answerText' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
-                                    </a>
-                                </th>
-                                <th>
-                                    <a href="{{ path('app_reponse_index_admin', {'sort_by': 'score', 'order': sort_by == 'score' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
-                                        Score {% if sort_by == 'score' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
-                                    </a>
-                                </th>
-                                <th>
-                                    <a href="{{ path('app_reponse_index_admin', {'sort_by': 'question', 'order': sort_by == 'question' and order == 'asc' ? 'desc' : 'asc', 'q': searchQuery}) }}">
-                                        Question {% if sort_by == 'question' %}({{ order == 'asc' ? '▲' : '▼' }}){% endif %}
-                                    </a>
-                                </th>
-                                <th>Actions</th>
+                                <th>Réponse</th>
+                                <th>Score</th>
+                                <th>Question</th>
                             </tr>
                         </thead>
                         <tbody>

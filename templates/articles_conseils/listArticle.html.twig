@@ -9,79 +9,148 @@
             <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
                 <p class="fs-5 fw-bold text-primary">Nos Articles de Conseils</p>
                 <h1 class="display-5 mb-5">Quelques-uns de nos articles intéressants</h1>
+                <a href="{{ path('chatbot') }}" class="btn btn-primary">Ouvrir le Chatbot</a>
             </div>
 
-            <div class="row g-4 portfolio-container">
-                {% for article in articlesConseils.items %} {# ✅ Utilisation de articlesConseils.items pour pagination #}
-                    <div class="col-lg-4 col-md-6 portfolio-item wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="portfolio-inner rounded position-relative overflow-hidden">
-                            <!-- Image -->
-                            {% if article.image %}
-                                <img class="img-fluid w-100" src="{{ asset(article.image) }}" alt="{{ article.titreArticle }}">
-                            {% else %}
-                                <img class="img-fluid w-100" src="https://via.placeholder.com/500x300" alt="Image non disponible">
-                            {% endif %}
-
-                            <!-- Titre affiché au survol -->
-                            <div class="portfolio-hover d-flex align-items-center justify-content-center">
-                                <h4 class="text-white text-center">{{ article.titreArticle }}</h4>
-                            </div>
-
-                            <!-- Bouton Voir -->
-                            <div class="portfolio-text">
-                                <div class="d-flex justify-content-center mt-4">
-                                    <a class="btn btn-lg-square rounded-circle mx-2" href="{{ path('app_articles_conseils_show', {'id': article.id}) }}" title="Voir l'article">
-                                        <i class="fa fa-eye"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Barre de recherche et options de tri -->
+            <div class="mb-4">
+                <input type="text" id="searchInput" class="form-control mb-2" placeholder="Rechercher par titre, contenu ou catégorie...">
+                <div class="row">
+                    <div class="col-md-6">
+                        <select id="sortSelect" class="form-select">
+                            <option value="titreArticle">Trier par titre</option>
+                            <option value="categorieMentalArticle">Trier par catégorie</option>
+                        </select>
                     </div>
-                {% endfor %}
+                    <div class="col-md-6">
+                        <select id="sortOrderSelect" class="form-select">
+                            <option value="ASC">Ordre croissant</option>
+                            <option value="DESC">Ordre décroissant</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
-            <!-- Affichage de la pagination -->
+            <!-- Liste des articles (rafraîchie dynamiquement via AJAX) -->
+            <div id="articlesList" class="row g-4 portfolio-container">
+                {% include 'articles_conseils/_list.html.twig' with {'articlesConseils': articlesConseils.items} %}
+            </div>
+
+            <!-- Pagination -->
             <div class="pagination-container mt-4">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
-                        {{ knp_pagination_render(articlesConseils) }} {# ✅ Correction ici #}
+                        {{ knp_pagination_render(articlesConseils) }}
                     </ul>
                 </nav>
             </div>
-            
+        </div>
+    </div>
+
+    <!-- Styles pour la recherche et le tri -->
+    <style>
+        #searchInput, #sortSelect, #sortOrderSelect {
+            margin-bottom: 10px;
+        }
+    </style>
+
+    <!-- Script JavaScript pour la recherche et le tri dynamique -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const sortSelect = document.getElementById('sortSelect');
+            const sortOrderSelect = document.getElementById('sortOrderSelect');
+
+            function updateList() {
+                const searchTerm = searchInput.value;
+                const sortBy = sortSelect.value;
+                const sortOrder = sortOrderSelect.value;
+
+                fetch(`/articles-conseils?search=${searchTerm}&sortBy=${sortBy}&sortOrder=${sortOrder}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('articlesList').innerHTML = html;
+                });
+            }
+
+            searchInput.addEventListener('input', updateList);
+            sortSelect.addEventListener('change', updateList);
+            sortOrderSelect.addEventListener('change', updateList);
+        });
+    </script>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget">
+        <button id="chatbot-toggle" class="btn btn-primary rounded-circle">
+            <i class="fa fa-comment"></i>
+        </button>
+        <div id="chatbot-box" style="display:none;">
+            <div id="webchat"></div>
         </div>
     </div>
 
     <style>
-        /* Cacher le titre par défaut */
-        .portfolio-hover {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+        #chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
         }
 
-        /* Afficher le titre au survol */
-        .portfolio-inner:hover .portfolio-hover {
-            opacity: 1;
-        }
-
-        /* Toujours afficher le bouton Voir et l'abaisser */
-        .portfolio-text {
-            position: relative;
+        #chatbot-toggle {
+            font-size: 24px;
             padding: 15px;
-            text-align: center;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .portfolio-text .btn {
-            margin-top: 90px; /* Ajout de marge pour abaisser le bouton */
+        #chatbot-box {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 300px;
+            height: 400px;
+        }
+
+        #chatbot-toggle:hover {
+            background-color: #0056b3;
         }
     </style>
+
+    <script>
+        document.getElementById('chatbot-toggle').addEventListener('click', function() {
+            var chatbotBox = document.getElementById('chatbot-box');
+            if (chatbotBox.style.display === 'none' || chatbotBox.style.display === '') {
+                chatbotBox.style.display = 'block';
+            } else {
+                chatbotBox.style.display = 'none';
+            }
+        });
+    </script>
+
+    <!-- Rasa Webchat Script -->
+    <script src="https://cdn.jsdelivr.net/npm/rasa-webchat@1.0.0/dist/rasa-webchat.bundle.js"></script>
+    <script>
+        window.WebChat.default({
+            selector: "#webchat",
+            initPayload: "/get_started",
+            customData: { "language": "fr" },
+            socketUrl: "http://localhost:5005/webhooks/rest/webhook",
+            socketPath: "/socket.io/",
+            title: "Chatbot Rasa",
+            subtitle: "Comment puis-je vous aider?",
+        });
+    </script>
 {% endblock %}

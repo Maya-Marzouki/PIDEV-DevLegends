@@ -15,6 +15,77 @@ class ArticlesConseilsRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, ArticlesConseils::class);
     }
+    public function searchAndSort($searchTerm = null, $sortBy = 'titreArticle', $sortOrder = 'ASC')
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        if ($searchTerm) {
+            $qb->andWhere('a.titreArticle LIKE :searchTerm OR a.contenuArticle LIKE :searchTerm OR a.categorieMentalArticle LIKE :searchTerm')
+               ->setParameter('searchTerm', '%'.$searchTerm.'%');
+        }
+
+        $qb->orderBy('a.'.$sortBy, $sortOrder);
+
+        return $qb->getQuery();
+    }
+
+    public function findAllOrderedByTitre($order = 'ASC')
+    {
+        return $this->createQueryBuilder('a')
+            ->orderBy('a.titreArticle', $order)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findByCriteria($criteria)
+    {
+        $queryBuilder = $this->createQueryBuilder('a');
+
+        if (!empty($criteria['titre'])) {
+            $queryBuilder->andWhere('a.titreArticle LIKE :titre')
+                ->setParameter('titre', '%' . $criteria['titre'] . '%');
+        }
+
+        if (!empty($criteria['categorie'])) {
+            $queryBuilder->andWhere('a.categorieMentalArticle = :categorie')
+                ->setParameter('categorie', $criteria['categorie']);
+        }
+
+        if (!empty($criteria['order'])) {
+            $queryBuilder->orderBy('a.titreArticle', $criteria['order']);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    // src/Repository/ArticlesConseilsRepository.php
+
+public function findBySearchTerm(string $searchTerm): array
+{
+    return $this->createQueryBuilder('a')
+        ->where('a.titre LIKE :searchTerm OR a.contenu LIKE :searchTerm')
+        ->setParameter('searchTerm', '%' . $searchTerm . '%')
+        ->orderBy('a.titre', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
+
+public function searchArticles(?string $titre, ?string $categorie): array
+{
+    $qb = $this->createQueryBuilder('a');
+
+    if ($titre) {
+        $qb->andWhere('a.titreArticle LIKE :titre')
+           ->setParameter('titre', '%' . $titre . '%');
+    }
+
+    if ($categorie) {
+        $qb->andWhere('a.categorieMentalArticle = :categorie')
+           ->setParameter('categorie', $categorie);
+    }
+
+    return $qb->getQuery()->getResult();
+}
 
      // Ajout de la méthode save()
      public function save(ArticlesConseils $article, bool $flush = true): void

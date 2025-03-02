@@ -1,0 +1,32 @@
+{# articles_conseils/_articles_list.html.twig #}
+
+{% for article in articlesConseils %}
+    <tr>
+        <td>{{ article.titreArticle }}</td>
+        <td>{{ article.contenuArticle|slice(0, 100) }}...</td>
+        <td>{{ article.categorieMentalArticle }}</td>
+        <td>
+            {% if article.image %}
+                <img src="{{ asset(article.image) }}" alt="Image de l'article" width="100">
+            {% else %}
+                <span>Pas d'image</span>
+            {% endif %}
+        </td>
+        <td>
+            <a href="{{ path('app_articles_conseils_edit', {'id': article.id}) }}" class="btn btn-secondary btn-sm">
+                <i class="fa fa-edit"></i> Modifier
+            </a>
+            <form action="{{ path('app_articles_conseils_delete', {'id': article.id}) }}" method="post" class="d-inline"
+                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+                <button type="submit" class="btn btn-secondary btn-sm">
+                    <i class="fa fa-trash"></i> Supprimer
+                </button>
+            </form>
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="5" class="text-center">Aucun article disponible.</td>
+    </tr>
+{% endfor %}

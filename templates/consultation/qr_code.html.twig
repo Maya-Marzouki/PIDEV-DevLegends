@@ -6,25 +6,19 @@
         <div class="card">
             <div class="card-block text-center">
                 <h4 class="card-title">QR Code des Consultations</h4>
-                <h6 class="card-subtitle">Contient toutes les consultations</h6>
+                <h6 class="card-subtitle">Scannez pour voir la liste des consultations</h6>
 
                 {# Afficher le QR code #}
                 <div class="mt-4">
-                    <img src="{{ qrCodeUrl }}" alt="QR Code des Consultations" class="img-fluid">
+                {# <p>{{ qrCodeUrl }}</p> #}
+
+                    <img src="{{ qrCodeUrl }}" alt="QR Code" class="img-fluid">
                 </div>
-        {# Bouton "Ajouter une Réponse" en bas à droite #}
-        <style>
-            .btn-custom-green {
-                background-color: #28a745 !important; /* Vert Bootstrap */
-                color: white !important; /* Texte blanc */
-                font-weight: bold;
-            }
-        </style>
-                {# Boutons en bas à droite #}
+
+                {# Boutons #}
                 <div class="d-flex justify-content-end mt-3">
-                    <a href="{{ path('consultation_index') }}" class="btn btn-custom-green mr-2">Retour à la liste</a>
-                    <a href="{{ qrCodeUrl }}" download="consultations_qr_code.png" class="btn btn-custom-green mr-2"> Télécharger le QR Code
-                    </a>
+                    <a href="{{ path('consultation_affichage') }}" class="btn btn-success mr-2">Voir les consultations</a>
+                    <a href="{{ qrCodeUrl }}" download="qr_code.png" class="btn btn-primary">Télécharger le QR Code</a>
                 </div>
             </div>
         </div>

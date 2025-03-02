@@ -7,6 +7,8 @@ parameters:
     unsplash_access_key: '%env(UNSPLASH_ACCESS_KEY)%'  # 👈 Bien placé sous `parameters`
 
 services:
+    # Client HTTP Symfony, c'est une implémentation de HttpClientInterface
+    Symfony\Contracts\HttpClient\HttpClientInterface: '@http_client'
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
@@ -27,6 +29,11 @@ services:
     App\Service\UnsplashService:
         arguments:
             $unsplashAccessKey: '%env(UNSPLASH_ACCESS_KEY)%'
+    
+
+    # http_client:
+    #     class: Symfony\Contracts\HttpClient\HttpClientInterface
+    #     public: true
 
 
     # add more service definitions when explicit configuration is needed

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\UnsplashService;
+
 use App\Entity\Quiz;
 use App\Form\QuizUserResponseType;
 use App\Repository\QuestionRepository;
@@ -19,9 +20,12 @@ use Knp\Component\Pager\PaginatorInterface;
 class QuizController extends AbstractController
 {
     private QuizService $quizService;
+    // private string $apiKey;
+
 
     public function __construct(QuizService $quizService)
     {
+        // $this->apiKey = $apiKey;
         $this->quizService = $quizService;
     }
 
@@ -245,15 +249,46 @@ public function result(Request $request, UnsplashService $unsplashService, Entit
 //     ]);
 // }
 
-#[Route('/admin/list', name: 'quiz_list_admin', methods: ['GET'])]    
+// #[Route('/admin/list', name: 'quiz_list_admin', methods: ['GET'])]    
+// public function list(QuizRepository $quizRepository, Request $request): Response
+// {
+//     // Récupérer le terme de recherche depuis l'URL (query parameter 'q')
+//     $query = $request->query->get('q', '');
+
+//     // Récupérer les paramètres de tri depuis l'URL
+//     $sortBy = $request->query->get('sort_by', 'id'); // Colonne par défaut : 'id'
+//     $order = $request->query->get('order', 'desc');   // Ordre par défaut : 'asc'
+
+//     // Initialiser le query builder
+//     $queryBuilder = $quizRepository->createQueryBuilder('q');
+
+//     // Appliquer la recherche si un terme est fourni
+//     if (!empty($query)) {
+//         $queryBuilder
+//         ->where('q.etatMental LIKE :query OR q.score LIKE :query')
+//         ->setParameter('query', '%' . $query . '%');
+//     }
+
+//     // Appliquer le tri
+//     $queryBuilder->orderBy('q.' . $sortBy, $order);
+
+//     // Récupérer tous les résultats sans pagination
+//     // $quizzes = $quizRepository->findAll();
+//     $quizzes = $queryBuilder->getQuery()->getResult();
+
+//     return $this->render('quiz/AdminShowQuiz.html.twig', [
+//         'quizzes' => $quizzes,
+//         'searchQuery' => $query, // Passer le terme de recherche au template
+//         'sort_by' => $sortBy,    // Passer la colonne de tri au template
+//         'order' => $order,       // Passer l'ordre de tri au template
+//     ]);
+// }
+
+#[Route('/admin/list', name: 'quiz_list_admin', methods: ['GET'])]
 public function list(QuizRepository $quizRepository, Request $request): Response
 {
     // Récupérer le terme de recherche depuis l'URL (query parameter 'q')
     $query = $request->query->get('q', '');
-
-    // Récupérer les paramètres de tri depuis l'URL
-    $sortBy = $request->query->get('sort_by', 'id'); // Colonne par défaut : 'id'
-    $order = $request->query->get('order', 'desc');   // Ordre par défaut : 'asc'
 
     // Initialiser le query builder
     $queryBuilder = $quizRepository->createQueryBuilder('q');
@@ -261,22 +296,16 @@ public function list(QuizRepository $quizRepository, Request $request): Response
     // Appliquer la recherche si un terme est fourni
     if (!empty($query)) {
         $queryBuilder
-        ->where('q.etatMental LIKE :query OR q.score LIKE :query')
-        ->setParameter('query', '%' . $query . '%');
+            ->where('q.etatMental LIKE :query OR q.score LIKE :query')
+            ->setParameter('query', '%' . $query . '%');
     }
 
-    // Appliquer le tri
-    $queryBuilder->orderBy('q.' . $sortBy, $order);
-
     // Récupérer tous les résultats sans pagination
-    // $quizzes = $quizRepository->findAll();
     $quizzes = $queryBuilder->getQuery()->getResult();
 
     return $this->render('quiz/AdminShowQuiz.html.twig', [
         'quizzes' => $quizzes,
         'searchQuery' => $query, // Passer le terme de recherche au template
-        'sort_by' => $sortBy,    // Passer la colonne de tri au template
-        'order' => $order,       // Passer l'ordre de tri au template
     ]);
 }
 
@@ -329,4 +358,62 @@ public function deleteAdmin(Request $request, Quiz $quiz, EntityManagerInterface
     return $this->redirectToRoute('quiz_list_admin');
 }
 
+
+// ************************** VOLET IA **************************
+
+    // // Route pour récupérer les questions
+    // #[Route('/questions', name: 'quiz_questions', methods: ['GET'])]
+    // public function getQuestions(): JsonResponse
+    // {
+    //     $questions = $this->apiAiService->generateQuizQuestions();
+    //     return $this->json(['questions' => $questions]);
+    // }
+
+    // // Route pour soumettre les réponses et obtenir l'état mental
+    // #[Route('/submit', name: 'quiz_submit', methods: ['POST'])]
+    // public function submitQuiz(Request $request): JsonResponse
+    // {
+    //     $responses = $request->toArray();  // Supposons que les réponses sont envoyées en format JSON
+
+    //     $result = $this->apiAiService->calculateMentalState($responses);
+
+    //     return $this->json([
+    //         'score' => $result['score'],
+    //         'mental_state' => $result['mental_state']
+    //     ]);
+    // }
+
+
+// #[Route('/generate', name: 'quiz_generate')]
+// public function generateQuestions(Request $request): Response
+// {
+//     $topic = $request->query->get('topic', 'mental health');
+//     $numQuestions = 5; // Nombre de questions à générer
+
+//     $questions = $this->questionGeneratorService->generateQuestions($topic, $numQuestions);
+
+//     return $this->render('quiz/generate.html.twig', [
+//         'questions' => $questions,
+//     ]);
+// }
+
+// #[Route('/quiz', name: 'quiz')]
+// public function quiz(): Response
+// {
+//     return $this->render('quiz/QuizAI.html.twig');
+// }
+// #[Route('/api/generate-quiz', name: 'generate_quiz', methods: ['GET'])]
+// public function generateQuiz(): JsonResponse
+// {
+//     $quiz = $this->quizService->generateQuiz();
+//     return $this->json($quiz);
+// }
+
+// #[Route('/api/evaluate-quiz', name: 'evaluate_quiz', methods: ['POST'])]
+// public function evaluateQuiz(Request $request): JsonResponse
+// {
+//     $data = json_decode($request->getContent(), true);
+//     $evaluation = $this->quizService->evaluateQuiz($data['answers']);
+//     return $this->json(['evaluation' => $evaluation]);
+// }
 }

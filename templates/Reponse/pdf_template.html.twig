@@ -1,51 +1,131 @@
-{# templates/reponse/pdf_template.html.twig #}
-
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Liste des Réponses</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* En-tête */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #28a745; /* Vert */
+            color: white;
+            font-size: 16px;
+        }
+        .header img {
+            height: 60px;
+        }
+        .header .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header .contact-info {
+            text-align: right;
+        }
+        
+        /* Barre de navigation */
+        .navbar {
+            background-color: rgba(118, 199, 192, 0.25);
+            padding: 10px;
+            text-align: center;
+        }
+        .navbar a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+
+        /* Tableau stylisé */
+        .table-container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
         }
         th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
         th {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
             background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+        .text-center {
+            text-align: center;
         }
     </style>
 </head>
+
 <body>
-    <h1>Liste des Réponses</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Réponse</th>
-                <th>Score</th>
-                <th>Question</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for reponse in reponses %}
+    <!-- En-tête -->
+    <div class="header">
+    <img src="data:image/png;base64,{{ logo_base64 }}" alt="InnerBloom Logo" style="width: 150px;">
+        {# <div class="title">InnerBloom</div> #}
+        <div class="contact-info">
+            <p>+216 21 345 678 | ✉️ InnerBloom@gmail.com</p>
+            <p>Suivez-nous: Facebook | Twitter | LinkedIn | Instagram</p>
+        </div>
+    </div>
+
+    <!-- Barre de navigation -->
+    <div class="navbar">
+        <a href="#">Home</a>
+        <a href="#">Événements</a>
+        <a href="#">Packs</a>
+        <a href="#">Consultations</a>
+        <a href="#">Produits</a>
+        <a href="#">Réclamations</a>
+    </div>
+
+    <div class="table-container">
+    <!-- Ajouter l'image avant la liste des réponses -->
+    <div class="text-center">
+        <img src="data:image/jpeg;base64,{{ image_base64 }}" alt="Image avant la liste" style="max-width: 100%; height: auto; margin-bottom: 20px;">
+    </div>
+
+        <h1 class="text-center">Liste des Réponses</h1>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ reponse.answerText }}</td>
-                    <td>{{ reponse.score }}</td>
-                    <td>{{ reponse.question.questionText }}</td>
+                    <th>Réponse</th>
+                    <th>Score</th>
+                    <th>Question</th>
                 </tr>
-            {% else %}
-                <tr>
-                    <td colspan="3" class="text-center">Aucune réponse disponible.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for reponse in reponses %}
+                    <tr>
+                        <td>{{ reponse.answerText }}</td>
+                        <td>{{ reponse.score }}</td>
+                        <td>{{ reponse.question.questionText }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">Aucune réponse disponible.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

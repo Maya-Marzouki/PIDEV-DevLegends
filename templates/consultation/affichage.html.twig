@@ -1,0 +1,108 @@
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Détails des Consultations</h2>
+    
+    <!-- Tableau stylisé -->
+    <table id="consultation-table" class="table table-striped table-hover table-bordered mt-4 shadow-sm">
+        <thead class="thead-light">
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Âge</th>
+                <th>Profession</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for consultation in consultations %}
+                <tr>
+                    <td>{{ consultation.id }}</td>
+                    <td>{{ consultation.dateCons|date('Y-m-d') }}</td>
+                    <td>{{ consultation.nom }}</td>
+                    <td>{{ consultation.prenom }}</td>
+                    <td>{{ consultation.age }}</td>
+                    <td>{{ consultation.lienVisioCons }}</td>
+                    <td>{{ consultation.notesCons }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <!-- Bouton de téléchargement du PDF -->
+    <div class="text-center mt-4">
+        <button id="download-btn" class="btn btn-success btn-lg">Télécharger le tableau en PDF</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        /* Style personnalisé pour le tableau */
+        #consultation-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #consultation-table th, #consultation-table td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        #consultation-table th {
+            background-color: #28a745; 
+            color: white;
+            font-size: 1.1em;
+        }
+
+        #consultation-table tbody tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+
+        #consultation-table tbody tr:hover {
+            background-color: #e9ecef;
+            cursor: pointer;
+        }
+
+        .btn {
+            font-size: 1.2em;
+            padding: 10px 20px;
+        }
+
+        .btn:hover {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    <!-- CDN jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- CDN autoTable (plugin jsPDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.19/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+        document.getElementById('download-btn').addEventListener('click', function() {
+            // Utiliser jsPDF pour générer un PDF à partir du tableau
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Vérification si le tableau existe
+            const table = document.getElementById('consultation-table');
+            if (table) {
+                console.log('Tableau trouvé, génération du PDF...');
+
+                // Utiliser autoTable pour ajouter le tableau au PDF
+                doc.autoTable({ html: table });
+
+                // Télécharger le PDF
+                doc.save('consultations.pdf');
+            } else {
+                console.error('Tableau non trouvé !');
+            }
+        });
+    </script>
+{% endblock %}

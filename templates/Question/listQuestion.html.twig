@@ -9,6 +9,26 @@
             <div class="card-block text-center p-4"> {# Centre le texte dans la carte #}
                 <h4 class="card-title">Liste des Questions</h4>
                 <h6 class="card-subtitle mb-3">Gestion des questions</h6>
+
+                <form method="get" class="mb-3">
+    <div class="row">
+        <div class="col">
+            <input type="text" name="text" class="form-control" placeholder="Rechercher par texte" value="{{ app.request.query.get('text') }}">
+        </div>
+        <div class="col">
+            <select name="type" class="form-control">
+                <option value="">Tous les types</option>
+                <option value="group1" {{ app.request.query.get('type') == 'group1' ? 'selected' }}>Group 1</option>
+                <option value="group2" {{ app.request.query.get('type') == 'group2' ? 'selected' }}>Group 2</option>
+            </select>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-secondary">Rechercher</button>
+            <a href="{{ path('question_index') }}" class="btn btn-secondary">Réinitialiser</a>
+        </div>
+    </div>
+</form>
+
                 <div class="table-responsive">
                     <table class="table table-bordered text-center"> {# Centre le texte dans le tableau #}
                         <thead>

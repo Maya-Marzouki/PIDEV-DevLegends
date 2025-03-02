@@ -24,13 +24,27 @@ class QuestionController extends AbstractController
     /**
      * Afficher la liste des questions
      */
-    #[Route('/list', name: 'question_index', methods: ['GET'])]
-    public function index(QuestionRepository $questionRepository): Response
-    {
-        return $this->render('question/listQuestion.html.twig', [
-            'questions' => $questionRepository->findAll(),
-        ]);
-    }
+
+     #[Route('/list', name: 'question_index', methods: ['GET'])]
+public function index(Request $request, QuestionRepository $questionRepository): Response
+{
+    $text = $request->query->get('text');
+    $type = $request->query->get('type');
+
+    $questions = $questionRepository->searchQuestions($text, $type);
+
+    return $this->render('question/listQuestion.html.twig', [
+        'questions' => $questions,
+    ]);
+}
+
+    // #[Route('/list', name: 'question_index', methods: ['GET'])]
+    // public function index(QuestionRepository $questionRepository): Response
+    // {
+    //     return $this->render('question/listQuestion.html.twig', [
+    //         'questions' => $questionRepository->findAll(),
+    //     ]);
+    // }
 
     /**
      * Ajouter une nouvelle question
