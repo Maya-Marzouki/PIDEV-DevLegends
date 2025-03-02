@@ -35,9 +35,17 @@ class AvisController extends AbstractController
     }
 
     #[Route('/avisclient', name: 'avisclient')]
-    public function showavisclient(ManagerRegistry $mr): Response
+    public function showavisclient(ManagerRegistry $mr, PaginatorInterface $paginator, Request $request): Response
     {
-        $aviss = $mr->getRepository(Avis::class)->findAll();
+        // Récupérer toutes les avis
+        $avisQuery = $mr->getRepository(Avis::class)->findAll();
+
+        // Pagination
+        $aviss = $paginator->paginate(
+            $avisQuery, // Requête à paginer
+            $request->query->getInt('page', 1), // Numéro de la page, 1 par défaut
+            6 // Nombre d'éléments par page
+        );
 
         return $this->render('avis/showclientavis.html.twig', [
             'aviss' => $aviss,
@@ -89,6 +97,11 @@ class AvisController extends AbstractController
     #[Route('/avis/{id}/edit', name: 'editAvis')]
     public function edit(Request $request, Avis $avis, ManagerRegistry $mr): Response
     {
+        // Vérifier si l'utilisateur connecté est le propriétaire de l'avis
+        if ($this->getUser() !== $avis->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier cet avis.');
+        }
+
         $form = $this->createForm(AvisType::class, $avis);
         $form->handleRequest($request);
 
@@ -109,8 +122,14 @@ class AvisController extends AbstractController
     #[Route('/avis/{id}/delete', name: 'deleteAvis')]
     public function deleteAvis(ManagerRegistry $mr, AvisRepository $repo, $id): Response
     {
-        $manager = $mr->getManager();
         $avis = $repo->find($id);
+
+        // Vérifier si l'utilisateur connecté est le propriétaire de l'avis
+        if ($this->getUser() !== $avis->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer cet avis.');
+        }
+
+        $manager = $mr->getManager();
         $manager->remove($avis);
         $manager->flush();
         $this->addFlash('success', 'L\'avis a été supprimé avec succès.');
@@ -119,7 +138,7 @@ class AvisController extends AbstractController
     }
 
     #[Route('/avis/{id}/traiter', name: 'traiterAvis')]
-    public function traiterAvis(Avis $avis, ManagerRegistry $mr , EmailService $emailService): Response
+    public function traiterAvis(Avis $avis, ManagerRegistry $mr, EmailService $emailService): Response
     {
         if ($avis->getStatutAvis() === 'Pas traitée') {
             $avis->setStatutAvis('Traitée');

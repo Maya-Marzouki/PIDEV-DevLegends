@@ -37,9 +37,17 @@ class ReclamationController extends AbstractController
 
 
     #[Route('/reclamationclient', name: 'reclamationclient')]
-    public function showreclamationclient(ManagerRegistry $mr): Response
+    public function showreclamationclient(ManagerRegistry $mr, PaginatorInterface $paginator, Request $request): Response
     {
-        $reclamations = $mr->getRepository(Reclamation::class)->findAll();
+        // Récupérer toutes les réclamations
+        $reclamationsQuery = $mr->getRepository(Reclamation::class)->findAll();
+
+        // Pagination
+        $reclamations = $paginator->paginate(
+            $reclamationsQuery, // Requête à paginer
+            $request->query->getInt('page', 1), // Numéro de la page, 1 par défaut
+            6 // Nombre d'éléments par page
+        );
 
         return $this->render('reclamation/showclientreclamation.html.twig', [
             'reclamations' => $reclamations,
@@ -94,6 +102,11 @@ class ReclamationController extends AbstractController
     #[Route('/reclamation/{id}/edit', name: 'editReclamation')]
     public function edit(Request $request, Reclamation $reclamation, ManagerRegistry $mr): Response
     {
+        // Vérifier si l'utilisateur connecté est le propriétaire de la réclamation
+        if ($this->getUser() !== $reclamation->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à modifier cette réclamation.');
+        }
+
         $form = $this->createForm(ReclamationType::class, $reclamation);
         $form->handleRequest($request);
 
@@ -114,8 +127,14 @@ class ReclamationController extends AbstractController
     #[Route('/reclamation/{id}/delete', name: 'deleteReclamation')]
     public function deleteReclamation(ManagerRegistry $mr, ReclamationRepository $repo, $id): Response
     {
-        $manager = $mr->getManager();
         $reclamation = $repo->find($id);
+
+        // Vérifier si l'utilisateur connecté est le propriétaire de la réclamation
+        if ($this->getUser() !== $reclamation->getUser()) {
+            throw $this->createAccessDeniedException('Vous n\'êtes pas autorisé à supprimer cette réclamation.');
+        }
+
+        $manager = $mr->getManager();
         $manager->remove($reclamation);
         $manager->flush();
         $this->addFlash('success', 'La réclamation a été supprimée avec succès.');

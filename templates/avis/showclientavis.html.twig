@@ -45,14 +45,18 @@
 							<p class="card-text">
 								<strong>Par :</strong>
 								{{ avis.emailAvis }}</p>
-							<div class="mt-auto">
-								<a href="{{ path('editAvis', {'id': avis.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
-								<form method="post" action="{{ path('deleteAvis', { id: avis.id }) }}" class="d-inline">
-									<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet avis ?');">
-										Supprimer
-									</button>
-								</form>
-							</div>
+							<div
+								class="mt-auto">
+								{# Afficher les boutons uniquement si l'utilisateur est le propriétaire de l'avis #}
+{# 								{% if app.user and avis.user and avis.user.id == app.user.id %}
+ #}									<a href="{{ path('editAvis', {'id': avis.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+									<form method="post" action="{{ path('deleteAvis', { id: avis.id }) }}" class="d-inline">
+										<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet avis ?');">
+											Supprimer
+										</button>
+									</form>
+{# 								{% endif %}
+ #}						</div>
 						</div>
 					</div>
 				</div>
@@ -67,11 +71,18 @@
 	{# Activation des tooltips Bootstrap #}
 	<script>
 		document.addEventListener("DOMContentLoaded", function () {
-			var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-			var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-				return new bootstrap.Tooltip(tooltipTriggerEl);
-			});
-		});
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+});
 	</script>
+
+	{# Affichage de la pagination #}
+	<div class="d-flex justify-content-center">
+		<div class="avis">
+			{{ knp_pagination_render(aviss) }}
+		</div>
+	</div>
 
 {% endblock %}
