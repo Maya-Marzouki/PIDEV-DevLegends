@@ -1,81 +1,139 @@
+{# templates/pack/formeditpack.html.twig #}
+
 {% extends 'baseAdmin.html.twig' %}
 
 {% block title %}Update Pack{% endblock %}
 
 {% block body %}
-{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
-<div class="container-fluid py-5">
-    <div class="container">
-        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
-            <h1 class="display-5 mb-5">Ajouter un Pack</h1>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-lg-7">
-                <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <div class="form-floating">
-                                {{ form_label(form.nomPack) }}
-                                {{ form_widget(form.nomPack, {attr: {'class': 'form-control'}}) }}
-                                {{ form_errors(form.nomPack) }}
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    <div class="container-fluid py-5">
+        <div class="container">
+            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                <h1 class="display-5 mb-5">Modifier le Pack</h1>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="form-floating">
+                                    {{ form_label(form.nomPack) }}
+                                    {{ form_widget(form.nomPack, {attr: {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.nomPack) }}
+                                </div>
                             </div>
-                        </div>
-                    
-                        <div class="col-sm-12">
-                            <div class="form-floating">
-                                {{ form_label(form.descriptPack) }}
-                                {{ form_widget(form.descriptPack, {attr: {'class': 'form-control'}}) }}
-                                {{ form_errors(form.descriptPack) }}
+
+                            <div class="col-sm-12">
+                                <div class="form-floating">
+                                    {{ form_label(form.descriptPack) }}
+                                    {{ form_widget(form.descriptPack, {attr: {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.descriptPack) }}
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-sm-12">
-                            <div class="form-floating">
-                                {{ form_label(form.prixPack) }}
-                                {{ form_widget(form.prixPack, {attr: {'class': 'form-control'}}) }}
-                                {{ form_errors(form.prixPack) }}
+                            <div class="col-sm-12">
+                                <div class="form-floating">
+                                    {{ form_label(form.prixPack) }}
+                                    {{ form_widget(form.prixPack, {attr: {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.prixPack) }}
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-sm-12">
-                            <div class="form-floating">
-                                {{ form_label(form.dureePack) }}
-                                {{ form_widget(form.dureePack, {attr: {'class': 'form-control'}}) }}
-                                {{ form_errors(form.dureePack) }}
+                            <div class="col-sm-12">
+                                <div class="form-floating">
+                                    {{ form_label(form.dureePack) }}
+                                    {{ form_widget(form.dureePack, {attr: {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.dureePack) }}
+                                </div>
                             </div>
-                        </div>
-                         <!-- Affichage de l'image actuelle -->
-                        <div class="col-sm-12 text-center">
-                            {% if pack.photoPack %}
-                                <p>Image actuelle :</p>
-                                <img src="{{ asset(pack.photoPack) }}" alt="Photo actuelle du pack" class="img-fluid rounded" style="max-height: 200px;">
-                            {% else %}
-                                <p class="text-muted">Aucune image actuelle</p>
-                            {% endif %}
-                        </div>
 
-                        <!-- Champ Upload Image -->
-                        <div class="col-sm-12">
-                            <label class="form-label">Changer l'image du pack</label>
-                            {{ form_widget(form.photoPack, {attr: {'class': 'form-control'}}) }}
-                            {{ form_errors(form.photoPack) }}
-                        </div>
+                            <!-- Champ pour le code de réduction -->
+                            <div class="col-sm-12">
+                                <div class="form-floating">
+                                    {{ form_label(form.discountCode) }}
+                                    {{ form_widget(form.discountCode, {attr: {'class': 'form-control'}}) }}
+                                    {{ form_errors(form.discountCode) }}
+                                </div>
+                            </div>
 
-                         <style>
-                            .btn-custom-green{
-                                background-color: #28a745 !important;
-                                color: white !important;
-                                font-weight: bold;
-                            }
-                        </style>
-                        <div class="col-12 text-center">
-                            <button class="btn btn-custom-green py-3 px-4" type="submit">Update</button>
+                            <!-- Bouton pour générer un code de réduction -->
+                            <div class="col-sm-12 text-center">
+                                <button id="generate-discount-btn" class="btn btn-secondary mt-3">
+                                    Générer un code de réduction
+                                </button>
+                            </div>
+
+                            <!-- Affichage de l'image actuelle -->
+                            <div class="col-sm-12 text-center">
+                                {% if pack.photoPack %}
+                                    <p>Image actuelle :</p>
+                                    <img src="{{ asset(pack.photoPack) }}" alt="Photo actuelle du pack" class="img-fluid rounded" style="max-height: 200px;">
+                                {% else %}
+                                    <p class="text-muted">Aucune image actuelle</p>
+                                {% endif %}
+                            </div>
+
+                            <!-- Champ Upload Image -->
+                            <div class="col-sm-12">
+                                <label class="form-label">Changer l'image du pack</label>
+                                {{ form_widget(form.photoPack, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.photoPack) }}
+                            </div>
+
+                            <style>
+                                .btn-custom-green {
+                                    background-color: #28a745 !important;
+                                    color: white !important;
+                                    font-weight: bold;
+                                }
+                            </style>
+                            <div class="col-12 text-center">
+                                <button class="btn btn-custom-green py-3 px-4" type="submit">Mettre à jour</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>    
+            </div>
         </div>
-    </div>      
-</div>
-{{ form_end(form) }}
+    </div>
+    {{ form_end(form) }}
+
+    {# Script JavaScript pour gérer la génération du code de réduction #}
+    <script>
+        document.getElementById('generate-discount-btn').addEventListener('click', function (e) {
+            e.preventDefault(); // Empêcher le comportement par défaut du bouton
+
+            const packId = {{ pack.id }}; // ID du pack
+            const generateDiscountUrl = "{{ path('generate_discount', { 'id': pack.id }) }}"; // URL de génération du code
+
+            // Envoyer une requête AJAX pour générer le code
+            fetch(generateDiscountUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Déboguer la réponse
+                if (data.success) {
+                    // Remplir automatiquement le champ "discountCode" avec le code généré
+                    document.getElementById('{{ form.discountCode.vars.id }}').value = data.discountCode;
+                    alert('Code de réduction généré : ' + data.discountCode); // Afficher une alerte avec le code
+                } else {
+                    alert(data.message); // Afficher un message d'erreur
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la génération du code:', error);
+                alert('Une erreur est survenue lors de la génération du code.');
+            });
+        });
+    </script>
 {% endblock %}

@@ -88,10 +88,10 @@
                 <div class="text-center mb-3">
                     <img src="{{ asset('images/paypal.png') }}" width="120" alt="Logo PayPal">
                 </div>
-                <div class="form-floating mb-3">
+               {# <div class="form-floating mb-3">
                     <input type="email" id="paypal-email" class="form-control" placeholder="Adresse email PayPal" required>
                     <label for="paypal-email">Adresse email PayPal</label>
-                </div>
+                </div>#}
                 <div id="paypal-button-container">
     <a href="{{ path('paypal_pay', {'amount': discountPrice is defined ? discountPrice : pack.prixPack }) }}" class="btn btn-primary btn-lg">
         Payer avec PayPal
@@ -101,10 +101,10 @@
             
 
             {# Bouton de confirmation de paiement #}
-            <div class="text-center mt-4">
+            {# <div class="text-center mt-4">
                 <button type="submit" class="btn btn-success btn-lg" id="confirm-payment">Confirmer le paiement</button>
                 <a href="{{ path('packclient') }}" class="btn btn-secondary btn-lg">Annuler</a>
-            </div>
+            </div>#}
         </div>
     </div>
 </div>

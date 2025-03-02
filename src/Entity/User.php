@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection; 
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -30,6 +31,10 @@ class User
 
     #[ORM\Column]
     private ?int $userAge = null;
+
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Contrat::class)]
+    private Collection $contrats;
+
 
     public function getId(): ?int
     {
@@ -107,7 +112,8 @@ class User
 
         return $this;
     }
-     /**
+    
+    /**
      * @return Collection<int, Contrat>
      */
     public function getContrats(): Collection
@@ -118,20 +124,8 @@ class User
     public function addContrat(Contrat $contrat): static
     {
         if (!$this->contrats->contains($contrat)) {
-            $this->contrats[] = $contrat;
-            $contrat->setClient($this);  // Relier le contrat à l'utilisateur
-        }
-
-        return $this;
-    }
-
-    public function removeContrat(Contrat $contrat): static
-    {
-        if ($this->contrats->removeElement($contrat)) {
-            // Défaire la relation avec le contrat
-            if ($contrat->getClient() === $this) {
-                $contrat->setClient(null);
-            }
+            $this->contrats->add($contrat);
+            $contrat->setClient($this);
         }
 
         return $this;

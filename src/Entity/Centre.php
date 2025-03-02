@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: CentreRepository::class)]
 class Centre
 {
+
+    public ?float $distance = null;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,11 +34,11 @@ class Centre
     )]
     private ?string $nomCentre = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 500)]
     #[Assert\NotBlank(message:"Center address is required")]
     #[Assert\Length(
         min: 2,
-        max: 20,
+        max: 500,
         minMessage: 'Your center address must be at least {{ limit }} characters long',
         maxMessage: 'Your center address cannot be longer than {{ limit }} characters',
     )]

@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\PackRepository;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 class PackController extends AbstractController
@@ -25,18 +27,10 @@ class PackController extends AbstractController
         ]);
     }
 
-    #[Route('/packclient', name: 'packclient')]
-    public function showpackclient(ManagerRegistry $mr, PaginatorInterface $paginator, Request $request): Response
+     #[Route('/packclient', name: 'packclient')]
+    public function showpackclient(ManagerRegistry $mr): Response
     {
-        // Récupère les packs via une requête Doctrine
-        $query = $mr->getRepository(Pack::class)->createQueryBuilder('p')->getQuery();
-
-        // Pagination des packs (3 packs par page)
-        $packs = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1), // Page actuelle (1 par défaut)
-            3 // Nombre d'éléments par page
-        );
+        $packs = $mr->getRepository(Pack::class)->findAll();
 
         return $this->render('pack/showclientpack.html.twig', [
             'packs' => $packs,
@@ -148,15 +142,23 @@ public function acheterPack(Pack $pack): Response
 // src/Controller/PackController.php
 
 #[Route('/pack/{id}/achat', name: 'achatPack')]
-public function acheterPackAvecReduction(Request $request, Pack $pack): Response
+public function acheterPackAvecReduction(Request $request, Pack $pack, ManagerRegistry $mr): Response
 {
     $codeReduction = $request->request->get('codeReduction');
-    $discountPrice = $pack->getPrixPack(); // prix original
+    $discountPrice = $pack->getPrixPack(); // Prix original
 
-    // Vérifiez si le code de réduction est valide
-    if ($codeReduction && $codeReduction === 'reduc10%') { // Code de réduction à valider
-        $discountPrice = $discountPrice * 0.9; // Applique la réduction de 10%
-        $this->addFlash('success', 'Code de réduction appliqué avec succès !');
+    // Vérifiez si le code de réduction est valide et non utilisé
+    if ($codeReduction && $codeReduction === $pack->getDiscountCode()) {
+        if ($pack->isUsed()) {
+            $this->addFlash('error', 'Ce code de réduction a déjà été utilisé.');
+        } else {
+            $discountPrice = $discountPrice * 0.9; // Applique la réduction de 10%
+            $pack->setIsUsed(true); // Marquer le code comme utilisé
+            $mr->getManager()->flush(); // Enregistrer les modifications
+            $this->addFlash('success', 'Code de réduction appliqué avec succès !');
+        }
+    } elseif ($codeReduction) {
+        $this->addFlash('error', 'Code de réduction invalide.');
     }
 
     return $this->render('pack/achat.html.twig', [
@@ -164,6 +166,20 @@ public function acheterPackAvecReduction(Request $request, Pack $pack): Response
         'codeReduction' => $codeReduction,
         'discountPrice' => $discountPrice, // Passer le prix réduit
     ]);
+}
+
+
+// src/Controller/PackController.php
+
+private function generateDiscountCode(): string
+{
+    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < 8; $i++) { // Longueur du code : 8 caractères
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
 }
 
 #[Route('/pack/{id}/paiement', name: 'paiementPack')]
@@ -176,9 +192,11 @@ public function paiement(int $id, ManagerRegistry $mr, Request $request): Respon
     $codeReduction = $request->request->get('codeReduction');
     $discountPrice = $pack->getPrixPack(); // Prix original
 
-    // Appliquer la réduction si le code est valide
-    if ($codeReduction && $codeReduction === 'reduc10%') {
+    // Appliquer la réduction si le code est valide et non utilisé
+    if ($codeReduction && $codeReduction === $pack->getDiscountCode() && !$pack->isUsed()) {
         $discountPrice = $discountPrice * 0.9; // Réduction de 10%
+        $pack->setIsUsed(true); // Marquer le code comme utilisé
+        $mr->getManager()->flush(); // Enregistrer les modifications
     }
 
     // Passer les variables au template
@@ -186,6 +204,71 @@ public function paiement(int $id, ManagerRegistry $mr, Request $request): Respon
         'pack' => $pack,
         'discountPrice' => $discountPrice, // Passer le prix réduit
         'codeReduction' => $codeReduction, // Passer le code de réduction (optionnel)
+    ]);
+}
+
+
+#[Route('/pack/{id}/generate-discount', name: 'generate_discount', methods: ['POST'])]
+public function generateDiscountCodeAction(ManagerRegistry $mr, Pack $pack): JsonResponse
+{
+    $entityManager = $mr->getManager();
+
+    // Vérifier si un code de réduction existe déjà pour ce pack
+    if ($pack->getDiscountCode()) {
+        return new JsonResponse([
+            'success' => true,
+            'discountCode' => $pack->getDiscountCode(), // Renvoyer le code existant
+            'message' => 'Code de réduction déjà généré.',
+        ]);
+    }
+
+    // Générer un nouveau code unique
+    $unique = false;
+    $discountCode = '';
+
+    while (!$unique) {
+        $discountCode = $this->generateDiscountCode();
+        $existingPack = $entityManager->getRepository(Pack::class)->findOneBy(['discountCode' => $discountCode]);
+        if (!$existingPack) {
+            $unique = true;
+        }
+    }
+
+    // Enregistrer le nouveau code dans le pack
+    $pack->setDiscountCode($discountCode);
+    $entityManager->flush();
+
+    return new JsonResponse([
+        'success' => true,
+        'discountCode' => $discountCode, // Renvoyer le nouveau code
+        'message' => 'Code de réduction généré avec succès.',
+    ]);
+}
+#[Route('/pack/{id}/reset-discount', name: 'reset_discount', methods: ['POST'])]
+public function resetDiscountCodeAction(ManagerRegistry $mr, Pack $pack): JsonResponse
+{
+    $entityManager = $mr->getManager();
+
+    // Générer un nouveau code unique
+    $unique = false;
+    $discountCode = '';
+
+    while (!$unique) {
+        $discountCode = $this->generateDiscountCode();
+        $existingPack = $entityManager->getRepository(Pack::class)->findOneBy(['discountCode' => $discountCode]);
+        if (!$existingPack) {
+            $unique = true;
+        }
+    }
+
+    // Enregistrer le nouveau code dans le pack
+    $pack->setDiscountCode($discountCode);
+    $entityManager->flush();
+
+    return new JsonResponse([
+        'success' => true,
+        'discountCode' => $discountCode, // Renvoyer le nouveau code
+        'message' => 'Nouveau code de réduction généré avec succès.',
     ]);
 }
 

@@ -29,42 +29,32 @@ class CentreController extends AbstractController
     }
 
     #[Route('/centreclient', name: 'centreclient')]
-    public function showCentreClient(CentreRepository $centreRepository, PaginatorInterface $paginator, Request $request): Response
-    {
-        // Récupérer le terme de recherche depuis la requête
-        $searchTerm = $request->query->get('search');
-        
-        // Récupérer l'ordre de tri depuis la requête (par défaut, pas de tri)
-        $order = $request->query->get('order');
-    
-        // Créer une requête Doctrine de base
-        $queryBuilder = $centreRepository->createQueryBuilder('c');
-    
-        // Appliquer le filtre de recherche si un terme de recherche est présent
-        if ($searchTerm) {
-            $queryBuilder->andWhere('c.nomCentre LIKE :searchTerm')
-                ->setParameter('searchTerm', '%' . $searchTerm . '%');
-        }
-    
-        // Appliquer le tri uniquement si un ordre est spécifié
-        if ($order === 'asc') {
-            $queryBuilder->orderBy('c.nomCentre', 'ASC');
-        } elseif ($order === 'desc') {
-            $queryBuilder->orderBy('c.nomCentre', 'DESC');
-        }
-    
-        // Paginer les résultats (3 centres par page)
-        $centres = $paginator->paginate(
-            $queryBuilder->getQuery(),
-            $request->query->getInt('page', 1), // Page actuelle (1 par défaut)
-            3 // Nombre d'éléments par page
-        );
-    
-        return $this->render('centre/showclient.html.twig', [
-            'centres' => $centres,
-            'order' => $order, // Passer l'ordre de tri à la vue
-        ]);
+public function showCentreClient(CentreRepository $centreRepository, PaginatorInterface $paginator, Request $request): Response
+{
+    $searchTerm = $request->query->get('search');
+    $sortBy = $request->query->get('sortBy', 'id'); // Trier par ID par défaut (ordre d'ajout)
+    $sortOrder = $request->query->get('sortOrder', 'ASC'); // Ordre croissant par défaut (du plus ancien au plus récent)
+
+    // Vérifier si l'utilisateur demande un tri par nom A-Z ou Z-A
+    if ($request->query->get('order') == 'ASC' || $request->query->get('order') == 'DESC') {
+        $sortBy = 'nomCentre'; // On trie par nomCentre
+        $sortOrder = $request->query->get('order'); // On récupère l'ordre
     }
+
+    $query = $centreRepository->searchAndSort($searchTerm, $sortBy, $sortOrder);
+
+    $centres = $paginator->paginate($query, $request->query->getInt('page', 1), 3);
+
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('centre/_centres_list.html.twig', ['centres' => $centres]);
+    }
+
+    return $this->render('centre/showclient.html.twig', [
+        'centres' => $centres,
+        'order' => $sortOrder,
+    ]);
+}
+
 
     #[Route('/addcentre', name: 'insertCentre', methods: ['GET', 'POST'])]
     public function new(Request $request, ManagerRegistry $mr): Response

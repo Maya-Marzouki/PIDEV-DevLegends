@@ -15,7 +15,7 @@ class Pack
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message:"Pack Name is required")]
+    #[Assert\NotBlank(message: "Pack Name is required")]
     #[Assert\Length(
         min: 2,
         max: 20,
@@ -26,45 +26,47 @@ class Pack
         pattern: '/\d/',
         match: false,
         message: 'Your pack name cannot contain a number',
-     )]
+    )]
     private ?string $nomPack = null;
 
-
-
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message:"Pack description is required")]
+    #[Assert\NotBlank(message: "Pack description is required")]
     #[Assert\Length(
         min: 2,
         max: 255,
-        minMessage: 'Your Pack description  must be at least {{ limit }} characters long',
-        maxMessage: 'Your Pack description  cannot be longer than {{ limit }} characters',
+        minMessage: 'Your Pack description must be at least {{ limit }} characters long',
+        maxMessage: 'Your Pack description cannot be longer than {{ limit }} characters',
     )]
     #[Assert\Regex(
         pattern: '/\d/',
         match: false,
-        message: 'Your Pack description  cannot contain a number',
+        message: 'Your Pack description cannot contain a number',
     )]
     private ?string $descriptPack = null;
 
-
     #[ORM\Column]
-    #[Assert\NotBlank(message:"Pack price is required")]
-    #[Assert\GreaterThan(0,message:"The pack price must be positive")]
+    #[Assert\NotBlank(message: "Pack price is required")]
+    #[Assert\GreaterThan(0, message: "The pack price must be positive")]
     private ?float $prixPack = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message:"Pack duration is required")]
+    #[Assert\NotBlank(message: "Pack duration is required")]
     #[Assert\Length(
         min: 2,
         max: 20,
-        minMessage: 'Your Pack duration  must be at least {{ limit }} characters long',
-        maxMessage: 'Your Pack duration  cannot be longer than {{ limit }} characters',
+        minMessage: 'Your Pack duration must be at least {{ limit }} characters long',
+        maxMessage: 'Your Pack duration cannot be longer than {{ limit }} characters',
     )]
-    
     private ?string $dureePack = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photoPack = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $discountCode = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+private bool $isUsed = false;
 
     public function getId(): ?int
     {
@@ -79,7 +81,6 @@ class Pack
     public function setNomPack(?string $nomPack): static
     {
         $this->nomPack = $nomPack;
-
         return $this;
     }
 
@@ -89,11 +90,10 @@ class Pack
     }
 
     public function setDescriptPack(?string $descriptPack): static
-{
-    $this->descriptPack = $descriptPack;
-
-    return $this;
-}
+    {
+        $this->descriptPack = $descriptPack;
+        return $this;
+    }
 
     public function getPrixPack(): ?float
     {
@@ -103,7 +103,6 @@ class Pack
     public function setPrixPack(?float $prixPack): static
     {
         $this->prixPack = $prixPack;
-
         return $this;
     }
 
@@ -115,7 +114,6 @@ class Pack
     public function setDureePack(?string $dureePack): static
     {
         $this->dureePack = $dureePack;
-
         return $this;
     }
 
@@ -127,7 +125,28 @@ class Pack
     public function setPhotoPack(?string $photoPack): static
     {
         $this->photoPack = $photoPack;
-
         return $this;
     }
+
+    public function getDiscountCode(): ?string
+    {
+        return $this->discountCode;
+    }
+
+    public function setDiscountCode(?string $discountCode): static
+    {
+        $this->discountCode = $discountCode;
+        return $this;
+    }
+
+    public function isUsed(): bool
+{
+    return $this->isUsed;
+}
+
+public function setIsUsed(bool $isUsed): self
+{
+    $this->isUsed = $isUsed;
+    return $this;
+}
 }

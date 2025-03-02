@@ -8,6 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class PackType extends AbstractType
 {
@@ -29,7 +30,12 @@ class PackType extends AbstractType
                         'mimeTypesMessage' => 'Veuillez uploader une image valide (JPG ou PNG).',
                     ])
                 ],
+            ])
+            ->add('discountCode', TextType::class, [
+                'label' => 'Code de réduction',
+                'required' => false, // Le champ n'est pas obligatoire
             ]);
+            
         ;
     }
 

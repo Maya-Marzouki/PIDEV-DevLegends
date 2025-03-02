@@ -28,6 +28,9 @@ class ContratController extends AbstractController
     #[Route('/contratclient', name: 'contratclient')]
     public function showcontratclient(ContratRepository $contratRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        // Récupérer l'utilisateur connecté
+        $user = $this->getUser();
+    
         // Récupérer la date de recherche depuis la requête
         $searchDate = $request->query->get('searchDate');
     
@@ -36,7 +39,9 @@ class ContratController extends AbstractController
         $orderDirection = $request->query->get('orderDirection', 'ASC'); // Par défaut, ordre croissant
     
         // Créer une requête Doctrine de base
-        $queryBuilder = $contratRepository->createQueryBuilder('c');
+        $queryBuilder = $contratRepository->createQueryBuilder('c')
+            ->andWhere('c.user = :user')  // Filtrer par utilisateur connecté
+            ->setParameter('user', $user);
     
         // Appliquer le filtre par date si une date est spécifiée
         if ($searchDate) {
@@ -63,7 +68,6 @@ class ContratController extends AbstractController
             'orderDirection' => $orderDirection, // Passer la direction du tri
         ]);
     }
-
     #[Route('/addcontrat', name: 'insertContrat', methods: ['GET', 'POST'])]
     public function new(Request $request, ManagerRegistry $mr): Response
     {

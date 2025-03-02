@@ -16,6 +16,17 @@ class PackRepository extends ServiceEntityRepository
         parent::__construct($registry, Pack::class);
     }
 
+    // src/Repository/PackRepository.php
+
+public function findOneByDiscountCode(string $code): ?Pack
+{
+    return $this->createQueryBuilder('p')
+        ->andWhere('p.discountCode = :code')
+        ->setParameter('code', $code)
+        ->getQuery()
+        ->getOneOrNullResult();
+}
+
     //    /**
     //     * @return Pack[] Returns an array of Pack objects
     //     */
@@ -40,4 +51,4 @@ class PackRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-}
+}  
