@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Panier{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Mon Panier</h1>
+    <div class="row">
+        {% if panier is empty %}
+            <div class="col-12 text-center text-muted">
+                <p>Votre panier est vide.</p>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="row" id="panier-container">
+                    {% for id, item in panier %}
+                    <div class="col-md-4 mb-4" id="product-{{ id }}">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ item.nomProduit }}</h5>
+                                <p class="card-text">Prix: {{ item.prixProduit }} €</p>
+                                <p class="card-text">Quantité: 
+                                    <input type="number" class="quantiteProduit" value="{{ item.quantiteProduit }}" min="1" data-id="{{ id }}" style="width: 60px;">
+                                </p>
+                                <p class="card-text" id="total-{{ id }}">Total: {{ item.prixProduit * item.quantiteProduit }} €</p>
+
+                                <form action="{{ path('supprimer_du_panier', {'id': id}) }}" method="POST" style="display: inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('supprimer' ~ id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="text-end">
+                    <p><strong>Total du Panier:</strong> <span id="total-panier">{{ total }} €</span></p>
+                </div>
+                <form action="{{ path('valider_commande') }}" method="POST">
+                    <input type="hidden" name="_token" value="{{ csrf_token('valider_commande') }}">
+                    <button type="submit" class="btn btn-success">Valider la Commande</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block javascripts %}
+    <script>
+        // Fonction pour mettre à jour le total du panier
+        function updateTotal() {
+            let totalPanier = 0;
+
+            // Parcourir chaque produit et calculer le total
+            document.querySelectorAll('.quantiteProduit').forEach(function(input) {
+                let id = input.getAttribute('data-id');
+                let quantity = parseInt(input.value);
+                let price = parseFloat(document.querySelector(`#product-${id} .card-text`).innerText.split(" ")[1]);
+                let total = quantity * price;
+                
+                // Mettre à jour le total pour chaque produit
+                document.querySelector(`#total-${id}`).innerText = `Total: ${total.toFixed(2)} €`;
+
+                // Ajouter au total global du panier
+                totalPanier += total;
+            });
+
+            // Mettre à jour le total global du panier
+            document.getElementById('total-panier').innerText = totalPanier.toFixed(2) + ' €';
+        }
+
+        // Evénement pour chaque champ de quantité
+        document.querySelectorAll('.quantiteProduit').forEach(function(input) {
+            input.addEventListener('change', function() {
+                let productId = this.getAttribute('data-id');
+                let newQuantity = parseInt(this.value);
+
+                // Envoi de la requête AJAX pour mettre à jour la quantité
+                fetch('{{ path('modifier_quantite', {'id': 'PRODUCT_ID'}) }}'.replace('PRODUCT_ID', productId), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ quantiteProduit: newQuantity })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateTotal();
+                    } else {
+                        alert("Erreur lors de la mise à jour de la quantité.");
+                    }
+                })
+                .catch(error => console.error('Erreur:', error));
+            });
+        });
+
+        // Initialisation du total dès le chargement de la page
+        updateTotal();
+    </script>
+{% endblock %}
+{% endblock %}

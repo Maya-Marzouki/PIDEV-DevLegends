@@ -93,61 +93,166 @@
         <aside class="left-sidebar">
             <!-- Sidebar scroll-->
             <div class="scroll-sidebar">
-                <!-- Sidebar navigation-->
-                <nav class="sidebar-nav">
-                    <ul id="sidebarnav">
-                        <li> <a class="waves-effect waves-dark" href="index.html" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
-                        </li>
-                        <li> <a class="waves-effect waves-dark" href="pages-profile.html" aria-expanded="false"><i class="mdi mdi-account-check"></i><span class="hide-menu">Profile</span></a>
-                        </li>
-                     <li> 
-                              <a class="waves-effect waves-dark" href="{{ path('consultation_index') }}" aria-expanded="false">
-                                    <i class="mdi mdi-table"></i><span class="hide-menu">Liste des consultations</span>
-                              </a>
-                        </li>
-                        <li> 
-                              <a class="waves-effect waves-dark" href="{{ path('app_articles_conseils_admin') }}" aria-expanded="false">
-                                    <i class="mdi mdi-table"></i><span class="hide-menu">Liste des articles</span>
-                              </a>
-                        </li>
-                        <li>  
-                              <a class="waves-effect waves-dark" href="{{ path('question_index') }}" aria-expanded="false">
-                                    <i class="mdi mdi-table"></i><span class="hide-menu">Liste des questions</span>
-                              </a>
-                        </li>
-                        <li> 
-                              <a class="waves-effect waves-dark" href="{{ path('app_reponse_index_admin') }}" aria-expanded="false">
-                                    <i class="mdi mdi-table"></i><span class="hide-menu">Liste des réponses</span>
-                              </a>
-                        </li>  
-                        <li> 
-                              <a class="waves-effect waves-dark" href="{{ path('quiz_list_admin') }}" aria-expanded="false">
+<!-- Sidebar navigation-->
+					<nav class="sidebar-nav">
+						<ul id="sidebarnav">
+							<li>
+								<a class="waves-effect waves-dark" href="{{path('adminProfile')}}" aria-expanded="false">
+									<i class="mdi mdi-account-check"></i>
+									<span class="hide-menu">Profile Admin</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{path('userList')}}" aria-expanded="false">
+									<i class="mdi mdi-gauge"></i>
+									<span class="hide-menu">Liste des utilisateurs</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('app_pack_index') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des packs</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('app_contrat_index') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des Contrats</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('app_centre_index') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des Centres</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('consultation_index') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des consultations</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('app_articles_conseils_admin') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des articles</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('question_index') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des questions</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('app_reponse_index_admin') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des réponses</span>
+								</a>
+							</li>
+                            <li> 
+                                <a class="waves-effect waves-dark" href="{{ path('quiz_list_admin') }}" aria-expanded="false">
                                     <i class="mdi mdi-table"></i><span class="hide-menu">Liste des quiz</span>
-                              </a>
-                        </li> 
-                        <li> <a class="waves-effect waves-dark" href="icon-material.html" aria-expanded="false"><i class="mdi mdi-emoticon"></i><span class="hide-menu">Icons</span></a>
-                        </li>
-                        <li>
-                            <a class="waves-effect waves-dark" href="https://www.google.com/maps/place/Esprit+Block+M/@36.9008053,10.1875889,17z/data=!4m14!1m7!3m6!1s0x12e2cb745e5c6f1b:0xf69a51ee3c65c12e!2sESB+:+Esprit+School+of+Business!8m2!3d36.8992352!4d10.189445!16s%2Fg%2F11cs3ytq00!3m5!1s0x12e2cbb73f78b917:0xfa77a5668dcfbd64!8m2!3d36.9021262!4d10.1893184!16s%2Fg%2F11gnpqdgkj?entry=ttu&g_ep=EgoyMDI1MDIwNS4xIKXMDSoASAFQAw%3D%3D" aria-expanded="false" target="_blank">
-                                <i class="mdi mdi-earth"></i>
-                                <span class="hide-menu">Google Map</span>
-                            </a>
-                        </li>
-                        <li> <a class="waves-effect waves-dark" href="pages-blank.html" aria-expanded="false"><i class="mdi mdi-book-open-variant"></i><span class="hide-menu">Blank Page</span></a>
-                        </li>
-                        <li> <a class="waves-effect waves-dark" href="pages-error-404.html" aria-expanded="false"><i class="mdi mdi-help-circle"></i><span class="hide-menu">Error 404</span></a>
-                        </li>
-                    </ul>
-                    
-                </nav>
-                <!-- End Sidebar navigation -->
+                                </a>
+                            </li> 
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('app_reclamation_index') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des reclamations</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{ path('app_avis_index') }}" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Liste des avis</span>
+								</a>
+							</li>
+							<li> 
+                                <a class="waves-effect waves-dark" href="{{path('insertProduit')}}" aria-expanded="false">  
+                                    <i class="mdi mdi-account-check"></i>
+                                    <span class="hide-menu">Ajouter des Produits</span>
+                                </a>
+                            </li>
+                            <li> 
+                                <a class="waves-effect waves-dark" href="{{path('app_produit')}}" aria-expanded="false">
+                                    <i class="mdi mdi-table"></i><span class="hide-menu">Liste des Produits
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{path('valider_commande')}}" aria-expanded="false">
+                                    <i class="mdi mdi-emoticon"></i>
+                                    <span class="hide-menu">Ajouter les Commandes </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{path('app_commande')}}" aria-expanded="false">
+                                    <i class="mdi mdi-earth"></i>
+                                    <span class="hide-menu">Liste des Commandes</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{path('insertCategorie')}}" aria-expanded="false">
+                                    <i class="mdi mdi-book-open-variant"></i>
+                                    <span class="hide-menu">Ajouter Catégorie</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="waves-effect waves-dark" href="{{path('app_categorie_index')}}" aria-expanded="false">
+                                    <i class="mdi mdi-help-circle"></i>
+                                    <span class="hide-menu">Liste des Catégories</span>
+                                </a>
+                            </li>
+							<li>
+								<a class="waves-effect waves-dark" href="addformation" aria-expanded="false">
+									<i class="mdi mdi-table"></i>
+									<span class="hide-menu">Ajouter les Formations</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="{{path('app_formation_index')}}" aria-expanded="false">
+									<i class="mdi mdi-gauge"></i>
+									<span class="hide-menu">Liste des Formations</span>
+								</a>
+							</li>
+							
+							<li>
+								<a class="waves-effect waves-dark" href="addevenement" aria-expanded="false">
+									<i class="mdi mdi-emoticon"></i>
+									<span class="hide-menu">Ajouter les Evenements</span>
+								</a>
+							</li>
+
+							<li>
+								<a class="waves-effect waves-dark" href="{{path('app_evenement_index')}}" aria-expanded="false">
+									<i class="mdi mdi-gauge"></i>
+									<span class="hide-menu">Liste des Evenements</span>
+								</a>
+							</li> 
+
+							<li>
+								<a class="waves-effect waves-dark" href="index.html" aria-expanded="false">
+									<i class="mdi mdi-gauge"></i>
+									<span class="hide-menu">Dashboard</span>
+								</a>
+							</li>
+							<li>
+								<a class="waves-effect waves-dark" href="https://www.google.com/maps/place/Esprit+Block+M/@36.9008053,10.1875889,17z/data=!4m14!1m7!3m6!1s0x12e2cb745e5c6f1b:0xf69a51ee3c65c12e!2sESB+:+Esprit+School+of+Business!8m2!3d36.8992352!4d10.189445!16s%2Fg%2F11cs3ytq00!3m5!1s0x12e2cbb73f78b917:0xfa77a5668dcfbd64!8m2!3d36.9021262!4d10.1893184!16s%2Fg%2F11gnpqdgkj?entry=ttu&g_ep=EgoyMDI1MDIwNS4xIKXMDSoASAFQAw%3D%3D" aria-expanded="false" target="_blank">
+									<i class="mdi mdi-earth"></i>
+									<span class="hide-menu">Google Map</span>
+								</a>
+							</li>
+						</ul>
+
+					</nav>
+					<!-- End Sidebar navigation -->
             </div>
             <!-- End Sidebar scroll-->
             <!-- Bottom points-->
             <div class="sidebar-footer">
                 <!-- item--><a href="" class="link" data-toggle="tooltip" title="Settings"><i class="ti-settings"></i></a>
                 <!-- item--><a href="" class="link" data-toggle="tooltip" title="Email"><i class="mdi mdi-gmail"></i></a>
-                <!-- item--><a href="" class="link" data-toggle="tooltip" title="Logout"><i class="mdi mdi-power"></i></a> </div>
+                <!-- item--><a href="{{ path('app_logout') }}" class="link" data-toggle="tooltip" title="Logout"><i class="mdi mdi-power"></i></a> </div>            
             <!-- End Bottom points-->
         </aside>
         <!-- ============================================================== -->

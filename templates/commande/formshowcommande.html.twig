@@ -1,0 +1,54 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+<a href="{{ path('valider_commande') }}" class="btn btn-success">Ajouter une Commande</a>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-block">
+                <h4 class="card-title">Liste des Commandes</h4>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nom Client</th>
+                                <th>Email</th>
+                                <th>Adresse</th>
+                                <th>Date Commande</th>
+                                <th>Pays</th>
+                                <th>Num Telephone</th>
+                                <th>Total</th>
+                                <th>Actions</th> <!-- Colonne pour les actions -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for commande in commandes %}
+                                <tr>
+                                    <td>{{ commande.nomClient }}</td>
+                                    <td>{{ commande.adresseEmail }}</td>
+                                    <td>{{ commande.adresse }}</td>
+                                    <td>{{ commande.dateCommande|date('d/m/Y H:i') }}</td>
+                                    <td>{{ commande.pays ?? 'Tunisie' }}</td> 
+                                    <td>{{ commande.numTelephone ?? 'Non renseigné' }}</td> 
+                                    <td>{{ commande.totalCom }} €</td>
+                                    <td>
+                                        <!-- Lien pour télécharger la facture en PDF -->
+                                        <a href="{{ path('generate_invoice', {'commandeId': commande.id}) }}" class="btn btn-primary">
+                                            Télécharger PDF
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">Aucune commande enregistrée.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

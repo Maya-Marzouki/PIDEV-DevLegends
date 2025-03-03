@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste des Formations {% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Nos Formations</h1>
+
+    <div class="row">
+        {% for formation in formations %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
+                    <div class="card-body d-flex flex-column flex-grow-1 text-center">
+                        <p class="card-text"><strong>Titre Formation:</strong> {{ formation.titreFor }}</p>
+                        <p class="card-text"><strong>Date Formation:</strong> {{ formation.dateFor|date('Y-m-d') }}</p>
+                        <p class="card-text"><strong>Lieu Formation:</strong> {{ formation.lieuFor }}</p>
+                        <p class="card-text"><strong>Statut:</strong> {{ formation.statutFor }}</p>
+                                        <a href="{{ path('formation_participation', { 'id': formation.id }) }}" class="btn btn-success">S'inscrire</a>
+
+                        
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>Aucune Formation trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+<div class="d-flex justify-content-center mt-4">
+    {{ knp_pagination_render(formations) }}
+</div>
+
+{% endblock %}

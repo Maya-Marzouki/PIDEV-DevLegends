@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Consultation;
+use App\Entity\User;
 use App\Form\ConsultationType;
 use App\Repository\ConsultationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,7 +19,7 @@ use App\Service\QrCodeService;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
+use Symfony\Component\Security\Core\Security;
 
 #[Route('/consultation')]
 class ConsultationController extends AbstractController
@@ -26,9 +27,11 @@ class ConsultationController extends AbstractController
 
     private $qrCodeService;
     private $entityManager;
+    private $security;
 
-    public function __construct(QrCodeService $qrCodeService, EntityManagerInterface $entityManager)
+    public function __construct(QrCodeService $qrCodeService, EntityManagerInterface $entityManager, Security $security)
     {
+        $this->security = $security;
         $this->qrCodeService = $qrCodeService;
         $this->entityManager = $entityManager;
     }
@@ -59,38 +62,91 @@ public function afficherConsultations(): Response
 }
 
 
+// #[Route('/list', name: 'consultation_index', methods: ['GET'])]
+// public function index(ConsultationRepository $consultationRepository, Request $request, PaginatorInterface $paginator): Response
+// {
+//     // Récupérer l'utilisateur connecté
+//     $user = $this->getUser();
+
+//     // Vérifier si l'utilisateur est authentifié
+//     if (!$user) {
+//         throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+//     }
+
+//     // Récupérer l'ID de l'utilisateur
+//     $userId = $user->getId();
+
+//     // Récupérer le paramètre de recherche
+//     $searchQuery = $request->query->get('q', '');
+//     $page = max(1, $request->query->getInt('page', 1)); // Assure que la page est au moins 1
+//     $limit = 5; // Nombre de résultats par page
+
+//     // Créer le QueryBuilder pour la recherche
+//     $queryBuilder = $consultationRepository->createQueryBuilder('c');
+
+//     // Appliquer la recherche si une requête est faite
+//     if (!empty($searchQuery)) {
+//         $queryBuilder->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
+//                      ->setParameter('query', '%' . $searchQuery . '%');
+//     }
+
+//     // Récupérer le total des consultations AVANT la pagination
+//     $totalConsultations = count($queryBuilder->getQuery()->getResult());
+//     $totalPages = max(1, ceil($totalConsultations / $limit)); // Évite d'avoir 0 page
+
+//     // Appliquer la pagination
+//     $query = $queryBuilder->getQuery()
+//                           ->setFirstResult(($page - 1) * $limit) // Offset
+//                           ->setMaxResults($limit);               // Limit
+
+//     $consultations = $query->getResult(); // Exécute la requête paginée
+
+//     return $this->render('consultation/ShowConsultation.html.twig', [
+//         'consultations' => $consultations, // Résultats paginés
+//         'searchQuery' => $searchQuery, // Terme de recherche
+//         'currentPage' => $page, // Page actuelle
+//         'totalPages' => $totalPages, // Nombre total de pages
+//         'userId' => $userId, // Passer l'ID de l'utilisateur au template
+//     ]);
+// }
+
 // Affiche la liste des consultations pour l'Admin
 #[Route('/list', name: 'consultation_index', methods: ['GET'])]
 public function index(ConsultationRepository $consultationRepository, Request $request, PaginatorInterface $paginator): Response
 {
     // Récupérer le paramètre de recherche
     $searchQuery = $request->query->get('q', '');
-    $page = $request->query->getInt('page', 1);
-    $limit = 10; // Nombre de résultats par page
+    $page = max(1, $request->query->getInt('page', 1)); // Assure que la page est au moins 1
+    $limit = 5; // Nombre de résultats par page
 
     // Créer le QueryBuilder pour la recherche
     $queryBuilder = $consultationRepository->createQueryBuilder('c');
 
-    // Appliquer la recherche
+    // Appliquer la recherche si une requête est faite
     if (!empty($searchQuery)) {
         $queryBuilder->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
                      ->setParameter('query', '%' . $searchQuery . '%');
     }
+
+    // Récupérer le total des consultations AVANT la pagination
+    $totalConsultations = count($queryBuilder->getQuery()->getResult());
+    $totalPages = max(1, ceil($totalConsultations / $limit)); // Évite d'avoir 0 page
 
     // Appliquer la pagination
     $query = $queryBuilder->getQuery()
                           ->setFirstResult(($page - 1) * $limit) // Offset
                           ->setMaxResults($limit);               // Limit
 
-    $paginator = $paginator->paginate($query, $page, $limit);
+    $consultations = $query->getResult(); // Exécute la requête paginée
 
     return $this->render('consultation/ShowConsultation.html.twig', [
-        'consultations' => $paginator,
-        'searchQuery' => $searchQuery,
-        'currentPage' => $page,
-        'totalPages' => ceil(count($paginator) / $limit),
+        'consultations' => $consultations, // Résultats paginés
+        'searchQuery' => $searchQuery, // Terme de recherche
+        'currentPage' => $page, // Page actuelle
+        'totalPages' => $totalPages, // Nombre total de pages
     ]);
 }
+
 
     // #[Route('/list', name: 'consultation_index', methods: ['GET'])]
     // public function index(ConsultationRepository $consultationRepository, Request $request): Response
@@ -200,8 +256,16 @@ public function ajaxSearch(ConsultationRepository $consultationRepository, Reque
     // }
 
     #[Route('/view/consultation', name: 'consultation_view')]
-    public function viewConsultation(Request $request, ConsultationRepository $consultationRepository, PaginatorInterface $paginator): Response
-    {
+public function viewConsultation(Request $request, ConsultationRepository $consultationRepository, PaginatorInterface $paginator): Response
+{
+        // Récupérer l'utilisateur connecté
+        $user = $this->getUser();
+
+        // Créer une requête Doctrine de base
+        $queryBuilder = $consultationRepository->createQueryBuilder('c')
+            ->andWhere('c.user = :user')  // Filtrer par utilisateur connecté
+            ->setParameter('user', $user);
+
     // Récupérer les paramètres de recherche et de tri
     $searchQuery = $request->query->get('q', '');
     $sortBy = $request->query->get('sort_by', 'id');
@@ -212,9 +276,10 @@ public function ajaxSearch(ConsultationRepository $consultationRepository, Reque
     // Créer le QueryBuilder pour la recherche
     $queryBuilder = $consultationRepository->createQueryBuilder('c');
 
+
     // Appliquer la recherche
     if (!empty($searchQuery)) {
-        $queryBuilder->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
+        $queryBuilder->andWhere('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
                      ->setParameter('query', '%' . $searchQuery . '%');
     }
 
@@ -236,7 +301,46 @@ public function ajaxSearch(ConsultationRepository $consultationRepository, Reque
         'currentPage' => $page,
         'totalPages' => ceil(count($paginator) / $limit),
     ]);
-    }
+}
+
+    // #[Route('/view/consultation', name: 'consultation_view')]
+    // public function viewConsultation(Request $request, ConsultationRepository $consultationRepository, PaginatorInterface $paginator): Response
+    // {
+    // // Récupérer les paramètres de recherche et de tri
+    // $searchQuery = $request->query->get('q', '');
+    // $sortBy = $request->query->get('sort_by', 'id');
+    // $order = $request->query->get('order', 'asc');
+    // $page = $request->query->getInt('page', 1);
+    // $limit = 10; // Nombre de résultats par page
+
+    // // Créer le QueryBuilder pour la recherche
+    // $queryBuilder = $consultationRepository->createQueryBuilder('c');
+
+    // // Appliquer la recherche
+    // if (!empty($searchQuery)) {
+    //     $queryBuilder->where('c.nom LIKE :query OR c.prenom LIKE :query OR c.notesCons LIKE :query OR c.age LIKE :query OR c.lienVisioCons LIKE :query OR c.id LIKE :query OR c.dateCons LIKE :query')
+    //                  ->setParameter('query', '%' . $searchQuery . '%');
+    // }
+
+    // // Appliquer le tri
+    // $queryBuilder->orderBy('c.' . $sortBy, $order);
+
+    // // Appliquer la pagination
+    // $query = $queryBuilder->getQuery()
+    //                       ->setFirstResult(($page - 1) * $limit) // Offset
+    //                       ->setMaxResults($limit);               // Limit
+
+    // $paginator = $paginator->paginate($query, $page, $limit);
+
+    // return $this->render('consultation/viewConsultation.html.twig', [
+    //     'consultations' => $paginator,
+    //     'searchQuery' => $searchQuery,
+    //     'sort_by' => $sortBy,
+    //     'order' => $order,
+    //     'currentPage' => $page,
+    //     'totalPages' => ceil(count($paginator) / $limit),
+    // ]);
+    // }
     
 
 
@@ -349,6 +453,9 @@ public function ajaxSearch(ConsultationRepository $consultationRepository, Reque
 
             // Vérification si le formulaire est valide
             if ($form->isValid()) {
+                // Associer l'utilisateur connecté au contrat
+                $user = $this->getUser();
+                $consultation->setUser($user);
                 dump('Formulaire valide'); // Debug
                 
                 try {
@@ -391,6 +498,11 @@ public function ajaxSearch(ConsultationRepository $consultationRepository, Reque
     #[Route('/editAdmin/{id}', name: 'edit_consultation_Admin', methods: ['GET', 'POST'])]
     public function editAdmin(Request $request, Consultation $consultation, EntityManagerInterface $entityManager): Response
     {
+                // Vérifier que l'utilisateur connecté est bien le propriétaire du contrat
+                $user = $this->security->getUser();
+                if ($consultation->getUser() !== $user) {
+                    throw $this->createAccessDeniedException('Vous n\'avez pas accès à ce contrat.');
+                }
         $form = $this->createForm(ConsultationType::class, $consultation);
         $form->handleRequest($request);
 
@@ -407,6 +519,12 @@ public function ajaxSearch(ConsultationRepository $consultationRepository, Reque
     #[Route('/delete/{id}', name: 'delete_consultation', methods: ['POST'])]
     public function delete(Request $request, Consultation $consultation, EntityManagerInterface $entityManager): Response
     {
+                // Vérifier que l'utilisateur connecté est bien le propriétaire du contrat
+                $user = $this->security->getUser();
+                if ($consultation->getUser() !== $user) {
+                    throw $this->createAccessDeniedException('Vous n\'avez pas accès à ce contrat.');
+                }
+
         if ($this->isCsrfTokenValid('delete'.$consultation->getId(), $request->request->get('_token'))) {
             $entityManager->remove($consultation);
             $entityManager->flush();

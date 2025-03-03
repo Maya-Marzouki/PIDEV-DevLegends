@@ -24,6 +24,9 @@ class Quiz
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $etatMental = null;
 
+    #[ORM\ManyToOne(inversedBy: 'quizzes')]
+    private ?User $user = null;
+
     // #[ORM\ManyToOne(inversedBy: 'quizzes')]
     // private ?Consultation $consultationQ = null;
 
@@ -133,4 +136,16 @@ class Quiz
 
     //     return $this;
     // }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
 }

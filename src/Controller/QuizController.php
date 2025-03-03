@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\UnsplashService;
 
+use App\Entity\User;
 use App\Entity\Quiz;
 use App\Form\QuizUserResponseType;
 use App\Repository\QuestionRepository;
@@ -309,9 +310,34 @@ public function list(QuizRepository $quizRepository, Request $request): Response
     ]);
 }
 
+// #[Route('/list', name: 'quiz_list', methods: ['GET'])]
+// public function listQuizzes(QuizRepository $quizRepository, PaginatorInterface $paginator, Request $request): Response
+// {
+//     // Récupérer tous les quiz
+//     $query = $quizRepository->createQueryBuilder('q')->getQuery();
+
+//     // Paginer les résultats
+//     $quizzes = $paginator->paginate(
+//         $query, // Requête à paginer
+//         $request->query->getInt('page', 1), // Numéro de page par défaut
+//         6 // Nombre d'éléments par page
+//     );
+
+//     return $this->render('quiz/list.html.twig', [
+//         'quizzes' => $quizzes,
+//     ]);
+// }
+
 #[Route('/list', name: 'quiz_list', methods: ['GET'])]
 public function listQuizzes(QuizRepository $quizRepository, PaginatorInterface $paginator, Request $request): Response
 {
+    // Récupérer l'utilisateur connecté
+    $user = $this->getUser();
+    if (!$user instanceof User) {
+        throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
+    }
+    $userId = $user->getId();
+
     // Récupérer tous les quiz
     $query = $quizRepository->createQueryBuilder('q')->getQuery();
 
@@ -324,8 +350,10 @@ public function listQuizzes(QuizRepository $quizRepository, PaginatorInterface $
 
     return $this->render('quiz/list.html.twig', [
         'quizzes' => $quizzes,
+        'userId' => $userId, // Passer l'ID de l'utilisateur au template
     ]);
 }
+
 #[Route('/quiz/{id}', name: 'quiz_show', methods: ['GET'])]
 public function showQuiz(Quiz $quiz, UnsplashService $unsplashService): Response
 {

@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Centres{% endblock %}
+
+{% block body %}
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+                <p class="fs-5 fw-bold text-success">Nos Centres</p>
+                <h1 class="display-5 mb-5">Découvrez nos centres partenaires</h1>
+            </div>
+
+            <!-- Barre de recherche et options de tri -->
+            <form method="get" action="{{ path('centreclient') }}" class="mb-4" id="searchForm">
+    <input type="text" name="search" id="searchInput" class="form-control mb-2" 
+           placeholder="Rechercher par nom..." value="{{ app.request.query.get('search') }}">
+
+    <div class="row">
+        <div class="col-md-6">
+            <select name="order" class="form-select" id="orderSelect">
+                <option value="">-- Trier par --</option>
+                <option value="ASC" {% if app.request.query.get('order') == 'ASC' %}selected{% endif %}>A-Z</option>
+                <option value="DESC" {% if app.request.query.get('order') == 'DESC' %}selected{% endif %}>Z-A</option>
+            </select>
+        </div>
+        
+    </div>
+</form>
+
+<!-- Liste des centres (chargement AJAX) -->
+<div id="centresList" class="row g-4">
+    {% include 'centre/_centres_list.html.twig' with {'centres': centres.items} %}
+</div>
+
+<!-- Pagination -->
+<div class="pagination-container mt-4">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {{ knp_pagination_render(centres) }}
+        </ul>
+    </nav>
+</div>
+
+
+    <!-- JavaScript pour recherche et tri dynamique -->
+    <script>
+     document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const orderSelect = document.getElementById('orderSelect');
+
+    function updateList() {
+        const formData = new FormData(searchForm);
+        const searchParams = new URLSearchParams(formData).toString();
+
+        document.getElementById('centresList').innerHTML = '<p class="text-center">Chargement...</p>';
+
+        fetch(`/centreclient?${searchParams}`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('centresList').innerHTML = html;
+        });
+    }
+
+    searchInput.addEventListener('input', updateList);
+    orderSelect.addEventListener('change', updateList);
+});
+
+    </script>
+{% endblock %}

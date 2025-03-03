@@ -1,0 +1,16 @@
+parameters:
+    google_recaptcha_site_key: '6LcCbOcqAAAAAN5HhxoopWHeEYZmT0VVN2CZrkp9'
+    google_recaptcha_secret_key: '6LcCbOcqAAAAAHdRi5G4fwmRRGKuT5WwmpMJrPZ'
+
+services:
+    ReCaptcha\ReCaptcha:
+        arguments:
+            $secret: '%google_recaptcha_secret_key%'
+            $requestMethod: '@ReCaptcha\RequestMethod'
+
+    ReCaptcha\RequestMethod: '@ReCaptcha\RequestMethod\CurlPost'
+    ReCaptcha\RequestMethod\CurlPost: null
+    ReCaptcha\RequestMethod\Curl: null
+twig:
+    globals:
+        google_recaptcha_site_key: '%google_recaptcha_site_key%'

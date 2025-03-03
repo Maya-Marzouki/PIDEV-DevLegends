@@ -90,9 +90,29 @@ class ArticlesConseilsController extends AbstractController
             'articleConseil' => $articleConseil,
         ]);
     }
-
-
-
+    // #[Route('/articles-conseils/{id}', name: 'app_articles_conseils_show')]
+    // public function show(ArticlesConseils $articleConseil, Request $request, PaginatorInterface $paginator, EntityManagerInterface $entityManager): Response
+    // {
+    //     // Récupérez le repository des articles conseils
+    //     $repository = $entityManager->getRepository(ArticlesConseils::class);
+    
+    //     // Créez une requête pour récupérer tous les articles
+    //     $query = $repository->createQueryBuilder('a')
+    //         ->getQuery();
+    
+    //     // Paginez les résultats
+    //     $articlesConseils = $paginator->paginate(
+    //         $query, // Requête à paginer
+    //         $request->query->getInt('page', 1), // Numéro de page par défaut
+    //         10 // Nombre d'éléments par page
+    //     );
+    
+    //     // Affiche un seul article conseil avec la pagination des autres articles
+    //     return $this->render('articles_conseils/ShowArticle.html.twig', [
+    //         'articleConseil' => $articleConseil,
+    //         'articlesConseils' => $articlesConseils, // Passer l'objet paginé au template
+    //     ]);
+    // }
 
     #[Route('/articles-conseils/{id}/edit', name: 'app_articles_conseils_edit')]
     public function edit(Request $request, ArticlesConseils $articleConseil, ArticlesConseilsRepository $articlesConseilsRepository): Response

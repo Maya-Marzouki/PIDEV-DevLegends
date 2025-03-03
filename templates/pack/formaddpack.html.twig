@@ -1,0 +1,103 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Ajouter un Centre{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- CSS de intl-tel-input -->
+    <link rel="stylesheet" href="{{ asset('node_modules/intl-tel-input/build/css/intlTelInput.css') }}">
+{% endblock %}
+
+{% block body %}
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-5">Ajouter un Centre</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.nomCentre) }}
+                                {{ form_widget(form.nomCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.nomCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.adresseCentre) }}
+                                {{ form_widget(form.adresseCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.adresseCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.telCentre) }}
+                                {{ form_widget(form.telCentre, {attr: {'class': 'form-control', 'id': 'telCentre'}}) }}
+                                {{ form_errors(form.telCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.emailCentre) }}
+                                {{ form_widget(form.emailCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.emailCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.specialiteCentre) }}
+                                {{ form_widget(form.specialiteCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.specialiteCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.capaciteCentre) }}
+                                {{ form_widget(form.capaciteCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.capaciteCentre) }}
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-floating">
+                                {{ form_label(form.photoCentre) }}
+                                {{ form_widget(form.photoCentre, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.photoCentre) }}
+                            </div>
+                        </div>
+
+                        <style>
+                            .btn-custom-green {
+                                background-color: #28a745 !important;
+                                color: white !important;
+                                font-weight: bold;
+                            }
+                        </style>
+                        <div class="col-12 text-center">
+                            <button class="btn btn-custom-green py-3 px-4" type="submit">Enregistrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </div>      
+</div>
+{{ form_end(form) }}
+
+<!-- JavaScript de intl-tel-input -->
+<script src="{{ asset('node_modules/intl-tel-input/build/js/intlTelInput.min.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.querySelector("#telCentre");
+    window.intlTelInput(input, {
+        initialCountry: "tn", // Par défaut, la Tunisie
+        separateDialCode: true, // Afficher le code du pays séparément
+        utilsScript: "{{ asset('node_modules/intl-tel-input/build/js/utils.js') }}", // Utilitaires pour la validation
+    });
+});
+</script>
+{% endblock %}

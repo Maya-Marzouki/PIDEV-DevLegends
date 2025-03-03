@@ -1,0 +1,34 @@
+{% block body %}
+    <div class="container mt-4">
+        <h2 class="text-center">Calendrier des Formations</h2>
+        <div id='calendar'></div>
+    </div>
+
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.css'/>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/locales/fr.min.js'></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+                },
+                events: '/calendar/events',
+                eventClick: function(info) {
+                    alert('Formation: ' + info.event.title + '\nLieu: ' + info.event.extendedProps.location);
+                },
+                eventDidMount: function(info) {
+                    info.el.style.backgroundColor = info.event.extendedProps.backgroundColor;
+                    info.el.style.color = info.event.extendedProps.textColor;
+                }
+            });
+            calendar.render();
+        });
+    </script>
+{% endblock %}

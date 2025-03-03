@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture Commande {{ commande.id }}</title>
+    <style>
+        /* Couleurs principales */
+        :root {
+            --green: #28a745;  /* Vert */
+            --light-green: #5cb85c; /* Vert clair */
+            --white: #fff;      /* Blanc */
+            --light-gray: #f9f9f9; /* Gris clair */
+            --dark-gray: #333;  /* Gris foncé */
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--dark-gray);
+            background-color: var(--light-gray);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--white);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: var(--green);
+            color: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            font-size: 1.2em;
+        }
+
+        .invoice-details {
+            margin-top: 20px;
+        }
+
+        .invoice-details table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .invoice-details th, .invoice-details td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .invoice-details th {
+            background-color: var(--light-green);
+            color: var(--white);
+        }
+
+        .invoice-details tr:last-child td {
+            border-bottom: none;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.1em;
+            color: #888;
+            background-color: var(--light-green);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .footer p {
+            margin: 0;
+            color: var(--white);
+        }
+
+        .total {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--green);
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Facture de la Commande #{{ commande.id }}</h1>
+            <p>Émise le : {{ commande.dateCommande|date('d/m/Y H:i') }}</p>
+        </div>
+
+        <!-- Commande Details -->
+        <div class="invoice-details">
+            <h2>Informations de la commande</h2>
+            <table>
+                <tr>
+                    <th>Nom du Client</th>
+                    <td>{{ commande.nomClient }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ commande.adresseEmail }}</td>
+                </tr>
+                <tr>
+                    <th>Adresse</th>
+                    <td>{{ commande.adresse }}</td>
+                </tr>
+                <tr>
+                    <th>Numéro de téléphone</th>
+                    <td>{{ commande.numTelephone ?? 'Non renseigné' }}</td>
+                </tr>
+                <tr>
+                    <th>Pays</th>
+                    <td>{{ commande.pays ?? 'Tunisie' }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Products Table -->
+        <div class="invoice-details">
+            <h2>Détails des Produits</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                        <th>Prix Unitaire (€)</th>
+                        <th>Total (€)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in commande.produits %}
+                        <tr>
+                            <td>{{ item.nomProduit }}</td>
+                            <td>{{ item.quantiteProduit }}</td>
+                            <td>{{ item.prixProduit|number_format(2, '.', ',') }}</td>
+                            <td>{{ (item.quantiteProduit * item.prixProduit)|number_format(2, '.', ',') }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">Aucun produit dans cette commande.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Total -->
+        <div class="total">
+            <p>Total de la commande : {{ commande.totalCom|number_format(2, '.', ',') }} €</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Merci de votre achat !</p>
+            <p>Si vous avez des questions, contactez-nous à <strong>innerbloom@gmail.com</strong></p>
+        </div>
+    </div>
+
+</body>
+</html>

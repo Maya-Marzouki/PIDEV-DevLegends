@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Contrats{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Liste des Contrats</h1>
+
+    {# Formulaire de recherche par date #}
+    <form method="get" action="{{ path('contratclient') }}" class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="searchDate">Rechercher par date (début ou fin)</label>
+                <input type="date" name="searchDate" class="form-control" value="{{ searchDate ?? '' }}">
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <button type="submit" class="btn btn-success">Rechercher</button>
+            </div>
+        </div>
+    </form>
+
+    {# Formulaire de tri #}
+    <form method="get" action="{{ path('contratclient') }}" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="orderBy">Trier par</label>
+                <select name="orderBy" class="form-control">
+                    <option value="datdebCont" {% if orderBy == 'datdebCont' %}selected{% endif %}>Date de début</option>
+                    <option value="datfinCont" {% if orderBy == 'datfinCont' %}selected{% endif %}>Date de fin</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="orderDirection">Ordre</label>
+                <select name="orderDirection" class="form-control">
+                    <option value="ASC" {% if orderDirection == 'ASC' %}selected{% endif %}>Croissant (A-Z)</option>
+                    <option value="DESC" {% if orderDirection == 'DESC' %}selected{% endif %}>Décroissant (Z-A)</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-success">Trier</button>
+            </div>
+        </div>
+    </form>
+
+    {# Affichage des contrats #}
+    <div class="row">
+        {% for contrat in contrats %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-lg border-0 h-100 d-flex flex-column">
+                    {# Affichage de l'image du centre #}
+                    {% if contrat.centre.photoCentre %}
+                        <img src="{{ contrat.centre.photoCentre }}" class="card-img-top" alt="Photo du centre" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/300x200?text=Pas+de+photo" class="card-img-top" alt="Image par défaut">
+                    {% endif %}
+
+                    <div class="card-body d-flex flex-column flex-grow-1">
+                        <h5 class="card-title text-success">
+                            {{ contrat.datdebCont|date('d-m-Y H:i') }} - {{ contrat.datfinCont|date('d-m-Y H:i') }}
+                        </h5>
+                        <p class="card-text"><strong>Mode de Paiement:</strong> {{ contrat.modpaimentCont }}</p>
+                        <p class="card-text"><strong>Renouvellement:</strong> {{ contrat.renouvAutoCont ? 'Oui' : 'Non' }}</p>
+                        <p class="card-text"><strong>Centre:</strong> {{ contrat.centre.nomCentre }}</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center text-muted">
+                <p>Aucun contrat trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Pagination #}
+    <div class="d-flex justify-content-center mt-4">
+        {{ knp_pagination_render(contrats) }}
+    </div>
+</div>
+{% endblock %}

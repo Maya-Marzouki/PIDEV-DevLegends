@@ -1,0 +1,79 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+	{# Affichage des messages flash #}
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">
+			{{ message }}
+		</div>
+	{% endfor %}
+
+
+	{# Barre de recherche #}
+	<div class="d-flex justify-content-end mb-3 mr-3 mt-2">
+		<form method="get" action="{{ path('app_avis_index') }}" class="d-flex">
+			<input type="text" name="search" class="form-control form-control-sm" placeholder="Rechercher..." value="{{ search ?? '' }}">
+			<button type="submit" class="btn btn-sm btn-secondary ms-2">🔍</button>
+			<a href="{{ path('app_avis_index') }}" class="btn btn-danger">✖</a>
+
+		</form>
+	</div>
+
+	<a href="{{ path('insertAvis') }}" class="btn btn-success">Ajouter un Avis</a>
+
+	<div class="card">
+		<div class="card-block">
+			<h4 class="card-title">Liste des Avis</h4>
+			<div class="table-responsive">
+				<table class="table">
+					<tr>
+						<th>Sujet</th>
+						<th>Contenu</th>
+						<th>Note</th>
+						<th>Date</th>
+						<th>Email</th>
+						<th>Client ID</th>
+						<th>Statut</th>
+						<th>Action</th>
+					</tr>
+					{% for avis in aviss %}
+						<tr>
+							<td>{{ avis.sujetAvis }}</td>
+							<td>{{ avis.contenuAvis }}</td>
+							<td>{{ avis.noteAvis }}/10</td>
+							<td>{{ avis.dateAvis|date('d-m-Y H:i:s') }}</td>
+							<td>{{ avis.emailAvis }}</td>
+							<td>{{ avis.user ? avis.user.id : 'N/A' }}</td>
+							<td class="text-center">
+								{% if avis.statutAvis == 'Pas traitée' %}
+									<span class="badge badge-danger">{{ avis.statutAvis }}</span>
+								{% else %}
+									<span class="badge badge-primary">{{ avis.statutAvis }}</span>
+								{% endif %}
+							</td>
+							<td class="text-center">
+								{% if avis.statutAvis == 'Pas traitée' %}
+									<a href="{{ path('traiterAvis', {'id': avis.id}) }}" class="btn btn-primary btn-sm">Traiter</a>
+								{% else %}
+									<span class="btn btn-secondary btn-sm disabled">Déjà traitée</span>
+								{% endif %}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="8" class="text-center">Aucun avis trouvé.</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+	</div>
+
+	{# Affichage de la pagination #}
+	<div class="d-flex justify-content-center">
+		<div class="avis">
+			{{ knp_pagination_render(aviss) }}
+		</div>
+	</div>
+
+{% endblock %}

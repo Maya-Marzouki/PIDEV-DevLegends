@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+{% block title %}Profil Utilisateur
+{% endblock %}
+{% block body %}
+<div class="container">
+	<div class="main-body">
+		<nav aria-label="breadcrumb" class="main-breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item">
+					<a>Home</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">Profil Utilisateur</li>
+			</ol>
+		</nav>
+		<div class="row gutters-sm">
+			<div class="col-md-4 mb-3">
+				<div class="card">
+					<div class="card-body">
+						<div class="d-flex flex-column align-items-center text-center">
+							{% if user.userPicture %}
+								<img src="{{ asset(user.userPicture) }}" class="rounded-circle" alt="userPicture" width="150">
+							{% else %}
+								<div class="text-center p-3 text-muted">Pas d'image</div>
+							{% endif %}
+							<div class="mt-3">
+								<h4>
+									<a href="{{path('userProfile',{'id':user.id})}}">{{user.firstName | upper}}
+										{{user.lastName | upper}}</a>
+								</h4>
+								<h6 class="text-secondary mb-1">{{user.userAge}}
+									Ans</h6>
+								<p class="text-secondary mb-1">{{user.userRole | upper}}</p>
+								{% if user.userRole=="Medecin" %}
+									<p class="text-secondary ">{{user.docSpecialty}}</p>
+								{% else %}
+									<div class="text-center p-3 text-muted"></div>
+								{% endif %}
+								<div class="d-flex justify-content-between">
+									<form method="post" action="{{ path('desactiver', { id: user.id }) }}">
+										<button class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir désactiver votre compte?');">
+											Désactiver compte
+										</button>
+									</form>
+									<a class="btn btn-warning" href="{{ path('change_password') }}">Modifier le mot de passe</a>
+
+									<form method="post" action="{{ path('app_logout') }}">
+										<button class="btn btn-outline-primary">Déconnexion</button>
+									</form>
+
+
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div class="card mb-3">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Prénom</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">{{user.firstName}}
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Nom</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">{{user.lastName}}
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Email</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">{{user.userEmail}}</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Âge</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">{{user.userAge}}</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-12">
+								<a class="text-themecolor" href="{{path('updateUser',{'id':user.id})}}">Modifier Profile</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+            <div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Localisation</h5>
+                {% if latitude and longitude %}
+                    <div id="map" style="height: 400px;"></div>
+                    <script>
+                        const map = L.map('map').setView([{{ latitude }}, {{ longitude }}], 13);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '© OpenStreetMap contributors'
+                        }).addTo(map);
+                        L.marker([{{ latitude }}, {{ longitude }}]).addTo(map)
+                            .bindPopup('{{ user.firstName }} {{ user.lastName }}')
+                            .openPopup();
+                    </script>
+                {% else %}
+                    <p class="text-center text-muted">La localisation n'est pas disponible.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+		</div>
+	</div>
+</div>
+{%endblock%}

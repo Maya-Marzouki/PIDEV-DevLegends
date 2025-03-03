@@ -67,6 +67,8 @@
                 <tbody>
                     {% for consultation in consultations %}
                         <tr>
+                            {# <td>{{ userId }}</td> Affiche l'ID de l'utilisateur connecté #}
+
                             <td>{{ consultation.dateCons|date('Y-m-d') }}</td>
                             <td>{{ consultation.Nom }}</td>
                             <td>{{ consultation.prenom }}</td>
@@ -89,28 +91,10 @@
                 </tbody>
             </table>
 
-{# Pagination #}
-<div class="d-flex justify-content-center mt-4">
-    <nav>
-        <ul class="pagination">
-            {% if currentPage > 1 %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ path('consultation_index', {'page': currentPage - 1, 'sort_by': sort_by, 'order': order, 'q': searchQuery}) }}">Précédent</a>
-                </li>
-            {% endif %}
-            {% for i in 1..totalPages %}
-                <li class="page-item {{ i == currentPage ? 'active' : '' }}">
-                    <a class="page-link" href="{{ path('consultation_index', {'page': i, 'sort_by': sort_by, 'order': order, 'q': searchQuery}) }}">{{ i }}</a>
-                </li>
-            {% endfor %}
-            {% if currentPage < totalPages %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ path('consultation_index', {'page': currentPage + 1, 'sort_by': sort_by, 'order': order, 'q': searchQuery}) }}">Suivant</a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-</div>
+    {# Pagination
+    <div class="d-flex justify-content-center mt-4">
+        {{ knp_pagination_render(consultations) }}
+    </div> #}
 
             {# Bouton "Ajouter une Consultation" #}
             <div class="text-center mt-3">

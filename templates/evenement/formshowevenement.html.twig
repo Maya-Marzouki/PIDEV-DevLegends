@@ -1,0 +1,43 @@
+{% extends 'baseAdmin.html.twig' %}
+{# {% if userList is defined and userList is not empty%} #}
+{% block body %}
+<a href="{{ path('insertevenement') }}" class="btn btn-success"> Ajouter un Evenements</a><div class="row">
+    <!-- column -->
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-block">
+			    <h4 class="card-title">Basic Table</h4>
+                    <h6 class="card-subtitle">Add class <code>.table</code></h6>
+                        <div class="table-responsive">
+                            <table class="table">
+                               <tr>
+		<th>Ttitre Evenement</th>
+        <th>Date Evenement</th>
+        <th>Lieu Evenement</th>
+        <th>Statut</th>
+	</tr>
+	{% for evenement in evenements %}
+		<tr>
+			<td>{{ evenement.titreEvent }}</td>
+                    <td>{{ evenement.dateEvent|date('Y-m-d') }}</td>
+                    <td>{{ evenement.lieuEvent }}</td>
+                    <td>{{ evenement.statutEvent }}</td>
+                    
+                    
+                    <td>
+                        <a class="text-themecolor" href="{{ path('editEvenement', {'id': evenement.id}) }}" >Modifier</a>
+                        <form method="post" action="{{ path('deleteEvenement', { id: evenement.id }) }}" >
+                        <a class="text-themecolor" href="{{ path('deleteEvenement', {'id': evenement.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette evenement ?');">Supprimer</a>
+                        
+</form>
+
+                    </td>
+		</tr>
+								{% endfor %}      
+                        	</table>
+                		</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

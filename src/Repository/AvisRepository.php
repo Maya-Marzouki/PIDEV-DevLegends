@@ -16,6 +16,19 @@ class AvisRepository extends ServiceEntityRepository
         parent::__construct($registry, Avis::class);
     }
 
+    public function searchAvis(string $search)
+    {
+        $query = $this->createQueryBuilder('a');
+
+        if ($search) {
+            $query->andWhere('a.sujetAvis LIKE :search OR a.contenuAvis LIKE :search OR a.emailAvis LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+
     //    /**
     //     * @return Avis[] Returns an array of Avis objects
     //     */

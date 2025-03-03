@@ -8,6 +8,7 @@
     <table class="table">
         <thead>
             <tr>
+                {# <th>User ID</th> #}
                 <th>Score</th>
                 <th>État Mental</th>
                 <th>Actions</th>
@@ -16,6 +17,7 @@
         <tbody>
             {% for quiz in quizzes %}
                 <tr>
+                    {# <td>{{ userId }}</td> Affiche l'ID de l'utilisateur connecté #}
                     <td>{{ quiz.score }}</td>
                     <td>{{ quiz.etatMental }}</td>
                     <td>

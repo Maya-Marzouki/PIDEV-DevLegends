@@ -14,6 +14,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
 use App\Service\PdfGeneratorService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Knp\Component\Pager\PaginatorInterface;
+
 class ReponseController extends AbstractController
 {
     // Liste des réponses
@@ -25,6 +27,40 @@ class ReponseController extends AbstractController
             'reponses' => $reponses,
         ]);
     }
+
+    // #[Route('/reponse/list', name: 'reponse_index')]
+    // public function index(ReponseRepository $reponseRepository, PaginatorInterface $paginator, Request $request): Response
+    // {
+    //     $search = $request->query->get('search', '');
+    //     $searchQuery = $request->query->get('q', '');
+
+    //     $queryBuilder = $reponseRepository->searchRep($search); // Maintenant, c'est un QueryBuilder
+    //     $page = max(1, $request->query->getInt('page', 1)); // Assure que la page est au moins 1
+
+    //     $limit = 5; // Nombre de résultats par page
+
+
+    // // Récupérer le total des consultations AVANT la pagination
+    // $totalConsultations = count($queryBuilder->getQuery()->getResult());
+    // $totalPages = max(1, ceil($totalConsultations / $limit)); // Évite d'avoir 0 page
+
+    // // Appliquer la pagination
+    // $query = $queryBuilder->getQuery()
+    //                       ->setFirstResult(($page - 1) * $limit) // Offset
+    //                       ->setMaxResults($limit);               // Limit
+        
+    //                       $reponses = $query->getResult(); // Exécute la requête paginée
+
+    //                       return $this->render('reponse/listReponse.html.twig', [
+    //                         'reponses' => $reponses, // Résultats paginés
+    //                           'searchQuery' => $searchQuery, // Terme de recherche
+    //                           'currentPage' => $page, // Page actuelle
+    //                           'totalPages' => $totalPages, // Nombre total de pages
+    //                       ]);
+
+    // }
+
+
 
     // #[Route('/admin/reponse', name: 'app_reponse_index_admin')]
     // public function adminRepIndex(ReponseRepository $reponseRepository): Response

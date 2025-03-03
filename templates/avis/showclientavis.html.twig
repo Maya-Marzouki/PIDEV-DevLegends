@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Liste des Avis
+{% endblock %}
+
+{% block body %}
+
+	{# Affichage des messages flash #}
+	{% for message in app.flashes('success') %}
+		<div class="alert alert-success">
+			{{ message }}
+		</div>
+	{% endfor %}
+
+	<div class="container my-5">
+		<h1 class="text-center text-success mb-4">Liste des Avis</h1>
+
+		<div class="row">
+			{% for avis in aviss %}
+				<div class="col-md-4 mb-4">
+					<div class="card shadow-lg border-0 h-100 d-flex flex-column">
+						<div class="card-body d-flex flex-column flex-grow-1 text-center">
+							<h5 class="card-title text-success">{{ avis.sujetAvis }}</h5>
+							<p class="card-text">
+								<strong>Contenu :</strong>
+								{{ avis.contenuAvis }}</p>
+							<p class="card-text">
+								<strong>Note :</strong>
+								<span class="text-warning" data-bs-toggle="tooltip" title="{{ avis.noteAvis }}/10">
+									{% for i in 1..5 %}
+										{% if i <= (avis.noteAvis / 2) %}
+											<i class="fas fa-star"></i>
+										{% elseif i - 0.5 == (avis.noteAvis / 2) %}
+											<i class="fas fa-star-half-alt"></i>
+										{% else %}
+											<i class="far fa-star"></i>
+										{% endif %}
+									{% endfor %}
+								</span>
+							</p>
+							<p class="card-text">
+								<strong>Date :</strong>
+								{{ avis.dateAvis|date('d-m-Y H:i') }}</p>
+							<p class="card-text">
+								<strong>Par :</strong>
+								{{ avis.emailAvis }}</p>
+							<div
+								class="mt-auto">
+								{# Afficher les boutons uniquement si l'utilisateur est le propriétaire de l'avis #}
+{# 								{% if app.user and avis.user and avis.user.id == app.user.id %}
+ #}									<a href="{{ path('editAvis', {'id': avis.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+									<form method="post" action="{{ path('deleteAvis', { id: avis.id }) }}" class="d-inline">
+										<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet avis ?');">
+											Supprimer
+										</button>
+									</form>
+{# 								{% endif %}
+ #}						</div>
+						</div>
+					</div>
+				</div>
+			{% else %}
+				<div class="col-12 text-center text-muted">
+					<p>Aucun avis trouvé.</p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	{# Activation des tooltips Bootstrap #}
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+});
+	</script>
+
+	{# Affichage de la pagination #}
+	<div class="d-flex justify-content-center">
+		<div class="avis">
+			{{ knp_pagination_render(aviss) }}
+		</div>
+	</div>
+
+{% endblock %}

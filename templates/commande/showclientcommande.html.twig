@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Commandes{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="text-center text-success mb-4">Mes Commandes</h1>
+
+    <div class="row">
+        {% if commandes is empty %}
+            <div class="col-12 text-center text-muted">
+                <p>Vous n'avez pas encore passé de commande.</p>
+            </div>
+        {% else %}
+            <div class="col-12">
+               {% for commande in commandes %}
+
+                    <form class="border p-4 mb-4">
+                        <div class="mb-3">
+                            <label class="form-label">Nom Client</label>
+                            <input type="text" class="form-control" value="{{ commande.nomClient }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ commande.adresseEmail }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date de Commande</label>
+                            <input type="text" class="form-control" value="{{ commande.dateCommande }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Adresse</label>
+                            <input type="text" class="form-control" value="{{ commande.adresse }}" readonly>
+                        </div>
+                       
+                        <div class="mb-3">
+                            <label class="form-label">Total</label>
+                            <input type="text" class="form-control" value="{{ commande.totalCom }} €" readonly>
+                        </div>
+                    </form>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

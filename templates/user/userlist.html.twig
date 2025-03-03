@@ -1,24 +1,63 @@
-
+{% extends 'baseAdmin.html.twig' %}
+{% block title %}Liste des utilisateurs{% endblock %}
 {# {% if userList is defined and userList is not empty%} #}
-<table border="1">
-	<tr>
-		<th>id</th>
-		<th>username</th>
-		<th>email</th>
-		<th>Action</th>
-	</tr>
-	{% for user in userList %}
-		<tr>
-			<td>{{user.id}}</td>
-			<td>{{user.firstName}}</td>
-            <td>{{user.lastName}}</td>
-			<td>{{user.userEmail}}</td>
-            <td>{{user.pswrd}}</td>
-			<td>{{user.userRole}}</td>
-            <td>{{user.userAge}}</td>
-			<td>
-				<a href="{{path('getUser',{'id':user.id})}}">details</a>
-				<a href="{{path('deleteUser',{'id':user.id})}}">delete</a>
-			</td>
-		</tr>
-	{% endfor %}
+{% block body %}
+<div class="container-fluid">
+    <div class="row page-titles">
+        <div class="col-md-5 col-8 align-self-center">
+            <h3 class="text-themecolor">Liste des utilisateurs</h3>      
+        </div>                
+    </div>
+</div>
+<div class="row">
+    <!-- column -->
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-block">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+									<th>ID</th>
+									<th>PRENOM</th>
+									<th>NOM</th>
+									<th>EMAIL</th>
+									<th>MOT DE PASSE</th>
+									<th>ROLE</th>
+									<th>SPECIALITE</th>
+									<th>AGE</th>
+									<th>PHOTO DE PROFILE</th>
+									<th>ACTIONS</th>
+								</tr>
+								{% for user in userList %}
+								<tr>
+								<td>{{user.id}}</td>
+								<td>{{user.firstName}}</td>
+        						<td>{{user.lastName}}</td>
+								<td>{{user.userEmail}}</td>
+        						<td>{{user.password}}</td>
+								<td>{{user.userRole}}</td>
+								<td>{{user.docSpecialty}}</td>
+            					<td>{{user.userAge}}</td>
+								<td>
+                                    {% if user.userPicture %}
+                                        <img src="{{ user.userPicture }}" alt="Photo de profile" width="100">
+                                    {% else %}
+                                        <span>Pas d'image</span>
+                                    {% endif %}
+                     			</td>
+								<td>
+									<a class="text-themecolor" href="{{path('updateAdmin',{'id':user.id})}}">Modifier</a>
+									<form method="post" action="{{ path('deleteUser', { id: user.id }) }}">
+									<a class="text-themecolor" href="{{ path('deleteUser', {'id': user.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?');">Supprimer</a>
+									</form>
+									<a href="{{ path('admin_ban_user', {'id': user.id}) }}" class="btn btn-danger">Bannir</a>
+								</td>
+								</tr>
+								{% endfor %}      
+                        	</table>
+                		</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

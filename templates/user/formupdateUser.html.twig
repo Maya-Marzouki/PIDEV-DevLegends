@@ -1,0 +1,188 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier Profil
+{% endblock %}
+{% block body %}
+{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
+<div class="container">
+	<div class="main-body">
+		<nav aria-label="breadcrumb" class="main-breadcrumb">
+			<ol class="breadcrumb">
+				<li class="breadcrumb-item">
+					<a>Home</a>
+				</li>
+				<li class="breadcrumb-item">
+					<a>Profil Utilisateur</a>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page">Modifier Profile</li>
+			</ol>
+		</nav>
+		<div class="row gutters-sm">
+			<div class="col-md-4 mb-3">
+				<div class="card">
+					<div class="card-body">
+						<div class="d-flex flex-column align-items-center text-center">
+							{% if user.userPicture %}
+								<img src="{{ asset(user.userPicture) }}" class="rounded-circle" alt="userPicture" width="150">
+							{% else %}
+								<div class="text-center p-3 text-muted">Pas d'image</div>
+							{% endif %}
+							<div class="mt-3">
+								<h4>
+									<a href="{{path('userProfile',{'id':user.id})}}">{{user.firstName | upper}}
+										{{user.lastName | upper}}</a>
+								</h4>
+								<h6 class="text-secondary mb-1">{{user.userAge}}
+									Ans</h6>
+								<p class="text-secondary mb-1">{{user.userRole | upper}}</p>
+								{% if user.docSpecialty %}
+									<p class="text-secondary ">{{user.docSpecialty}}</p>
+								{% else %}
+									<div class="text-center p-3 text-muted"></div>
+								{% endif %}
+								<div class="d-flex justify-content-between">
+									<form method="post" action="{{ path('desactiver', { id: user.id }) }}">
+										<button class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir désactiver votre compte?');">
+											Désactiver compte
+										</button>
+									</form>
+									<a class="btn btn-warning" href="{{ path('change_password') }}">Modifier le mot de passe</a>
+
+									<form method="post" action="{{ path('app_logout') }}">
+										<button class="btn btn-outline-primary">Déconnexion</button>
+									</form>
+
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-8">
+				<div class="card mb-3">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Prénom</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+								<div class="form-floating">
+									{{ form_widget(form.firstName, {attr: {'class': 'form-control'}}) }}
+									{{ form_label(form.firstName,"Prénom") }}
+									<div class="text-danger">{{ form_errors(form.firstName) }}</div>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Nom</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+								<div class="form-floating">
+									{{ form_widget(form.lastName, {attr: {'class': 'form-control'}}) }}
+									{{ form_label(form.lastName,"Nom") }}
+									<div class="text-danger">{{ form_errors(form.lastName) }}</div>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Rôle</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+								<div class="form-floating">
+									{{ form_widget(form.userRole, {attr: {'class': 'form-control', 'disabled': 'disabled'}}) }}
+									{{ form_label(form.userRole,"Rôle") }}
+									<div class="text-danger">{{ form_errors(form.userRole) }}</div>
+								</div>
+							</div>
+						</div>
+						<hr>
+						<div id="med-info" class="col-sm-12 mt-3" style="display: none;">
+							{% if form.docSpecialty is defined %}
+								<div class="row">
+									<div class="col-sm-3">
+										<h6 class="mb-0">Spécialité</h6>
+									</div>
+									<div class="col-sm-9 text-secondary">
+										<div class="form-floating">
+											{{ form_widget(form.docSpecialty, {attr: {'class': 'form-control'}}) }}
+											{{ form_label(form.docSpecialty, "Spécialité") }}
+											<div class="text-danger">{{ form_errors(form.docSpecialty) }}</div>
+										</div>
+									</div>
+								</div>
+								<hr>
+							{% endif %}
+						</div>
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Âge</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+								<div class="form-floating">
+									{{ form_widget(form.userAge, {attr: {'class': 'form-control'}}) }}
+									{{ form_label(form.userAge,"Âge") }}
+									<div class="text-danger">{{ form_errors(form.userAge) }}</div>
+								</div>
+							</div>
+						</div>
+						<hr>
+                        
+						<div class="col-sm-12 text-center">
+							{% if user.userPicture %}
+								<p>Photo de profil actuelle :</p>
+								<img src="{{ asset(user.userPicture) }}" alt="Photo de profile actuelle" class="img-fluid rounded" style="max-height: 200px;">
+							{% else %}
+								<p class="text-muted">Aucune image actuelle</p>
+							{% endif %}
+						</div>
+						<hr>
+						<div class="row">
+							<div class="col-sm-3">
+								<h6 class="mb-0">Photo de profile</h6>
+							</div>
+							<div class="col-sm-9 text-secondary">
+								<div class="form-floating">
+									{{ form_widget(form.userPicture, {attr: {'class': 'form-control'}}) }}
+									{{ form_label(form.userPicture,"Photo de profile") }}
+									<div class="text-danger">{{ form_errors(form.userPicture) }}</div>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-12">
+								<button class="btn btn-success" type="Submit">Enregistrer</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{{ form_end(form) }}
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+let userRoleField = document.getElementById("{{ form.userRole.vars.id }}");
+let medInfo = document.getElementById("med-info");
+
+function toggleSpecialtyField() {
+if (userRoleField.value.toLowerCase() === "medecin") {
+medInfo.style.display = "block";
+} else {
+medInfo.style.display = "none";
+}
+}
+
+// Vérification initiale au chargement de la page
+toggleSpecialtyField();
+
+// Ajout de l'événement sur changement du champ userRole
+userRoleField.addEventListener("change", toggleSpecialtyField);
+});
+</script>
+
+{%endblock%}

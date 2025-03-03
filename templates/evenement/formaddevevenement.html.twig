@@ -1,0 +1,67 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %} Ajouter un Evenement{% endblock %}
+
+{% block body %}
+{{ form_start(form) }}
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-5">Ajouter un Evenement </h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.titreEvent) }}
+                                {{ form_widget(form.titreEvent, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.titreEvent) }}
+                            </div>
+                        </div>
+                    
+                        <div class="col-sm-12">
+                            <div class="form-floating">
+                                {{ form_label(form.dateEvent) }}
+                                {{ form_widget(form.dateEvent, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.dateEvent) }}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-floating">
+                                {{ form_label(form.lieuEvent) }}
+                                {{ form_widget(form.lieuEvent, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.lieuEvent) }}
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-floating">
+                                {{ form_label(form.statutEvent) }}
+                                {{ form_widget(form.statutEvent, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.statutEvent) }}
+                            </div>
+                        </div>
+
+                        <!-- Ajout du champ formation -->
+                        <div class="col-sm-12">
+                            <div class="form-floating">
+                                {{ form_label(form.formation) }}
+                                {{ form_widget(form.formation, {attr: {'class': 'form-control'}}) }}
+                                {{ form_errors(form.formation) }}
+                            </div>
+                        </div>
+
+                        <div class="col-12 text-center">
+                            <button class="btn btn-primary py-3 px-4" type="submit">Enregistrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </div>      
+</div>
+{{ form_end(form) }}
+{% endblock %}

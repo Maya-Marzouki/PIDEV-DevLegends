@@ -1,0 +1,121 @@
+{# templates/pack/achat.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Achat du Pack {{ pack.nomPack }}{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="text-center text-success mb-4">Achat du Pack: {{ pack.nomPack }}</h1>
+
+        {# Affichage des messages flash #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="card shadow-lg border-0 p-4">
+            <div class="card-body text-center">
+                {% if pack.photoPack %}
+                    <img src="{{ asset(pack.photoPack) }}" class="card-img-top img-fluid" style="max-width: 300px; height: auto;" alt="Photo du pack {{ pack.nomPack }}">
+                {% else %}
+                    <div class="text-center p-3 text-muted">Pas d'image</div>
+                {% endif %}
+                <h5 class="card-title text-success">{{ pack.nomPack }}</h5>
+                <p class="card-text"><strong>Description:</strong></p>
+                <p class="card-text">{{ pack.descriptPack|replace({'. ': '<br>'})|raw }}</p>
+
+                {# Affichage du prix avec ou sans réduction #}
+                <p class="card-text">
+                    <strong>Prix:</strong>
+                    {% if discountPrice and discountPrice < pack.prixPack %}
+                        <span style="text-decoration: line-through;">{{ pack.prixPack|number_format(2, ',', ' ') }} €</span>
+                        <strong class="text-danger ml-2">{{ discountPrice|number_format(2, ',', ' ') }} €</strong>
+                    {% else %}
+                        {{ pack.prixPack|number_format(2, ',', ' ') }} €
+                    {% endif %}
+                </p>
+
+                <p class="card-text"><strong>Durée:</strong> {{ pack.dureePack }} jours</p>
+
+                {# Bouton pour générer ou récupérer le code de réduction #}
+                <div id="generate-discount-container">
+                    <button id="generate-discount-btn" class="btn btn-primary mb-3">Générer un code de réduction</button>
+                </div>
+
+                {# Affichage du code généré ou existant #}
+                <div id="discount-code-display" class="alert alert-info mt-3" style="display: none;">
+                    Code de réduction : <strong id="generated-code"></strong>
+                </div>
+
+                {# Formulaire de code de réduction #}
+                <form method="POST" action="{{ path('achatPack', { 'id': pack.id }) }}">
+                    <div class="form-group">
+                        <label for="codeReduction">Code de réduction</label>
+                        <input type="text" id="codeReduction" name="codeReduction" class="form-control" placeholder="Entrez votre code">
+                    </div>
+                    <button type="submit" class="btn btn-success mt-3">Appliquer</button>
+                </form>
+
+                {# Bouton de paiement avec transmission du code de réduction #}
+                <form method="POST" action="{{ path('paiementPack', { 'id': pack.id }) }}" class="mt-3">
+                    <input type="hidden" name="codeReduction" value="{{ codeReduction ?? '' }}">
+                    <button type="submit" class="btn btn-success">Procéder au paiement</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {# Script JavaScript pour gérer la génération ou la récupération du code #}
+    <script>
+        document.getElementById('generate-discount-btn').addEventListener('click', function (e) {
+            e.preventDefault(); // Empêcher le comportement par défaut du bouton
+
+            const packId = {{ pack.id }}; // ID du pack
+            const generateDiscountUrl = "{{ path('generate_discount', { 'id': pack.id }) }}"; // URL de génération du code
+
+            // Envoyer une requête AJAX pour générer ou récupérer le code
+            fetch(generateDiscountUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erreur réseau');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // Déboguer la réponse
+                if (data.success) {
+                    // Afficher le code généré ou existant dans l'interface
+                    const discountCodeDisplay = document.getElementById('discount-code-display');
+                    const generatedCodeElement = document.getElementById('generated-code');
+                    generatedCodeElement.textContent = data.discountCode;
+                    discountCodeDisplay.style.display = 'block'; // Afficher le div
+
+                    // Remplir automatiquement le champ "Code de réduction"
+                    document.getElementById('codeReduction').value = data.discountCode;
+
+                    // Désactiver le bouton après la génération ou la récupération
+                    document.getElementById('generate-discount-btn').disabled = true;
+                } else {
+                    alert(data.message); // Afficher un message d'erreur
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la génération ou de la récupération du code:', error);
+                alert('Une erreur est survenue.');
+            });
+        });
+    </script>
+{% endblock %}

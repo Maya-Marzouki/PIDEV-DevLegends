@@ -1,0 +1,58 @@
+{% extends 'baseAdmin.html.twig' %}
+{# {% if userList is defined and userList is not empty%} #}
+{% block body %}
+	<a href="{{ path('insertformation') }}" class="btn btn-success">
+		Ajouter une Formation</a>
+	<div
+		class="row">
+		<!-- column -->
+		<div class="col-lg-12">
+			<div class="card">
+				<div class="card-block">
+					<h4 class="card-title">Basic Table</h4>
+					<h6 class="card-subtitle">Add class
+						<code>.table</code>
+					</h6>
+					<div class="table-responsive">
+						<table class="table">
+							<tr>
+								<th>Titre Formation</th>
+								<th>Date Formation</th>
+								<th>Lieu Formation</th>
+								<th>Statut</th>
+								<th>Actions</th>
+							</tr>
+							{% for formation in formations %}
+								<tr>
+									<td>{{ formation.titreFor }}</td>
+									<td>{{ formation.dateFor|date('Y-m-d') }}</td>
+									<td>{{ formation.lieuFor }}</td>
+									<td>{{ formation.statutFor }}</td>
+
+
+            <td>
+                <a class="text-themecolor" href="{{ path('editFormation', {'id': formation.id}) }}">Modifier</a>
+<form action="{{ path('deleteFormation', { 'id': formation.id }) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cette formation ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ formation.id) }}">
+    <button type="submit" class="btn btn-danger">Supprimer</button>
+
+</form>
+                </form>
+            </td>
+								</tr>
+							{% endfor %}
+						</table>
+						{# <a href="{{ path('calendar_events') }}" class="btn btn-primary">Voir le calendrier</a>
+						            <a href="{{ path('qr_code') }}" class="btn btn-custom-green">
+                <i class="fas fa-qrcode"></i> Générer QR Code
+            </a> #}
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+
+{% endblock %}

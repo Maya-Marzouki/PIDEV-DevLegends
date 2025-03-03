@@ -47,6 +47,7 @@
             {% for consultation in consultations %}
                 <tr>
                     <td>{{ consultation.id }}</td>
+                    {# <td>{{ userId }}</td> Affiche l'ID de l'utilisateur connecté #}
                     <td>{{ consultation.dateCons|date('Y-m-d') }}</td>
                     <td>{{ consultation.Nom }}</td>
                     <td>{{ consultation.prenom }}</td>
@@ -69,6 +70,54 @@
         </tbody>
     </table>
 </div>
+{# Affichage de la pagination #}
+<div class="d-flex justify-content-center mt-3">
+    <nav aria-label="Pagination">
+        <ul class="pagination pagination-green">
+            {# Lien vers la page précédente #}
+            {% if currentPage > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('consultation_index', { q: searchQuery, page: currentPage - 1 }) }}">Précédent</a>
+                </li>
+            {% endif %}
+
+            {# Liens vers les pages #}
+            {% for i in 1..totalPages %}
+                <li class="page-item {% if i == currentPage %}active{% endif %}">
+                    <a class="page-link" href="{{ path('consultation_index', { q: searchQuery, page: i }) }}">{{ i }}</a>
+                </li>
+            {% endfor %}
+
+            {# Lien vers la page suivante #}
+            {% if currentPage < totalPages %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('consultation_index', { q: searchQuery, page: currentPage + 1 }) }}">Suivant</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+<style>
+    .pagination-green .page-item .page-link {
+        color: #28a745; /* Couleur du texte en vert */
+        background-color: #ffffff; /* Fond blanc */
+        border-color: #28a745; /* Bordure verte */
+    }
+
+    .pagination-green .page-item.active .page-link {
+        background-color: #28a745; /* Fond vert pour la page active */
+        border-color: #28a745; /* Bordure verte pour la page active */
+        color: #ffffff; /* Texte blanc pour la page active */
+    }
+
+    .pagination-green .page-item:hover .page-link {
+        background-color: #218838; /* Fond vert plus foncé au survol */
+        border-color: #218838; /* Bordure verte plus foncée au survol */
+        color: #ffffff; /* Texte blanc au survol */
+    }
+</style>
+
+
             </div>
         </div>
 

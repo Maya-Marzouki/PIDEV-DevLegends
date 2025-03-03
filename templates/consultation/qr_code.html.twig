@@ -15,10 +15,19 @@
                     <img src="{{ qrCodeUrl }}" alt="QR Code" class="img-fluid">
                 </div>
 
+{# Bouton "Ajouter une Consultation" en bas à droite #}
+        <style>
+            .btn-custom-green {
+                background-color: #28a745 !important; /* Vert Bootstrap */
+                color: white !important; /* Texte blanc */
+                font-weight: bold;
+            }
+        </style>
+
                 {# Boutons #}
                 <div class="d-flex justify-content-end mt-3">
-                    <a href="{{ path('consultation_affichage') }}" class="btn btn-success mr-2">Voir les consultations</a>
-                    <a href="{{ qrCodeUrl }}" download="qr_code.png" class="btn btn-primary">Télécharger le QR Code</a>
+                    <a href="{{ path('consultation_affichage') }}" class="btn btn-custom-green">Voir les consultations</a>
+                    <a href="{{ qrCodeUrl }}" download="qr_code.png" class="btn btn-custom-green">Télécharger le QR Code</a>
                 </div>
             </div>
         </div>

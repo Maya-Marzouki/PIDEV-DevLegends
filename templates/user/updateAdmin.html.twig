@@ -1,0 +1,106 @@
+
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}Modifier Profil{% endblock %}
+
+{% block body %}
+{{ form_start(form,{'attr': {'novalidate': 'novalidate'}}) }}
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="text-center mx-auto wow fadeInUp" data-wow-delay="0.1s" style="max-width: 500px;">
+            <h1 class="display-5 mb-5">Modifier Profil</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="bg-light rounded p-4 p-sm-5 wow fadeInUp" data-wow-delay="0.1s">
+                        
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.firstName,"Prénom") }}
+                                {{ form_widget(form.firstName, {attr: {'class': 'form-control'}}) }}
+                                <div class="text-danger">{{ form_errors(form.firstName) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.lastName,"Nom") }}
+                                {{ form_widget(form.lastName, {attr: {'class': 'form-control'}}) }}
+                                <div class="text-danger">{{ form_errors(form.lastName) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.userEmail,"Email") }}
+                                {{ form_widget(form.userEmail, {attr: {'class': 'form-control'}}) }}
+                                <div class="text-danger">{{ form_errors(form.userEmail) }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.userRole,"Rôle") }}
+                                {{ form_widget(form.userRole, {attr: {'class': 'form-control'}}) }}
+                                <div class="text-danger">{{ form_errors(form.userRole) }}</div>
+                            </div>
+                        </div>
+                                              <div id="med-info" class="col-sm-12 mt-3" style="display: none;">
+    {% if form.docSpecialty is defined %}
+        <div class="row">
+            <div class="col-sm-3"><h6 class="mb-0">Spécialité</h6></div>
+            <div class="col-sm-9 text-secondary">
+                <div class="form-floating">
+                    {{ form_widget(form.docSpecialty, {attr: {'class': 'form-control'}}) }}
+                    {{ form_label(form.docSpecialty, "Spécialité") }}
+                    <div class="text-danger">{{ form_errors(form.docSpecialty) }}</div>
+                </div>
+            </div>
+        </div>
+        <hr>
+    {% endif %}
+</div>
+                        <div class="col-sm-6">
+                            <div class="form-floating">
+                                {{ form_label(form.userAge,"Âge") }}
+                                {{ form_widget(form.userAge, {attr: {'class': 'form-control'}}) }}
+                                <div class="text-danger">{{ form_errors(form.userAge) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="form-floating">
+                                {{ form_label(form.userPicture,"Photo de profile") }}
+                                {{ form_widget(form.userPicture, {attr: {'class': 'form-control'}}) }}
+                                <div class="text-danger">{{ form_errors(form.userPicture) }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12 text-center">
+                            <button class="btn btn-success" type="submit">Enregistrer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </div>      
+</div>
+{{ form_end(form) }}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let userRoleField = document.getElementById("{{ form.userRole.vars.id }}");
+    let medInfo = document.getElementById("med-info");
+
+    function toggleSpecialtyField() {
+        if (userRoleField.value.toLowerCase() === "medecin") {
+            medInfo.style.display = "block";
+        } else {
+            medInfo.style.display = "none";
+        }
+    }
+
+    // Vérification initiale au chargement de la page
+    toggleSpecialtyField();
+
+    // Ajout de l'événement sur changement du champ userRole
+    userRoleField.addEventListener("change", toggleSpecialtyField);
+});
+</script>
+{% endblock %}
