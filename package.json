@@ -1,0 +1,18 @@
+{
+  "name": "innerbloom",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production"
+  },
+  "dependencies": {
+    "@fullcalendar/core": "^6.1.15",
+    "@fullcalendar/daygrid": "^6.1.15",
+    "@fullcalendar/interaction": "^6.1.15"
+  },
+  "devDependencies": {
+    "@symfony/webpack-encore": "^1.12.0"
+  }
+}

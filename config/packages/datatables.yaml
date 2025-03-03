@@ -1,0 +1,2 @@
+datatables:
+    datatable_class: App\Datatables\CustomDatatable

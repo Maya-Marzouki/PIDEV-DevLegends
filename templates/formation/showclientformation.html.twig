@@ -15,6 +15,8 @@
                         <p class="card-text"><strong>Date Formation:</strong> {{ formation.dateFor|date('Y-m-d') }}</p>
                         <p class="card-text"><strong>Lieu Formation:</strong> {{ formation.lieuFor }}</p>
                         <p class="card-text"><strong>Statut:</strong> {{ formation.statutFor }}</p>
+                                        <a href="{{ path('formation_participation', { 'id': formation.id }) }}" class="btn btn-success">S'inscrire</a>
+
                         
                     </div>
                 </div>
@@ -25,5 +27,8 @@
             </div>
         {% endfor %}
     </div>
+<div class="d-flex justify-content-center mt-4">
+    {{ knp_pagination_render(formations) }}
+</div>
 
 {% endblock %}

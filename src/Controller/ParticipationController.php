@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final class ParticipationController extends AbstractController
 {
@@ -45,18 +48,27 @@ final class ParticipationController extends AbstractController
             $manager->flush();
 
             // Vérification de l'email et envoi
-            if (method_exists($participation, 'getEmailParticipant') && 
-                filter_var($participation->getEmailParticipant(), FILTER_VALIDATE_EMAIL)) {
+            $emailParticipant = $participation->getEmailParticipant();
+            if (!empty($emailParticipant) && filter_var($emailParticipant, FILTER_VALIDATE_EMAIL)) {
                 $email = (new Email())
-                    ->from('noreply@gmail.com')
-                    ->to($participation->getEmailParticipant())
+                    ->from('noreply@gmail.com') // Remplace par ton adresse d'envoi
+                    ->to($emailParticipant)
                     ->subject('Confirmation de participation')
-                    ->text('Votre participation à la formation "' . $formation->getTitreFor() . '" a été confirmée !');
+                    ->text('Bonjour ' . $participation->getNomParticipant() . ',\n\n' .
+                        'Votre participation à la formation "' . $formation->getTitreFor() . '" a été confirmée !');
 
+                // Envoi de l'email
                 $mailer->send($email);
+
+                // Message de succès pour l'utilisateur
+                $this->addFlash('success', 'Votre inscription a été enregistrée et un email de confirmation a été envoyé.');
+            } else {
+                // Message d'erreur si l'email est invalide
+                $this->addFlash('error', 'L\'email fourni est invalide.');
             }
 
-            return $this->redirectToRoute('app_formation_index');
+            // Redirection après soumission réussie
+            return $this->redirectToRoute('formationclient');
         }
 
         return $this->render('participation/form.html.twig', [ 
@@ -64,4 +76,5 @@ final class ParticipationController extends AbstractController
             'formation' => $formation,
         ]);
     }
+    
 }

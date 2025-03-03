@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{{ dump(formations) }}
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Formations</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .logo { text-align: center; margin-bottom: 20px; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { border: 1px solid black; padding: 8px; text-align: left; }
+        .table th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="{{ logo }}" alt="Logo" width="100">
+    </div>
+    <h2>Liste des Formations</h2>
+    <p>Date de génération : {{ date|date('d/m/Y H:i') }}</p>
+    <table class="table">
+        <tr>
+            <th>Titre</th>
+            <th>Date</th>
+            <th>Lieu</th>
+            <th>Statut</th>
+        </tr>
+        {% for formation in formations %}
+            <tr>
+                <td>{{ formation.titreFor }}</td>
+                <td>{{ formation.dateFor|date('d/m/Y') }}</td>
+                <td>{{ formation.lieuFor }}</td>
+                <td>{{ formation.statutFor }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

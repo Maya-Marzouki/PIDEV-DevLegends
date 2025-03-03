@@ -32,16 +32,22 @@
 
             <td>
                 <a class="text-themecolor" href="{{ path('editFormation', {'id': formation.id}) }}">Modifier</a>
-                <form method="post" action="{{ path('deleteFormation', { id: formation.id }) }}" style="display:inline;">
-                    <a class="text-themecolor" href="{{ path('deleteFormation', {'id': formation.id}) }}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette formation ?');">Supprimer</a>
+<form action="{{ path('deleteFormation', { 'id': formation.id }) }}" method="post" onsubmit="return confirm('Voulez-vous vraiment supprimer cette formation ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ formation.id) }}">
+    <button type="submit" class="btn btn-danger">Supprimer</button>
+
+</form>
                 </form>
-                {# ✅ Bouton "S'inscrire" ajouté ici dans la même ligne que la formation #}
-                <a href="{{ path('formation_participation', { 'id': formation.id }) }}" class="btn btn-success">S'inscrire</a>
             </td>
 								</tr>
 							{% endfor %}
 						</table>
 						<a href="{{ path('calendar_events') }}" class="btn btn-primary">Voir le calendrier</a>
+<a href="{{ path('formation_pdf') }}" class="btn btn-primary">
+    <i class="fas fa-file-pdf"></i> Télécharger PDF
+</a>
+
+
 
 
 					</div>

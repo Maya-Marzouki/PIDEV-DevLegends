@@ -227,6 +227,11 @@ var map = L.map('map').setView([
 36.9021262, 10.1893184
 ], 17);
 // Zoom ajusté à 17 pour plus de précision
+.fc-event {
+    border: none !important;
+    border-radius: 5px !important;
+    padding: 5px !important;
+}
 
 // Ajout du fond de carte OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap contributors'}).addTo(map);

@@ -4,14 +4,17 @@ namespace App\Controller;
 
 use App\Entity\Formation;
 use App\Form\FormationType;
+use App\Repository\FormationRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Knp\Component\Pager\PaginatorInterface;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\FormationRepository;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
+use Omines\DataTablesBundle\DataTableFactory;
 class FormationController extends AbstractController
 {
     #[Route('/formation', name: 'app_formation_index')]
@@ -25,9 +28,10 @@ class FormationController extends AbstractController
     }
 
     #[Route('/formationclient', name: 'formationclient')]
-    public function showformationclient(ManagerRegistry $mr): Response
+    public function showFormationClient(ManagerRegistry $mr, PaginatorInterface $paginator, Request $request): Response
     {
-        $formations = $mr->getRepository(Formation::class)->findAll();
+        $formationsQuery = $mr->getRepository(Formation::class)->createQueryBuilder('f')->getQuery();
+        $formations = $paginator->paginate($formationsQuery, $request->query->getInt('page', 1), 6);
 
         return $this->render('formation/showclientformation.html.twig', [
             'formations' => $formations,
@@ -42,15 +46,15 @@ class FormationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $manager = $mr->getManager();
-            $manager->persist($formation);
-            $manager->flush();
+            $em = $mr->getManager();
+            $em->persist($formation);
+            $em->flush();
 
+            $this->addFlash('success', 'Formation ajoutée avec succès.');
             return $this->redirectToRoute('app_formation_index');
         }
 
         return $this->render('formation/formaddformation.html.twig', [
-            'formationt' => $formation,
             'form' => $form->createView(),
         ]);
     }
@@ -63,37 +67,45 @@ class FormationController extends AbstractController
         ]);
     }
 
-    #[Route('/formation/{id}/edit', name: 'editFormation')]
+    #[Route('/formation/{id}/edit', name: 'editFormation', methods: ['GET', 'POST'])]
     public function edit(Request $request, Formation $formation, ManagerRegistry $mr): Response
     {
+        if (!$formation) {
+            throw $this->createNotFoundException('Formation non trouvée.');
+        }
+
         $form = $this->createForm(FormationType::class, $formation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $manager = $mr->getManager();
-            $manager->flush();
+            $mr->getManager()->flush();
+            $this->addFlash('success', 'Formation mise à jour avec succès.');
 
             return $this->redirectToRoute('app_formation_index');
         }
 
         return $this->render('formation/formeditformation.html.twig', [
-            'formation' => $formation,
             'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/formation/{id}/delete', name: 'deleteFormation', methods: ['POST', 'DELETE'])]
-    public function deleteFormation(ManagerRegistry $mr, FormationRepository $repo, $id): Response
+    #[Route('/formation/{id}/delete', name: 'deleteFormation', methods: ['POST'])]
+    public function deleteFormation(Request $request, ManagerRegistry $mr, FormationRepository $repo, $id): Response
     {
-        $manager = $mr->getManager();
         $formation = $repo->find($id);
 
         if (!$formation) {
             throw $this->createNotFoundException('Formation non trouvée.');
         }
 
-        $manager->remove($formation);
-        $manager->flush();
+        if ($this->isCsrfTokenValid('delete'.$formation->getId(), $request->request->get('_token'))) {
+            $em = $mr->getManager();
+            $em->remove($formation);
+            $em->flush();
+            $this->addFlash('success', 'Formation supprimée avec succès.');
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide.');
+        }
 
         return $this->redirectToRoute("app_formation_index");
     }
@@ -102,16 +114,12 @@ class FormationController extends AbstractController
     public function getEvents(ManagerRegistry $mr): JsonResponse
     {
         $formations = $mr->getRepository(Formation::class)->findAll();
-        $events = [];
-
-        foreach ($formations as $formation) {
-            $events[] = [
-                'title Formation' => $formation->getTitreFor(),
-                'Date Formation' => $formation->getDateFor()->format('Y-m-d H:i:s'),
-                'Lieu Formation' => $formation->getLieuFor(),
-                'Statut' => $formation->getStatutFor(),
-            ];
-        }
+        $events = array_map(fn($formation) => [
+            'title' => $formation->getTitreFor(),
+            'start' => $formation->getDateFor()->format('Y-m-d H:i:s'),
+            'location' => $formation->getLieuFor(),
+            'status' => $formation->getStatutFor(),
+        ], $formations);
 
         return new JsonResponse($events);
     }
@@ -121,4 +129,67 @@ class FormationController extends AbstractController
     {
         return $this->render('formation/calendar.html.twig');
     }
+
+    #[Route('/formation/pdf', name: 'formation_pdf')]
+public function generatePdf(ManagerRegistry $mr): Response
+{
+    $this->addFlash('info', 'Début de la génération du PDF');
+
+    // Vérifier si les formations existent
+    $formations = $mr->getRepository(Formation::class)->findAll();
+    if (!$formations) {
+        $this->addFlash('error', 'Aucune formation trouvée.');
+        return $this->redirectToRoute('app_formation_index');
+    }
+
+    // Options pour DomPDF
+    $options = new Options();
+    $options->set('defaultFont', 'Arial');
+
+    // Créer l’instance DomPDF
+    $dompdf = new Dompdf($options);
+
+    // Vérifier si le fichier logo existe
+    $logoPath = $this->getParameter('kernel.project_dir') . '/public/images/logo.png';
+    if (!file_exists($logoPath)) {
+        $this->addFlash('error', 'Le fichier du logo est introuvable.');
+        return $this->redirectToRoute('app_formation_index');
+    }
+
+    // Générer le HTML
+    $html = $this->renderView('formation/pdf_template.html.twig', [
+        'formations' => $formations,
+        'logo' => $logoPath,
+        'date' => new \DateTime(),
+    ]);
+
+    // Charger le HTML dans DomPDF
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+
+    // Télécharger le fichier PDF
+    return new StreamedResponse(function () use ($dompdf) {
+        echo $dompdf->output();
+    }, 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'attachment; filename="formations.pdf"'
+    ]);
+}
+
+#[Route('/formations/datatables', name: 'formations_datatables')]
+public function formationsDatatables(DataTableFactory $dataTableFactory, Request $request): Response
+{
+    $table = $dataTableFactory->create(FormationListType::class);
+    $table->handleRequest($request);
+
+    if ($table->isCallback()) {
+        return $table->getResponse();
+    }
+
+    return $this->render('formation/datatables.html.twig', [
+        'datatable' => $table,
+    ]);
+}
+
 }
